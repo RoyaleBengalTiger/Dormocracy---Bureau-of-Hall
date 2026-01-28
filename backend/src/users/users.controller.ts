@@ -14,6 +14,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '@prisma/client';
+import { UpdateMeDto } from './dto/update-me.dto';
 
 /**
  * UsersController
@@ -39,9 +40,10 @@ export class UsersController {
    */
   @UseGuards(JwtAuthGuard)
   @Patch('me')
-  updateMe(@Req() req: any, @Body() dto: Pick<UpdateUserDto, 'username' | 'email'>) {
+  updateMe(@Req() req: any, @Body() dto: UpdateMeDto) {
     return this.usersService.updateMe(req.user.sub, dto);
   }
+
 
   /**
    * ADMIN/PM: List all users.
@@ -67,11 +69,12 @@ export class UsersController {
    * ADMIN/PM: Update a user (role/roomId allowed).
    */
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.PM)
+  @Roles(Role.ADMIN)
   @Patch(':id')
   update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
     return this.usersService.update(id, dto);
   }
+
 
   /**
    * ADMIN only: Delete a user.

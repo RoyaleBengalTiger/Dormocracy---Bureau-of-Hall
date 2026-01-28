@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateMeDto } from './dto/update-me.dto';
 
 /**
  * UsersService
@@ -82,22 +83,60 @@ export class UsersService {
    * (This will be used by /users/me)
    */
   async getMe(userId: string) {
-    return this.findOne(userId);
+    const me = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        role: true,
+        socialScore: true,
+        createdAt: true,
+
+        room: {
+          select: {
+            id: true,
+            roomNumber: true,
+            department: { select: { id: true, name: true } },
+
+            mayor: {
+              select: { id: true, username: true, role: true },
+            },
+
+            users: {
+              select: { id: true, username: true, role: true },
+            },
+          },
+        },
+
+        assignedTasks: {
+          orderBy: { createdAt: 'desc' },
+          select: {
+            id: true,
+            title: true,
+            status: true,
+            createdAt: true,
+            completionSummary: true,
+            reviewedAt: true,
+          },
+        },
+      },
+    });
+
+    if (!me) throw new NotFoundException('User not found');
+    return me;
   }
+
 
   /**
    * Allows a user to update their own profile fields.
    * Keep it minimal to avoid privilege escalation.
    */
-  async updateMe(userId: string, dto: Pick<UpdateUserDto, 'username' | 'email'>) {
-    try {
-      return await this.prisma.user.update({
-        where: { id: userId },
-        data: dto,
-      });
-    } catch (e: any) {
-      if (e?.code === 'P2025') throw new NotFoundException('User not found');
-      throw e;
-    }
+  async updateMe(userId: string, dto: UpdateMeDto) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: dto,
+    });
   }
+
 }

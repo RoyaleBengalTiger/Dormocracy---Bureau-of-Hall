@@ -13,5 +13,10 @@ export class RegisterDto {
     password: string;
 
     @IsString()
-    roomId: string;
+    departmentName: string;
+
+    // room number as string (e.g. "101", "2A")
+    @IsString()
+    roomNumber: string;
+
 }

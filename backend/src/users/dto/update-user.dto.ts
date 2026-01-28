@@ -1,12 +1,11 @@
-import { IsEmail, IsEnum, IsInt, IsOptional, IsString, Min } from 'class-validator';
-import { Role } from '@prisma/client';
+import { IsEmail, IsInt, IsOptional, IsString, Min } from 'class-validator';
 
 /**
  * UpdateUserDto
  *
- * Admin-focused update DTO:
- * - Can change role, roomId, socialScore, username/email (optional)
- * - Does NOT include password (password is handled by Auth module only)
+ * Admin update DTO:
+ * - Can change roomId, socialScore, username/email (optional)
+ * - Role is NOT editable here to prevent privilege/position escalation.
  */
 export class UpdateUserDto {
     @IsOptional()
@@ -16,10 +15,6 @@ export class UpdateUserDto {
     @IsOptional()
     @IsEmail()
     email?: string;
-
-    @IsOptional()
-    @IsEnum(Role)
-    role?: Role;
 
     @IsOptional()
     @IsString()

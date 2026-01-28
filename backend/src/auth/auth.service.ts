@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 import { ConfigService } from '@nestjs/config';
@@ -43,32 +43,70 @@ export class AuthService {
     }
 
     async register(dto: RegisterDto) {
-        // ensure room exists
-        const room = await this.prisma.room.findUnique({ where: { id: dto.roomId } });
-        if (!room) throw new NotFoundException('Room not found');
+        const department = await this.prisma.department.findUnique({
+            where: { name: dto.departmentName },
+        });
+
+        if (!department) {
+            throw new BadRequestException(`Department '${dto.departmentName}' does not exist`);
+        }
 
         const passwordHash = await argon2.hash(dto.password);
 
-        try {
-            const user = await this.prisma.user.create({
+        const user = await this.prisma.$transaction(async (tx) => {
+            // 1) Find or create room
+            const room = await tx.room.upsert({
+                where: {
+                    departmentId_roomNumber: {
+                        departmentId: department.id,
+                        roomNumber: dto.roomNumber,
+                    },
+                },
+                update: {},
+                create: {
+                    departmentId: department.id,
+                    roomNumber: dto.roomNumber,
+                },
+            });
+
+            // 2) Ensure chatroom exists for that room (safe even if room existed)
+            const chatRoom = await tx.chatRoom.upsert({
+                where: { roomId: room.id },      // requires ChatRoom.roomId @unique
+                update: {},
+                create: {
+                    type: 'ROOM',
+                    roomId: room.id,
+                },
+            });
+
+            // 3) Create user
+            const createdUser = await tx.user.create({
                 data: {
                     username: dto.username,
                     email: dto.email,
                     password: passwordHash,
-                    roomId: dto.roomId,
-                    role: Role.USER,
+                    role: Role.CITIZEN,
+                    roomId: room.id,
                 },
             });
 
-            const tokens = await this.signTokens(user.id, user.email, user.role);
-            await this.setRefreshTokenHash(user.id, tokens.refreshToken);
+            // 4) (Recommended) Create chat membership row
+            await tx.chatRoomMember.create({
+                data: {
+                    chatRoomId: chatRoom.id,
+                    userId: createdUser.id,
+                },
+            });
 
-            return tokens;
-        } catch (e: any) {
-            if (e?.code === 'P2002') throw new ConflictException('Username or email already exists');
-            throw e;
-        }
+            return createdUser;
+        });
+
+        const tokens = await this.signTokens(user.id, user.email, user.role);
+        await this.setRefreshTokenHash(user.id, tokens.refreshToken);
+
+        return tokens;
     }
+
 
     async login(dto: LoginDto) {
         const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
@@ -83,18 +121,40 @@ export class AuthService {
         return tokens;
     }
 
-    async refresh(userId: string, refreshToken: string) {
+    async refresh(refreshToken: string) {
+        const refreshSecret = this.config.getOrThrow<string>('JWT_REFRESH_SECRET');
+
+        // 1️⃣ Verify refresh token (signature + expiry)
+        let payload: { sub: string; email: string; role: Role };
+        try {
+            payload = await this.jwt.verifyAsync(refreshToken, {
+                secret: refreshSecret,
+            });
+        } catch {
+            throw new UnauthorizedException('Invalid refresh token');
+        }
+
+        const userId = payload.sub;
+
+        // 2️⃣ Load user and ensure refresh token exists
         const user = await this.prisma.user.findUnique({ where: { id: userId } });
-        if (!user || !user.refreshTokenHash) throw new UnauthorizedException('Access denied');
+        if (!user || !user.refreshTokenHash) {
+            throw new UnauthorizedException('Access denied');
+        }
 
+        // 3️⃣ Compare refresh token with stored hash
         const ok = await argon2.verify(user.refreshTokenHash, refreshToken);
-        if (!ok) throw new UnauthorizedException('Access denied');
+        if (!ok) {
+            throw new UnauthorizedException('Access denied');
+        }
 
+        // 4️⃣ Rotate tokens
         const tokens = await this.signTokens(user.id, user.email, user.role);
-        await this.setRefreshTokenHash(user.id, tokens.refreshToken); // rotation
+        await this.setRefreshTokenHash(user.id, tokens.refreshToken);
 
         return tokens;
     }
+
 
     async logout(userId: string) {
         await this.prisma.user.update({

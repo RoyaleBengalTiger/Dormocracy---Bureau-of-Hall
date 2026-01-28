@@ -1,5 +1,8 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import fastifyCookie from '@fastify/cookie';
+import fastifyCors from '@fastify/cors';
+
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -12,14 +15,55 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
 
+  // 🍪 Cookies (must be registered early)
+  await app.register(fastifyCookie, {
+    secret: process.env.COOKIE_SECRET || 'jkdfsaajs;akdjlkhgahsfl',
+  });
+
+  // 🌍 CORS — REQUIRED for Lovable + cookies
+  await app.register(fastifyCors, {
+    origin: (origin, cb) => {
+      // Allow non-browser clients (Postman, curl)
+      if (!origin) return cb(null, true);
+
+      // Allow localhost
+      if (
+        origin === 'http://localhost:5173' ||
+        origin === 'http://localhost:3000'
+      ) {
+        return cb(null, true);
+      }
+
+      // Allow ANY Lovable preview domain
+      if (/^https:\/\/.*\.lovableproject\.com$/.test(origin)) {
+        return cb(null, true);
+      }
+
+      // Otherwise block
+      cb(new Error(`CORS blocked for origin: ${origin}`), false);
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'ngrok-skip-browser-warning',
+    ],
+  });
+
+  // 🧹 Validation
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, // strips unknown fields
-      forbidNonWhitelisted: true, // error if unknown fields are sent
-      transform: true, // transforms payloads into DTO instances
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
     }),
   );
 
-  await app.listen(process.env.PORT ? Number(process.env.PORT) : 3000, '0.0.0.0');
+  await app.listen(
+    process.env.PORT ? Number(process.env.PORT) : 3000,
+    '0.0.0.0',
+  );
 }
+
 bootstrap();
