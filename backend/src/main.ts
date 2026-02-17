@@ -22,26 +22,28 @@ async function bootstrap() {
 
   // 🌍 CORS — REQUIRED for Lovable + cookies
   await app.register(fastifyCors, {
-    origin: (origin, cb) => {
-      // Allow non-browser clients (Postman, curl)
-      if (!origin) return cb(null, true);
+    // origin: (origin, cb) => {
+    //   // Allow non-browser clients (Postman, curl)
+    //   if (!origin) return cb(null, true);
 
-      // Allow localhost
-      if (
-        origin === 'http://localhost:8080' ||
-        origin === 'http://localhost:3000'
-      ) {
-        return cb(null, true);
-      }
+    //   // Allow localhost
+    //   if (
+    //     origin === 'http://localhost:8080' ||
+    //     origin === 'http://localhost:3000' ||
+    //     origin === 'https://sailorlike-monatomic-elina.ngrok-free.dev'
+    //   ) {
+    //     return cb(null, true);
+    //   }
 
-      // Allow ANY Lovable preview domain
-      if (/^https:\/\/.*\.lovableproject\.com$/.test(origin)) {
-        return cb(null, true);
-      }
+    //   // Allow ANY Lovable preview domain
+    //   if (/^https:\/\/.*\.lovableproject\.com$/.test(origin)) {
+    //     return cb(null, true);
+    //   }
 
-      // Otherwise block
-      cb(new Error(`CORS blocked for origin: ${origin}`), false);
-    },
+    //   // Otherwise block
+    //   cb(new Error(`CORS blocked for origin: ${origin}`), false);
+    // },
+    origin: true,
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: [

@@ -39,7 +39,7 @@ export class RoomsService {
   async findAll() {
     return this.prisma.room.findMany({
       orderBy: { createdAt: 'desc' },
-      include: { department: true, users: true },
+      include: { department: true, users: true, mayor: true },
     });
   }
 

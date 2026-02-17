@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { UiMessage } from "../types";
 import { MessageBubble } from "./MessageBubble";
@@ -19,6 +19,7 @@ export function MessageList(props: {
   isNearBottom: boolean;
   onNearBottomChange: (near: boolean) => void;
   onUserScrollUp: () => void;
+  jumpToBottom?: number;
 }) {
   const {
     messages,
@@ -30,6 +31,7 @@ export function MessageList(props: {
     isNearBottom,
     onNearBottomChange,
     onUserScrollUp,
+    jumpToBottom,
   } = props;
 
   const scrollerRef = useRef<HTMLDivElement | null>(null);
@@ -66,8 +68,25 @@ export function MessageList(props: {
     el.scrollTop = next - prev + el.scrollTop;
   }, [messages.length]);
 
+  // Scroll to bottom when jumpToBottom counter changes
+  useEffect(() => {
+    if (!jumpToBottom) return;
+    const el = scrollerRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+  }, [jumpToBottom]);
+
+  // Initial scroll to bottom on load
+  const [initialScrollDone, setInitialScrollDone] = useState(false);
+  useEffect(() => {
+    if (!isLoading && messages.length > 0 && !initialScrollDone && scrollerRef.current) {
+      scrollerRef.current.scrollTop = scrollerRef.current.scrollHeight;
+      setInitialScrollDone(true);
+    }
+  }, [isLoading, messages.length, initialScrollDone]);
+
   return (
-    <div className="relative flex-1">
+    <div className="relative min-h-0 flex-1">
       <div
         ref={scrollerRef}
         className="h-full overflow-y-auto px-4 py-4"

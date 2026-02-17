@@ -20,7 +20,7 @@ export function ChatLayout(props: {
 }) {
   const { title, roomLabel, status, username, children } = props;
   return (
-    <div className="flex h-[calc(100vh-0px)] flex-col">
+    <div className="flex h-[calc(100vh-0px)] flex-col overflow-hidden">
       <header className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
           <div className="min-w-0">
@@ -39,7 +39,7 @@ export function ChatLayout(props: {
           </div>
         </div>
       </header>
-      <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col">{children}</div>
+      <div className="mx-auto flex w-full max-w-5xl min-h-0 flex-1 flex-col">{children}</div>
     </div>
   );
 }

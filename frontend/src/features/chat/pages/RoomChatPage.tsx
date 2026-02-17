@@ -69,11 +69,8 @@ export default function RoomChatPage() {
     setIsNearBottom(true);
   };
 
-  // Imperative scroll-to-bottom by toggling a state and relying on DOM to be at bottom
-  useEffect(() => {
-    // MessageList doesn't expose the element; this is a lightweight nudge via focusing the end.
-    // (Kept minimal for now; can be upgraded to a ref API if needed.)
-  }, [jumpToBottom]);
+  // The jumpToBottom effect is now handled inside MessageList via the prop.
+  // No additional effect needed here.
 
   if (!token) return <Navigate to="/login" replace />;
 
@@ -93,7 +90,7 @@ export default function RoomChatPage() {
     };
 
     cache.addOptimisticMessage(optimistic);
-    if (isNearBottom) setTimeout(() => setJumpToBottom((n) => n + 1), 0);
+    setTimeout(() => setJumpToBottom((n) => n + 1), 0);
 
     setIsSending(true);
     try {
@@ -123,7 +120,7 @@ export default function RoomChatPage() {
       status={status}
       username={user?.username}
     >
-      <div className="relative flex flex-1 flex-col">
+      <div className="relative flex min-h-0 flex-1 flex-col">
         <NewMessagesPill count={unreadCount} onClick={handleJumpToBottom} />
 
         <MessageList
@@ -141,6 +138,7 @@ export default function RoomChatPage() {
           onUserScrollUp={() => {
             // no-op placeholder; keeps unread pill behavior consistent
           }}
+          jumpToBottom={jumpToBottom}
         />
 
         <Composer disabled={offline} isSending={isSending} onSend={sendMessage} />
