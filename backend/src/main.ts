@@ -28,7 +28,7 @@ async function bootstrap() {
 
       // Allow localhost
       if (
-        origin === 'http://localhost:5173' ||
+        origin === 'http://localhost:8080' ||
         origin === 'http://localhost:3000'
       ) {
         return cb(null, true);

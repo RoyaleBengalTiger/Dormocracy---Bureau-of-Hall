@@ -7,6 +7,7 @@ import { RoomsModule } from './rooms/rooms.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { TasksModule } from './tasks/tasks.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { TasksModule } from './tasks/tasks.module';
     DepartmentsModule,
     RoomsModule,
     UsersModule,
-
+    ChatModule,
     AuthModule,
 
     TasksModule,
