@@ -3,12 +3,8 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ChatService } from './chat.service';
 import { SendMessageDto } from './dto/send-message.dto';
 
-/**
- * ChatController
- * REST endpoints for room chat.
- *
- * Even if you primarily use WebSockets, keep REST as a fallback.
- */
+
+
 @UseGuards(JwtAuthGuard)
 @Controller('chat')
 export class ChatController {

@@ -37,7 +37,6 @@ private setRefreshCookie(reply: FastifyReply, refreshToken: string) {
         return { accessToken: tokens.accessToken };
     }
 
-
     @Post('login')
     async login(@Body() dto: LoginDto, @Res({ passthrough: true }) reply: FastifyReply) {
         const tokens = await this.auth.login(dto);

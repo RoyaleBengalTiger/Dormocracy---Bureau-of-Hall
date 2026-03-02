@@ -42,7 +42,7 @@ async function bootstrap() {
 
     //   // Otherwise block
     //   cb(new Error(`CORS blocked for origin: ${origin}`), false);
-    // },
+    // }, 
     origin: true,
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],

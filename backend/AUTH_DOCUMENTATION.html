@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dormocracy — Authentication System Documentation</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+    :root {
+      --primary: #6366f1;
+      --primary-light: #818cf8;
+      --primary-dark: #4f46e5;
+      --bg: #ffffff;
+      --surface: #f8fafc;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --text-secondary: #64748b;
+      --code-bg: #1e1e2e;
+      --code-text: #cdd6f4;
+      --accent-green: #10b981;
+      --accent-yellow: #f59e0b;
+      --accent-red: #ef4444;
+      --accent-blue: #3b82f6;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      color: var(--text);
+      line-height: 1.7;
+      background: var(--bg);
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 48px;
+    }
+
+    /* ───────── Cover Section ───────── */
+    .cover {
+      text-align: center;
+      padding: 60px 0 40px;
+      border-bottom: 3px solid var(--primary);
+      margin-bottom: 40px;
+    }
+    .cover h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    .cover .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+    .cover .meta {
+      margin-top: 20px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* ───────── Headings ───────── */
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-top: 48px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border);
+      page-break-after: avoid;
+    }
+    h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-top: 32px;
+      margin-bottom: 10px;
+      page-break-after: avoid;
+    }
+    h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-top: 20px;
+      margin-bottom: 8px;
+    }
+
+    p { margin-bottom: 12px; }
+
+    /* ───────── Tables ───────── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 24px;
+      font-size: 0.9rem;
+    }
+    th, td {
+      padding: 10px 14px;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    th {
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+    }
+    tr:nth-child(even) { background: var(--surface); }
+
+    /* ───────── Code Blocks ───────── */
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      border-radius: 8px;
+      padding: 20px 24px;
+      overflow-x: auto;
+      font-size: 0.82rem;
+      line-height: 1.65;
+      margin: 14px 0 22px;
+      page-break-inside: avoid;
+    }
+    code {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.82rem;
+    }
+    p code, li code, td code {
+      background: #f1f5f9;
+      color: var(--primary-dark);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.82rem;
+    }
+
+    /* ───────── Callouts ───────── */
+    .callout {
+      border-left: 4px solid;
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      margin: 16px 0 22px;
+      font-size: 0.9rem;
+    }
+    .callout-info   { border-color: var(--accent-blue); background: #eff6ff; }
+    .callout-warn   { border-color: var(--accent-yellow); background: #fffbeb; }
+    .callout-danger { border-color: var(--accent-red); background: #fef2f2; }
+    .callout-ok     { border-color: var(--accent-green); background: #ecfdf5; }
+    .callout strong  { display: block; margin-bottom: 4px; }
+
+    /* ───────── Lists ───────── */
+    ul, ol { margin: 8px 0 16px 24px; }
+    li { margin-bottom: 6px; }
+
+    /* ───────── File Header ───────── */
+    .file-header {
+      display: inline-block;
+      background: var(--primary);
+      color: white;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      padding: 4px 14px;
+      border-radius: 6px 6px 0 0;
+      margin-top: 16px;
+      font-weight: 500;
+    }
+    .file-header + pre {
+      margin-top: 0;
+      border-radius: 0 8px 8px 8px;
+    }
+
+    /* ───────── Diagram ───────── */
+    .diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      margin: 20px 0 28px;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.9;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    /* ───────── Badge ───────── */
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-post { background: #dbeafe; color: #1d4ed8; }
+    .badge-get  { background: #d1fae5; color: #065f46; }
+
+    /* ───────── TOC ───────── */
+    .toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px 30px;
+      margin: 0 0 40px;
+    }
+    .toc h3 { margin-top: 0; color: var(--primary-dark); }
+    .toc ol { margin-left: 18px; }
+    .toc li { margin-bottom: 4px; }
+    .toc a { color: var(--primary); text-decoration: none; }
+
+    /* Print */
+    @media print {
+      body { padding: 20px 30px; }
+      pre { font-size: 0.75rem; }
+      .cover { padding: 30px 0 20px; }
+    }
+
+    .section-break {
+      page-break-before: always;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!--  COVER                                                        -->
+<!-- ============================================================ -->
+<div class="cover">
+  <h1>🏛️ Dormocracy — Bureau of Hall</h1>
+  <div class="subtitle">Authentication System — Complete Technical Documentation</div>
+  <div class="meta">
+    NestJS · Fastify · JWT · Argon2 · Passport.js · Prisma · PostgreSQL<br/>
+    Generated: February 18, 2026
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!--  TABLE OF CONTENTS                                            -->
+<!-- ============================================================ -->
+<div class="toc">
+  <h3>📑 Table of Contents</h3>
+  <ol>
+    <li><a href="#overview">System Overview &amp; Architecture</a></li>
+    <li><a href="#dependencies">Dependencies &amp; Tech Stack</a></li>
+    <li><a href="#schema">Database Schema (Prisma)</a></li>
+    <li><a href="#module">Auth Module Setup</a></li>
+    <li><a href="#dtos">DTOs — Data Transfer Objects</a></li>
+    <li><a href="#service">Auth Service — Core Business Logic</a></li>
+    <li><a href="#controller">Auth Controller — API Endpoints</a></li>
+    <li><a href="#strategy">JWT Strategy (Passport.js)</a></li>
+    <li><a href="#guards">Guards — JWT &amp; Role-Based Access</a></li>
+    <li><a href="#decorator">Roles Decorator</a></li>
+    <li><a href="#bootstrap">Bootstrap &amp; Server Configuration</a></li>
+    <li><a href="#flow">Complete Auth Flow — Step by Step</a></li>
+    <li><a href="#api">API Reference</a></li>
+    <li><a href="#security">Security Best Practices</a></li>
+  </ol>
+</div>
+
+<!-- ============================================================ -->
+<!--  1. OVERVIEW                                                  -->
+<!-- ============================================================ -->
+<h2 id="overview">1. System Overview &amp; Architecture</h2>
+
+<p>
+  The Dormocracy authentication system implements a <strong>stateless JWT-based authentication</strong>
+  mechanism with <strong>refresh-token rotation</strong>. It follows NestJS best practices using a
+  modular architecture with clear separation of concerns.
+</p>
+
+<h3>High-Level Architecture</h3>
+
+<div class="diagram">
+┌─────────────┐     HTTP      ┌──────────────────┐     Service     ┌──────────────────┐
+│             │  ──────────▶  │  AuthController   │  ───────────▶  │   AuthService    │
+│   Client    │               │  (4 endpoints)    │                │  (business logic)│
+│  (Browser)  │  ◀──────────  │                   │  ◀───────────  │                  │
+└─────────────┘   JSON +      └──────────────────┘                └────────┬─────────┘
+                  Cookie                                                   │
+                                                                           │  Prisma ORM
+                                                                           ▼
+                              ┌──────────────────┐                ┌──────────────────┐
+                              │   JwtStrategy     │                │   PostgreSQL     │
+                              │  (Passport.js)    │                │   Database       │
+                              │  validates token  │                │   (User table)   │
+                              └──────────────────┘                └──────────────────┘
+                                       │
+                                       ▼
+                              ┌──────────────────┐
+                              │   JwtAuthGuard    │   ← protects routes
+                              │   RolesGuard      │   ← RBAC enforcement
+                              └──────────────────┘
+</div>
+
+<h3>Key Design Decisions</h3>
+<ul>
+  <li><strong>Dual-token system:</strong> Short-lived access tokens (JWT) + long-lived refresh tokens</li>
+  <li><strong>Refresh token rotation:</strong> Every refresh generates a new pair of tokens, invalidating the old refresh token</li>
+  <li><strong>httpOnly cookies:</strong> Refresh tokens are stored in secure, httpOnly cookies (not accessible via JavaScript)</li>
+  <li><strong>Argon2 hashing:</strong> Both passwords and refresh tokens are hashed using Argon2 (winner of the Password Hashing Competition)</li>
+  <li><strong>Role-Based Access Control (RBAC):</strong> Five roles — <code>CITIZEN</code>, <code>MAYOR</code>, <code>MINISTER</code>, <code>PM</code>, <code>ADMIN</code></li>
+</ul>
+
+<!-- ============================================================ -->
+<!--  2. DEPENDENCIES                                              -->
+<!-- ============================================================ -->
+<h2 id="dependencies">2. Dependencies &amp; Tech Stack</h2>
+
+<table>
+  <thead>
+    <tr><th>Package</th><th>Version</th><th>Purpose</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>@nestjs/passport</code></td><td>^11.0.5</td><td>NestJS wrapper for Passport.js authentication framework</td></tr>
+    <tr><td><code>passport</code></td><td>^0.7.0</td><td>Core Passport.js — middleware for pluggable auth strategies</td></tr>
+    <tr><td><code>passport-jwt</code></td><td>^4.0.1</td><td>Passport strategy to validate JWTs from request headers</td></tr>
+    <tr><td><code>@nestjs/jwt</code></td><td>^11.0.2</td><td>NestJS module for signing &amp; verifying JWTs</td></tr>
+    <tr><td><code>argon2</code></td><td>^0.44.0</td><td>Argon2 password hashing (PHC winner, resistant to GPU attacks)</td></tr>
+    <tr><td><code>@fastify/cookie</code></td><td>^11.0.2</td><td>Fastify plugin for reading/writing cookies</td></tr>
+    <tr><td><code>@fastify/cors</code></td><td>^11.2.0</td><td>CORS with <code>credentials: true</code> for cross-origin cookie sending</td></tr>
+    <tr><td><code>class-validator</code></td><td>^0.14.3</td><td>DTO validation decorators (<code>@IsEmail</code>, <code>@MinLength</code>, etc.)</td></tr>
+    <tr><td><code>class-transformer</code></td><td>^0.5.1</td><td>Transforms plain objects to DTO class instances</td></tr>
+    <tr><td><code>@prisma/client</code></td><td>^7.2.0</td><td>Prisma ORM — type-safe database access</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<!--  3. SCHEMA                                                    -->
+<!-- ============================================================ -->
+<h2 id="schema" class="section-break">3. Database Schema (Prisma)</h2>
+
+<p>The authentication system relies on two core schema elements: the <code>Role</code> enum and the <code>User</code> model.</p>
+
+<h3>3.1 Role Enum</h3>
+
+<div class="file-header">prisma/schema.prisma</div>
+<pre><code>enum Role {
+  CITIZEN      // Default role for all new users
+  MAYOR        // Room-level leader
+  MINISTER     // Department-level role
+  PM           // Project Manager
+  ADMIN        // Full system access
+}</code></pre>
+
+<div class="callout callout-info">
+  <strong>ℹ️ How roles work:</strong>
+  Every new user is assigned <code>CITIZEN</code> by default. Roles are stored in the JWT payload
+  and checked by the <code>RolesGuard</code> on protected routes.
+</div>
+
+<h3>3.2 User Model — Auth-Related Fields</h3>
+
+<div class="file-header">prisma/schema.prisma</div>
+<pre><code>model User {
+  id       String @id @default(uuid())  // Primary key — UUID v4
+  username String @unique               // Unique username
+  email    String @unique               // Used for login
+  password String                       // Argon2 hashed password
+
+  role             Role    @default(CITIZEN)  // RBAC role
+  refreshTokenHash String?                    // Argon2 hash of current refresh token
+                                              // null = user is logged out
+
+  socialScore Int @default(50)           // Gamification score
+
+  roomId String                          // FK → Room (every user belongs to a room)
+  room   Room   @relation(fields: [roomId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  // ... other relations omitted for brevity
+}</code></pre>
+
+<h4>Key Auth Fields Explained</h4>
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td><code>password</code></td><td><code>String</code></td><td>Stores the Argon2 hash (never plaintext)</td></tr>
+    <tr><td><code>refreshTokenHash</code></td><td><code>String?</code></td><td>Stores a hash of the active refresh token. When <code>null</code>, the user is effectively logged out — no refresh is possible.</td></tr>
+    <tr><td><code>role</code></td><td><code>Role</code></td><td>Determines access level. Included in JWT payload for stateless authorization.</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<!--  4. MODULE                                                    -->
+<!-- ============================================================ -->
+<h2 id="module">4. Auth Module Setup</h2>
+
+<div class="file-header">src/auth/auth.module.ts</div>
+<pre><code>import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+
+import { AuthService } from './auth.service';
+import { AuthController } from './auth.controller';
+import { JwtStrategy } from './strategies/jwt.strategy';
+
+@Module({
+  imports: [
+    PassportModule,                // Enables Passport integration
+    JwtModule.register({}),        // Empty config — secrets provided at sign/verify time
+  ],
+  controllers: [AuthController],   // Registers HTTP endpoints
+  providers: [AuthService, JwtStrategy],  // DI providers
+  exports: [AuthService],          // Allows other modules to use AuthService
+})
+export class AuthModule { }</code></pre>
+
+<h3>Line-by-Line Explanation</h3>
+<ul>
+  <li><code>PassportModule</code> — Integrates Passport.js into NestJS's dependency injection system. Required for <code>AuthGuard</code> to work.</li>
+  <li><code>JwtModule.register({})</code> — Registers the JWT service. Passing <code>{}</code> means no default secret is configured — instead, secrets are provided explicitly when calling <code>signAsync()</code> and <code>verifyAsync()</code>. This allows using <strong>different secrets</strong> for access vs. refresh tokens.</li>
+  <li><code>JwtStrategy</code> — Passport strategy for validating access tokens. Must be listed as a provider so NestJS can inject <code>ConfigService</code> into it.</li>
+  <li><code>exports: [AuthService]</code> — Other modules (e.g., <code>UsersModule</code>) can import <code>AuthModule</code> to use <code>AuthService</code>.</li>
+</ul>
+
+<!-- ============================================================ -->
+<!--  5. DTOs                                                      -->
+<!-- ============================================================ -->
+<h2 id="dtos">5. DTOs — Data Transfer Objects</h2>
+
+<p>DTOs define the shape and validation rules for incoming request bodies. They use <code>class-validator</code> decorators, which are enforced by NestJS's global <code>ValidationPipe</code>.</p>
+
+<h3>5.1 RegisterDto</h3>
+
+<div class="file-header">src/auth/dto/register.dto.ts</div>
+<pre><code>import { IsEmail, IsString, MinLength } from 'class-validator';
+
+export class RegisterDto {
+  @IsString()           // Must be a string
+  @MinLength(3)         // At least 3 characters
+  username: string;
+
+  @IsEmail()            // Must be a valid email format
+  email: string;
+
+  @IsString()
+  @MinLength(8)         // Password must be ≥ 8 characters
+  password: string;
+
+  @IsString()
+  departmentName: string;  // Name of the department (looked up in DB)
+
+  @IsString()
+  roomNumber: string;      // Room identifier like "101" or "2A"
+}</code></pre>
+
+<h3>5.2 LoginDto</h3>
+
+<div class="file-header">src/auth/dto/login.dto.ts</div>
+<pre><code>import { IsEmail, IsString, MinLength } from 'class-validator';
+
+export class LoginDto {
+  @IsEmail()            // Must be a valid email
+  email: string;
+
+  @IsString()
+  @MinLength(8)         // Must match the minimum length rule
+  password: string;
+}</code></pre>
+
+<div class="callout callout-ok">
+  <strong>✅ Validation pipeline:</strong>
+  The global <code>ValidationPipe</code> in <code>main.ts</code> automatically validates every incoming 
+  request body against the DTO. Invalid requests are rejected with a <code>400 Bad Request</code> 
+  before any business logic runs.
+</div>
+
+<!-- ============================================================ -->
+<!--  6. SERVICE                                                   -->
+<!-- ============================================================ -->
+<h2 id="service" class="section-break">6. Auth Service — Core Business Logic</h2>
+
+<p>The <code>AuthService</code> is the heart of the authentication system. It handles user registration, login, token generation, refresh, and logout.</p>
+
+<div class="file-header">src/auth/auth.service.ts</div>
+
+<h3>6.1 Constructor &amp; Dependencies</h3>
+<pre><code>@Injectable()
+export class AuthService {
+  constructor(
+    private readonly prisma: PrismaService,   // Database access
+    private readonly jwt: JwtService,         // JWT sign/verify operations
+    private readonly config: ConfigService,   // Environment variables
+  ) { }
+}</code></pre>
+
+<p>Three injected services:</p>
+<ul>
+  <li><code>PrismaService</code> — Wraps Prisma Client for database queries</li>
+  <li><code>JwtService</code> — From <code>@nestjs/jwt</code>, handles JWT signing and verification</li>
+  <li><code>ConfigService</code> — Reads <code>.env</code> variables like <code>JWT_ACCESS_SECRET</code></li>
+</ul>
+
+<h3>6.2 Token Signing — <code>signTokens()</code></h3>
+
+<pre><code>private async signTokens(userId: string, email: string, role: Role): Promise&lt;Tokens&gt; {
+  // 1. Read secrets from environment
+  const accessSecret  = this.config.getOrThrow&lt;string&gt;('JWT_ACCESS_SECRET');
+  const refreshSecret = this.config.getOrThrow&lt;string&gt;('JWT_REFRESH_SECRET');
+
+  // 2. Read TTLs (with defaults: 15 min access, 30 day refresh)
+  const accessTtl  = Number(this.config.get&lt;string&gt;('JWT_ACCESS_TTL_SECONDS')  ?? 900);
+  const refreshTtl = Number(this.config.get&lt;string&gt;('JWT_REFRESH_TTL_SECONDS') ?? 2592000);
+
+  // 3. Build payload — this data is encoded into the JWT
+  const payload = { sub: userId, email, role };
+
+  // 4. Sign both tokens concurrently using different secrets
+  const [accessToken, refreshToken] = await Promise.all([
+    this.jwt.signAsync(payload, { secret: accessSecret,  expiresIn: accessTtl }),
+    this.jwt.signAsync(payload, { secret: refreshSecret, expiresIn: refreshTtl }),
+  ]);
+
+  return { accessToken, refreshToken };
+}</code></pre>
+
+<div class="callout callout-warn">
+  <strong>⚠️ Why two different secrets?</strong>
+  Using separate secrets for access and refresh tokens ensures that an access token cannot be 
+  used as a refresh token (and vice versa). Even if an access token is intercepted, it cannot be 
+  used to generate new tokens.
+</div>
+
+<h4>JWT Payload Structure</h4>
+<table>
+  <thead><tr><th>Field</th><th>Value</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td><code>sub</code></td><td>User UUID</td><td>Standard JWT "subject" claim — identifies the user</td></tr>
+    <tr><td><code>email</code></td><td>User's email</td><td>Quick lookup without DB query</td></tr>
+    <tr><td><code>role</code></td><td><code>CITIZEN</code> etc.</td><td>Enables stateless role checks via <code>RolesGuard</code></td></tr>
+    <tr><td><code>exp</code></td><td>Unix timestamp</td><td>Auto-added by JWT library based on <code>expiresIn</code></td></tr>
+    <tr><td><code>iat</code></td><td>Unix timestamp</td><td>Auto-added — "issued at" time</td></tr>
+  </tbody>
+</table>
+
+<h3>6.3 Storing Refresh Token Hash</h3>
+
+<pre><code>private async setRefreshTokenHash(userId: string, refreshToken: string) {
+  const hash = await argon2.hash(refreshToken);   // Hash the raw JWT string
+  await this.prisma.user.update({
+    where: { id: userId },
+    data:  { refreshTokenHash: hash },            // Store hash in DB
+  });
+}</code></pre>
+
+<div class="callout callout-info">
+  <strong>ℹ️ Why hash the refresh token?</strong>
+  If the database is compromised, attackers get only hashes — not usable tokens. Argon2 is 
+  deliberately slow, making brute-force attacks impractical.
+</div>
+
+<h3>6.4 Registration — <code>register()</code></h3>
+
+<pre><code>async register(dto: RegisterDto) {
+  // 1. Validate department exists
+  const department = await this.prisma.department.findUnique({
+    where: { name: dto.departmentName },
+  });
+  if (!department) {
+    throw new BadRequestException(`Department '${dto.departmentName}' does not exist`);
+  }
+
+  // 2. Hash the password with Argon2
+  const passwordHash = await argon2.hash(dto.password);
+
+  // 3. Run all creates in a transaction (atomic — all succeed or all fail)
+  const user = await this.prisma.$transaction(async (tx) => {
+
+    // 3a. Find or create the room
+    const room = await tx.room.upsert({
+      where: {
+        departmentId_roomNumber: {
+          departmentId: department.id,
+          roomNumber: dto.roomNumber,
+        },
+      },
+      update: {},       // Room exists → no changes
+      create: {         // Room doesn't exist → create it
+        departmentId: department.id,
+        roomNumber: dto.roomNumber,
+      },
+    });
+
+    // 3b. Ensure a ChatRoom exists for this room
+    const chatRoom = await tx.chatRoom.upsert({
+      where:  { roomId: room.id },
+      update: {},
+      create: { type: 'ROOM', roomId: room.id },
+    });
+
+    // 3c. Create the user record
+    const createdUser = await tx.user.create({
+      data: {
+        username: dto.username,
+        email:    dto.email,
+        password: passwordHash,     // Store hashed password
+        role:     Role.CITIZEN,     // Default role
+        roomId:   room.id,
+      },
+    });
+
+    // 3d. Add user to the chat room
+    await tx.chatRoomMember.create({
+      data: { chatRoomId: chatRoom.id, userId: createdUser.id },
+    });
+
+    return createdUser;
+  });
+
+  // 4. Generate tokens and store refresh hash
+  const tokens = await this.signTokens(user.id, user.email, user.role);
+  await this.setRefreshTokenHash(user.id, tokens.refreshToken);
+
+  return tokens;  // { accessToken, refreshToken }
+}</code></pre>
+
+<div class="callout callout-ok">
+  <strong>✅ Transaction safety:</strong>
+  The <code>$transaction()</code> block ensures that if any step fails (e.g., duplicate email, 
+  database error), all changes are rolled back automatically. The user, room, chat room, and 
+  membership are either all created or none are.
+</div>
+
+<h3>6.5 Login — <code>login()</code></h3>
+
+<pre><code>async login(dto: LoginDto) {
+  // 1. Find user by email
+  const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
+  if (!user) throw new UnauthorizedException('Invalid credentials');
+
+  // 2. Verify password against stored Argon2 hash
+  const ok = await argon2.verify(user.password, dto.password);
+  if (!ok) throw new UnauthorizedException('Invalid credentials');
+
+  // 3. Generate new token pair
+  const tokens = await this.signTokens(user.id, user.email, user.role);
+  await this.setRefreshTokenHash(user.id, tokens.refreshToken);
+
+  return tokens;
+}</code></pre>
+
+<div class="callout callout-info">
+  <strong>ℹ️ Security note:</strong>
+  The same generic error message <code>"Invalid credentials"</code> is returned for both 
+  "user not found" and "wrong password" scenarios. This prevents attackers from enumerating 
+  valid email addresses.
+</div>
+
+<h3>6.6 Token Refresh — <code>refresh()</code></h3>
+
+<pre><code>async refresh(refreshToken: string) {
+  const refreshSecret = this.config.getOrThrow&lt;string&gt;('JWT_REFRESH_SECRET');
+
+  // Step 1: Verify the JWT signature and expiration
+  let payload: { sub: string; email: string; role: Role };
+  try {
+    payload = await this.jwt.verifyAsync(refreshToken, {
+      secret: refreshSecret,
+    });
+  } catch {
+    throw new UnauthorizedException('Invalid refresh token');
+  }
+
+  const userId = payload.sub;
+
+  // Step 2: Load user and check if refresh token hash exists
+  const user = await this.prisma.user.findUnique({ where: { id: userId } });
+  if (!user || !user.refreshTokenHash) {
+    throw new UnauthorizedException('Access denied');
+  }
+
+  // Step 3: Verify the token matches the stored hash
+  const ok = await argon2.verify(user.refreshTokenHash, refreshToken);
+  if (!ok) {
+    throw new UnauthorizedException('Access denied');
+  }
+
+  // Step 4: Rotate — generate new tokens and update the hash
+  const tokens = await this.signTokens(user.id, user.email, user.role);
+  await this.setRefreshTokenHash(user.id, tokens.refreshToken);
+
+  return tokens;
+}</code></pre>
+
+<div class="callout callout-danger">
+  <strong>🔒 Refresh Token Rotation — Three Layers of Security:</strong>
+  <ol>
+    <li><strong>JWT verification:</strong> Checks the cryptographic signature and expiry date</li>
+    <li><strong>Existence check:</strong> If <code>refreshTokenHash</code> is null, the user has logged out</li>
+    <li><strong>Hash comparison:</strong> The token must match the hash in the database — prevents replay of old tokens</li>
+  </ol>
+</div>
+
+<h3>6.7 Logout — <code>logout()</code></h3>
+
+<pre><code>async logout(userId: string) {
+  await this.prisma.user.update({
+    where: { id: userId },
+    data:  { refreshTokenHash: null },   // Nullify → no refresh possible
+  });
+  return { success: true };
+}</code></pre>
+
+<p>Setting <code>refreshTokenHash</code> to <code>null</code> effectively invalidates all refresh tokens for this user. The access token will continue to work until it expires (typically 15 minutes), but no new tokens can be generated.</p>
+
+<!-- ============================================================ -->
+<!--  7. CONTROLLER                                                -->
+<!-- ============================================================ -->
+<h2 id="controller" class="section-break">7. Auth Controller — API Endpoints</h2>
+
+<div class="file-header">src/auth/auth.controller.ts</div>
+<pre><code>@Controller('auth')  // Base path: /auth
+export class AuthController {
+  constructor(private readonly auth: AuthService) { }
+}</code></pre>
+
+<p>All endpoints are prefixed with <code>/auth</code> (e.g., <code>POST /auth/login</code>).</p>
+
+<h3>7.1 Cookie Helper Methods</h3>
+
+<pre><code>// Sets the refresh token as a secure, httpOnly cookie
+private setRefreshCookie(reply: FastifyReply, refreshToken: string) {
+  reply.setCookie('refresh_token', refreshToken, {
+    httpOnly: true,       // Not accessible via JavaScript (XSS protection)
+    secure: true,         // Only sent over HTTPS
+    sameSite: 'none',     // Required for cross-site cookies (frontend ≠ backend domain)
+    path: '/',            // Cookie available on all routes
+    maxAge: 60 * 60 * 24 * 30,  // 30 days (in seconds)
+  });
+}
+
+// Clears the cookie on logout
+private clearRefreshCookie(reply: FastifyReply) {
+  reply.clearCookie('refresh_token', { path: '/' });
+}</code></pre>
+
+<h4>Cookie Options Explained</h4>
+<table>
+  <thead><tr><th>Option</th><th>Value</th><th>Security Benefit</th></tr></thead>
+  <tbody>
+    <tr><td><code>httpOnly</code></td><td><code>true</code></td><td>Prevents XSS attacks from stealing the refresh token via <code>document.cookie</code></td></tr>
+    <tr><td><code>secure</code></td><td><code>true</code></td><td>Cookie only sent over HTTPS connections</td></tr>
+    <tr><td><code>sameSite</code></td><td><code>'none'</code></td><td>Allows cross-origin cookie sending (required when frontend and backend are on different domains)</td></tr>
+    <tr><td><code>path</code></td><td><code>'/'</code></td><td>Cookie sent with every request to the backend</td></tr>
+    <tr><td><code>maxAge</code></td><td><code>2592000</code></td><td>Auto-expires after 30 days</td></tr>
+  </tbody>
+</table>
+
+<h3>7.2 Register Endpoint</h3>
+
+<pre><code>@Post('register')  // POST /auth/register
+async register(
+  @Body() dto: RegisterDto,                          // Validated request body
+  @Res({ passthrough: true }) reply: FastifyReply     // Access to response for cookies
+) {
+  const tokens = await this.auth.register(dto);       // Create user + generate tokens
+  this.setRefreshCookie(reply, tokens.refreshToken);   // Set httpOnly cookie
+  return { accessToken: tokens.accessToken };          // Return access token in body
+}</code></pre>
+
+<h3>7.3 Login Endpoint</h3>
+
+<pre><code>@Post('login')  // POST /auth/login
+async login(
+  @Body() dto: LoginDto,
+  @Res({ passthrough: true }) reply: FastifyReply
+) {
+  const tokens = await this.auth.login(dto);
+  this.setRefreshCookie(reply, tokens.refreshToken);
+  return { accessToken: tokens.accessToken };
+}</code></pre>
+
+<h3>7.4 Refresh Endpoint</h3>
+
+<pre><code>@Post('refresh')  // POST /auth/refresh
+async refresh(
+  @Req() req: FastifyRequest,                         // Access to request (cookies)
+  @Res({ passthrough: true }) reply: FastifyReply
+) {
+  const refreshToken = (req.cookies as any)?.refresh_token;  // Read from cookie
+  if (!refreshToken) throw new UnauthorizedException('Missing refresh token');
+
+  const tokens = await this.auth.refresh(refreshToken);
+  this.setRefreshCookie(reply, tokens.refreshToken);   // Set new cookie (rotation)
+  return { accessToken: tokens.accessToken };
+}</code></pre>
+
+<h3>7.5 Logout Endpoint (Protected)</h3>
+
+<pre><code>@UseGuards(JwtAuthGuard)  // ← Requires valid access token
+@Post('logout')            // POST /auth/logout
+async logout(
+  @Req() req: any,
+  @Res({ passthrough: true }) reply: FastifyReply
+) {
+  await this.auth.logout(req.user.sub);          // req.user comes from JwtStrategy
+  this.clearRefreshCookie(reply);                 // Delete the cookie
+  return { success: true };
+}</code></pre>
+
+<div class="callout callout-info">
+  <strong>ℹ️ <code>@Res({ passthrough: true })</code></strong> — The <code>passthrough</code> option 
+  tells NestJS to still handle the response (serialization, status codes, etc.) even though 
+  we're injecting <code>reply</code>. Without it, NestJS would expect you to manually call 
+  <code>reply.send()</code>.
+</div>
+
+<!-- ============================================================ -->
+<!--  8. STRATEGY                                                  -->
+<!-- ============================================================ -->
+<h2 id="strategy">8. JWT Strategy (Passport.js)</h2>
+
+<p>The JWT strategy tells Passport <em>how</em> to extract and validate access tokens from incoming requests.</p>
+
+<div class="file-header">src/auth/strategies/jwt.strategy.ts</div>
+<pre><code>import { Injectable } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import { ConfigService } from '@nestjs/config';
+
+@Injectable()
+export class JwtStrategy extends PassportStrategy(Strategy) {
+  constructor(config: ConfigService) {
+    super({
+      // Extract token from: "Authorization: Bearer &lt;token&gt;"
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+
+      // Use the ACCESS secret (not refresh secret)
+      secretOrKey: config.getOrThrow&lt;string&gt;('JWT_ACCESS_SECRET'),
+    });
+  }
+
+  // Called AFTER token is verified. Return value → req.user
+  validate(payload: any) {
+    return payload;  // { sub, email, role, iat, exp }
+  }
+}</code></pre>
+
+<h3>How It Works</h3>
+<ol>
+  <li>When a request hits a route protected by <code>JwtAuthGuard</code>, Passport intercepts it</li>
+  <li><code>ExtractJwt.fromAuthHeaderAsBearerToken()</code> extracts the JWT from the <code>Authorization</code> header</li>
+  <li>Passport verifies the token's signature using <code>JWT_ACCESS_SECRET</code> and checks expiration</li>
+  <li>If valid, the <code>validate()</code> method is called with the decoded payload</li>
+  <li>The return value of <code>validate()</code> is attached to <code>req.user</code>, making it available in controllers and guards</li>
+</ol>
+
+<!-- ============================================================ -->
+<!--  9. GUARDS                                                    -->
+<!-- ============================================================ -->
+<h2 id="guards">9. Guards — JWT &amp; Role-Based Access</h2>
+
+<h3>9.1 JwtAuthGuard</h3>
+
+<div class="file-header">src/auth/guards/jwt-auth.guard.ts</div>
+<pre><code>import { Injectable } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+
+@Injectable()
+export class JwtAuthGuard extends AuthGuard('jwt') { }</code></pre>
+
+<p>This is a thin wrapper around Passport's <code>AuthGuard</code>. When applied to a route with <code>@UseGuards(JwtAuthGuard)</code>, it triggers the <code>JwtStrategy</code> to validate the Bearer token. If validation fails, a <code>401 Unauthorized</code> response is sent automatically.</p>
+
+<h3>9.2 RolesGuard — RBAC</h3>
+
+<div class="file-header">src/auth/guards/roles.guard.ts</div>
+<pre><code>import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { ROLES_KEY } from '../decorators/roles.decorator';
+import { Role } from '@prisma/client';
+
+@Injectable()
+export class RolesGuard implements CanActivate {
+  constructor(private readonly reflector: Reflector) { }
+
+  canActivate(ctx: ExecutionContext): boolean {
+    // 1. Read the @Roles() metadata from the handler or class
+    const required = this.reflector.getAllAndOverride&lt;Role[]&gt;(ROLES_KEY, [
+      ctx.getHandler(),    // Check method-level decorator first
+      ctx.getClass(),      // Then class-level decorator
+    ]);
+
+    // 2. If no roles are specified, allow access
+    if (!required || required.length === 0) return true;
+
+    // 3. Get the user from the request (set by JwtStrategy)
+    const req = ctx.switchToHttp().getRequest();
+    const user = req.user;
+
+    // 4. Check if user's role is in the required roles
+    return required.includes(user.role);
+  }
+}</code></pre>
+
+<h3>How to Use Guards Together</h3>
+
+<pre><code>// Example: Only ADMIN and PM can access this endpoint
+@UseGuards(JwtAuthGuard, RolesGuard)   // First authenticate, then authorize
+@Roles(Role.ADMIN, Role.PM)             // Specify allowed roles
+@Post('sensitive-action')
+async doSomething() {
+  // Only reachable by authenticated ADMIN or PM users
+}</code></pre>
+
+<div class="callout callout-warn">
+  <strong>⚠️ Guard order matters:</strong>
+  <code>JwtAuthGuard</code> must come <strong>before</strong> <code>RolesGuard</code> in the 
+  <code>@UseGuards()</code> array. The <code>RolesGuard</code> depends on <code>req.user</code>, 
+  which is only set after JWT validation.
+</div>
+
+<!-- ============================================================ -->
+<!--  10. DECORATOR                                                -->
+<!-- ============================================================ -->
+<h2 id="decorator">10. Roles Decorator</h2>
+
+<div class="file-header">src/auth/decorators/roles.decorator.ts</div>
+<pre><code>import { SetMetadata } from '@nestjs/common';
+import { Role } from '@prisma/client';
+
+export const ROLES_KEY = 'roles';
+export const Roles = (...roles: Role[]) => SetMetadata(ROLES_KEY, roles);</code></pre>
+
+<h3>How It Works</h3>
+<ul>
+  <li><code>SetMetadata(key, value)</code> attaches metadata to the route handler</li>
+  <li><code>ROLES_KEY</code> is the key used by <code>RolesGuard</code> to retrieve the metadata via <code>Reflector</code></li>
+  <li><code>Roles</code> accepts one or more <code>Role</code> enum values: <code>@Roles(Role.ADMIN, Role.MAYOR)</code></li>
+</ul>
+
+<!-- ============================================================ -->
+<!--  11. BOOTSTRAP                                                -->
+<!-- ============================================================ -->
+<h2 id="bootstrap" class="section-break">11. Bootstrap &amp; Server Configuration</h2>
+
+<p>The <code>main.ts</code> file configures Fastify plugins and global pipes that are critical for the auth system to function.</p>
+
+<div class="file-header">src/main.ts</div>
+<pre><code>async function bootstrap() {
+  const app = await NestFactory.create&lt;NestFastifyApplication&gt;(
+    AppModule,
+    new FastifyAdapter(),   // Using Fastify instead of Express
+  );
+
+  // 🍪 Cookie plugin — MUST be registered early
+  await app.register(fastifyCookie, {
+    secret: process.env.COOKIE_SECRET || 'jkdfsaajs;akdjlkhgahsfl',
+  });
+
+  // 🌍 CORS — Required for cross-origin cookie sending
+  await app.register(fastifyCors, {
+    origin: true,           // Allow all origins (dev mode)
+    credentials: true,      // ← CRITICAL: allows cookies in cross-origin requests
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',                  // ← For Bearer tokens
+      'ngrok-skip-browser-warning',     // Custom header for ngrok dev tunnels
+    ],
+  });
+
+  // 🧹 Global validation pipe
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,              // Strip unknown properties
+      forbidNonWhitelisted: true,   // Throw error on unknown properties
+      transform: true,              // Auto-transform payloads to DTO instances
+    }),
+  );
+
+  await app.listen(process.env.PORT ? Number(process.env.PORT) : 3000, '0.0.0.0');
+}</code></pre>
+
+<h4>Critical Config for Auth</h4>
+<table>
+  <thead><tr><th>Configuration</th><th>Why It Matters</th></tr></thead>
+  <tbody>
+    <tr><td><code>fastifyCookie</code></td><td>Required to read/write refresh token cookies</td></tr>
+    <tr><td><code>credentials: true</code></td><td>Browser only sends cookies cross-origin if this header is present</td></tr>
+    <tr><td><code>ValidationPipe</code></td><td>Enforces DTO validation — rejects malformed register/login requests</td></tr>
+    <tr><td><code>whitelist + forbidNonWhitelisted</code></td><td>Prevents payload injection — only DTO-declared fields are accepted</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<!--  12. FLOW                                                     -->
+<!-- ============================================================ -->
+<h2 id="flow">12. Complete Auth Flow — Step by Step</h2>
+
+<h3>12.1 Registration Flow</h3>
+
+<div class="diagram">
+Client                          Server                           Database
+  │                               │                               │
+  │  POST /auth/register          │                               │
+  │  { username, email,           │                               │
+  │    password, departmentName,  │                               │
+  │    roomNumber }               │                               │
+  │─────────────────────────────▶│                               │
+  │                               │  Validate DTO (ValidationPipe)│
+  │                               │  Lookup department            │
+  │                               │──────────────────────────────▶│
+  │                               │  argon2.hash(password)        │
+  │                               │  $transaction:                │
+  │                               │    upsert Room                │
+  │                               │    upsert ChatRoom            │
+  │                               │    create User                │
+  │                               │    create ChatRoomMember      │
+  │                               │──────────────────────────────▶│
+  │                               │                               │
+  │                               │  signTokens(userId, email, role)
+  │                               │  argon2.hash(refreshToken)    │
+  │                               │  store hash in User.refreshTokenHash
+  │                               │──────────────────────────────▶│
+  │                               │                               │
+  │  { accessToken }              │                               │
+  │  + Set-Cookie: refresh_token  │                               │
+  │◀─────────────────────────────│                               │
+</div>
+
+<h3>12.2 Login Flow</h3>
+
+<div class="diagram">
+Client                          Server                           Database
+  │                               │                               │
+  │  POST /auth/login             │                               │
+  │  { email, password }          │                               │
+  │─────────────────────────────▶│                               │
+  │                               │  Find user by email           │
+  │                               │──────────────────────────────▶│
+  │                               │  argon2.verify(hash, password)│
+  │                               │  signTokens(userId, email, role)
+  │                               │  setRefreshTokenHash()        │
+  │                               │──────────────────────────────▶│
+  │                               │                               │
+  │  { accessToken }              │                               │
+  │  + Set-Cookie: refresh_token  │                               │
+  │◀─────────────────────────────│                               │
+</div>
+
+<h3>12.3 Accessing Protected Routes</h3>
+
+<div class="diagram">
+Client                          Server
+  │                               │
+  │  GET /some/protected/route    │
+  │  Authorization: Bearer &lt;AT&gt;  │
+  │─────────────────────────────▶│
+  │                               │  JwtAuthGuard triggers
+  │                               │  JwtStrategy:
+  │                               │    1. Extract token from header
+  │                               │    2. Verify signature with ACCESS_SECRET
+  │                               │    3. Check expiry
+  │                               │    4. Call validate() → set req.user
+  │                               │
+  │                               │  RolesGuard (if applied):
+  │                               │    1. Read @Roles() metadata
+  │                               │    2. Check req.user.role ∈ allowed roles
+  │                               │
+  │  200 OK + data                │
+  │◀─────────────────────────────│
+</div>
+
+<h3>12.4 Token Refresh Flow</h3>
+
+<div class="diagram">
+Client                          Server                           Database
+  │                               │                               │
+  │  POST /auth/refresh           │                               │
+  │  Cookie: refresh_token=&lt;RT&gt;  │                               │
+  │─────────────────────────────▶│                               │
+  │                               │  1. Read RT from cookie       │
+  │                               │  2. jwt.verifyAsync(RT, REFRESH_SECRET)
+  │                               │  3. Find user by payload.sub  │
+  │                               │──────────────────────────────▶│
+  │                               │  4. argon2.verify(storedHash, RT)
+  │                               │  5. Generate NEW token pair   │
+  │                               │  6. Hash new RT → update DB   │
+  │                               │──────────────────────────────▶│
+  │                               │                               │
+  │  { accessToken }              │                               │
+  │  + Set-Cookie: refresh_token  │  (new RT replaces old one)    │
+  │◀─────────────────────────────│                               │
+</div>
+
+<h3>12.5 Logout Flow</h3>
+
+<div class="diagram">
+Client                          Server                           Database
+  │                               │                               │
+  │  POST /auth/logout            │                               │
+  │  Authorization: Bearer &lt;AT&gt;  │                               │
+  │─────────────────────────────▶│                               │
+  │                               │  JwtAuthGuard validates AT    │
+  │                               │  Set refreshTokenHash = null  │
+  │                               │──────────────────────────────▶│
+  │                               │  Clear-Cookie: refresh_token  │
+  │                               │                               │
+  │  { success: true }            │                               │
+  │  + cookie cleared             │                               │
+  │◀─────────────────────────────│                               │
+</div>
+
+<!-- ============================================================ -->
+<!--  13. API REFERENCE                                            -->
+<!-- ============================================================ -->
+<h2 id="api">13. API Reference</h2>
+
+<table>
+  <thead>
+    <tr><th>Method</th><th>Endpoint</th><th>Auth Required</th><th>Request Body</th><th>Response</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="badge badge-post">POST</span></td>
+      <td><code>/auth/register</code></td>
+      <td>❌ No</td>
+      <td><code>{ username, email, password, departmentName, roomNumber }</code></td>
+      <td><code>{ accessToken }</code> + httpOnly cookie</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-post">POST</span></td>
+      <td><code>/auth/login</code></td>
+      <td>❌ No</td>
+      <td><code>{ email, password }</code></td>
+      <td><code>{ accessToken }</code> + httpOnly cookie</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-post">POST</span></td>
+      <td><code>/auth/refresh</code></td>
+      <td>🍪 Cookie</td>
+      <td>None (reads from cookie)</td>
+      <td><code>{ accessToken }</code> + new httpOnly cookie</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-post">POST</span></td>
+      <td><code>/auth/logout</code></td>
+      <td>🔒 Bearer Token</td>
+      <td>None</td>
+      <td><code>{ success: true }</code> + clears cookie</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Environment Variables Required</h3>
+
+<table>
+  <thead><tr><th>Variable</th><th>Required</th><th>Default</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><code>JWT_ACCESS_SECRET</code></td><td>Yes</td><td>—</td><td>Secret key for signing access tokens</td></tr>
+    <tr><td><code>JWT_REFRESH_SECRET</code></td><td>Yes</td><td>—</td><td>Secret key for signing refresh tokens (must be different from access secret)</td></tr>
+    <tr><td><code>JWT_ACCESS_TTL_SECONDS</code></td><td>No</td><td><code>900</code> (15 min)</td><td>Access token lifetime in seconds</td></tr>
+    <tr><td><code>JWT_REFRESH_TTL_SECONDS</code></td><td>No</td><td><code>2592000</code> (30 days)</td><td>Refresh token lifetime in seconds</td></tr>
+    <tr><td><code>COOKIE_SECRET</code></td><td>No</td><td>fallback string</td><td>Secret for signing cookie values</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<!--  14. SECURITY                                                 -->
+<!-- ============================================================ -->
+<h2 id="security">14. Security Best Practices Used</h2>
+
+<table>
+  <thead><tr><th>Practice</th><th>Implementation</th></tr></thead>
+  <tbody>
+    <tr><td>Password hashing</td><td>Argon2 (PHC winner) — resistant to GPU/ASIC brute-force attacks</td></tr>
+    <tr><td>Refresh token hashing</td><td>Refresh tokens hashed with Argon2 before DB storage</td></tr>
+    <tr><td>Token rotation</td><td>Every refresh generates a new token pair, old tokens become invalid</td></tr>
+    <tr><td>httpOnly cookies</td><td>Refresh tokens inaccessible to JavaScript (XSS protection)</td></tr>
+    <tr><td>Secure cookie flag</td><td>Cookies only sent over HTTPS</td></tr>
+    <tr><td>Separate secrets</td><td>Access and refresh tokens use different signing keys</td></tr>
+    <tr><td>Short-lived access tokens</td><td>Default 15 min — limits window of exposure if stolen</td></tr>
+    <tr><td>Generic error messages</td><td>Login errors don't reveal whether email exists or password is wrong</td></tr>
+    <tr><td>Input validation</td><td>DTO validation with whitelist/forbidNonWhitelisted prevents injection</td></tr>
+    <tr><td>Transaction safety</td><td>Registration uses Prisma <code>$transaction</code> for atomic operations</td></tr>
+    <tr><td>Stateless checks</td><td>Role is embedded in JWT — no DB query needed for authorization</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<!--  FILE TREE                                                    -->
+<!-- ============================================================ -->
+<h2>Appendix: Auth Module File Tree</h2>
+
+<pre><code>src/auth/
+├── auth.module.ts              ─  Module definition (imports, providers, exports)
+├── auth.controller.ts          ─  HTTP endpoints (register, login, refresh, logout)
+├── auth.service.ts             ─  Business logic (hashing, tokens, DB operations)
+├── dto/
+│   ├── register.dto.ts         ─  Registration input validation
+│   └── login.dto.ts            ─  Login input validation
+├── guards/
+│   ├── jwt-auth.guard.ts       ─  Passport JWT authentication guard
+│   └── roles.guard.ts          ─  Role-based authorization guard
+├── strategies/
+│   └── jwt.strategy.ts         ─  Passport strategy for token extraction & validation
+└── decorators/
+    └── roles.decorator.ts      ─  @Roles() decorator for RBAC metadata</code></pre>
+
+<div style="text-align:center; margin-top: 60px; padding-top: 20px; border-top: 2px solid var(--border); color: var(--text-secondary); font-size: 0.85rem;">
+  <p>Dormocracy — Bureau of Hall | Authentication System Documentation</p>
+  <p>Generated February 18, 2026</p>
+</div>
+
+</body>
+</html>

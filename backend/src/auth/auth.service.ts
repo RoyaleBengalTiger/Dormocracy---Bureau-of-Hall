@@ -78,7 +78,6 @@ export class AuthService {
                     roomId: room.id,
                 },
             });
-
             // 3) Create user
             const createdUser = await tx.user.create({
                 data: {

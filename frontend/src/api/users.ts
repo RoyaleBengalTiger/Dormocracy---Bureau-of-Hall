@@ -1,9 +1,9 @@
- import { httpClient } from '@/lib/http';
- import { UserProfile, User } from '@/types';
- 
- export const usersApi = {
-   // Backend returns User directly, not wrapped
-   getMe: async (): Promise<User> => {
+import { httpClient } from '@/lib/http';
+import { UserProfile, User } from '@/types';
+
+export const usersApi = {
+  // Backend returns User directly, not wrapped
+  getMe: async (): Promise<User> => {
      const user = await httpClient.get<User>('/users/me');
      return user;
    },
