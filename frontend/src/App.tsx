@@ -10,6 +10,11 @@ import Dashboard from "./pages/Dashboard";
 import Tasks from "./pages/Tasks";
 import MayorDashboard from "./pages/MayorDashboard";
 import AdminRooms from "./pages/AdminRooms";
+import AdminDepartments from "./pages/AdminDepartments";
+import Violations from "./pages/Violations";
+import PMInbox from "./pages/PMInbox";
+import ViolationCasePage from "./pages/ViolationCasePage";
+import CaseChatPage from "./pages/CaseChatPage";
 import RoomChatPage from "./features/chat/pages/RoomChatPage";
 import ChatDebugPage from "./features/chat/pages/ChatDebugPage";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -24,32 +29,37 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
 
-          <Route path="/chat" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-            <Route index element={<Navigate to="/chat/room" replace />} />
-            <Route path="room" element={<RoomChatPage />} />
-            <Route path="debug" element={<ChatDebugPage />} />
-          </Route>
+            <Route path="/chat" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+              <Route index element={<Navigate to="/chat/room" replace />} />
+              <Route path="room" element={<RoomChatPage />} />
+              <Route path="debug" element={<ChatDebugPage />} />
+            </Route>
 
-          <Route path="/app" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="tasks" element={<Tasks />} />
-            <Route path="mayor" element={<ProtectedRoute requiredRole={Role.MAYOR}><MayorDashboard /></ProtectedRoute>} />
-            <Route path="admin/rooms" element={<ProtectedRoute requiredRole={Role.ADMIN}><AdminRooms /></ProtectedRoute>} />
-          </Route>
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+            <Route path="/app" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="tasks" element={<Tasks />} />
+              <Route path="violations" element={<Violations />} />
+              <Route path="violations/:id/chat" element={<CaseChatPage />} />
+              <Route path="pm/inbox" element={<PMInbox />} />
+              <Route path="pm/violations/:id" element={<ViolationCasePage />} />
+              <Route path="mayor" element={<ProtectedRoute requiredRole={Role.MAYOR}><MayorDashboard /></ProtectedRoute>} />
+              <Route path="admin/rooms" element={<ProtectedRoute requiredRole={Role.ADMIN}><AdminRooms /></ProtectedRoute>} />
+              <Route path="admin/departments" element={<ProtectedRoute requiredRole={Role.ADMIN}><AdminDepartments /></ProtectedRoute>} />
+            </Route>
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
 );

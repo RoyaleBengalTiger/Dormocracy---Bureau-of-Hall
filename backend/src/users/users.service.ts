@@ -80,7 +80,7 @@ export class UsersService {
 
   /**
    * Returns the "me" profile by userId from JWT.
-   * (This will be used by /users/me)
+   * Includes computed office flags (isPrimeMinister, isForeignMinister, isMayor).
    */
   async getMe(userId: string) {
     const me = await this.prisma.user.findUnique({
@@ -97,7 +97,15 @@ export class UsersService {
           select: {
             id: true,
             roomNumber: true,
-            department: { select: { id: true, name: true } },
+            mayorId: true,
+            department: {
+              select: {
+                id: true,
+                name: true,
+                primeMinisterId: true,
+                foreignMinisterId: true,
+              },
+            },
 
             mayor: {
               select: { id: true, username: true, role: true },
@@ -124,7 +132,31 @@ export class UsersService {
     });
 
     if (!me) throw new NotFoundException('User not found');
-    return me;
+
+    // Compute office flags from department/room assignments
+    const isPrimeMinister = me.room?.department?.primeMinisterId === me.id;
+    const isForeignMinister = me.room?.department?.foreignMinisterId === me.id;
+    const isMayor = me.room?.mayorId === me.id;
+
+    // Return without the raw mayorId (keep response clean)
+    const { room, ...rest } = me;
+    const cleanRoom = room
+      ? {
+        id: room.id,
+        roomNumber: room.roomNumber,
+        department: room.department,
+        mayor: room.mayor,
+        users: room.users,
+      }
+      : null;
+
+    return {
+      ...rest,
+      room: cleanRoom,
+      isPrimeMinister,
+      isForeignMinister,
+      isMayor,
+    };
   }
 
 

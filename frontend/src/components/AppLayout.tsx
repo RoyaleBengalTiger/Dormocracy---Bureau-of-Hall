@@ -3,11 +3,14 @@ import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import {
+  AlertTriangle,
   Building2,
+  Landmark,
   LayoutDashboard,
   ListChecks,
   Crown,
   LogOut,
+  Scale,
   Shield,
   MessagesSquare,
   PanelLeftClose,
@@ -76,7 +79,12 @@ export function AppLayout() {
             {!collapsed && user && (
               <div className="space-y-2 mt-4">
                 <p className="font-medium truncate">{user.username}</p>
-                <RoleBadge role={user.role} />
+                <RoleBadge
+                  role={user.role}
+                  isPrimeMinister={user.isPrimeMinister}
+                  isForeignMinister={user.isForeignMinister}
+                  isMayor={user.isMayor}
+                />
               </div>
             )}
           </div>
@@ -113,6 +121,12 @@ export function AppLayout() {
               isActive('/app/tasks'),
             )}
             {navItem(
+              '/app/violations',
+              <AlertTriangle className={`h-4 w-4 shrink-0 ${collapsed ? '' : 'mr-2'}`} />,
+              'Violations',
+              isActive('/app/violations'),
+            )}
+            {navItem(
               '/chat/room',
               <MessagesSquare className={`h-4 w-4 shrink-0 ${collapsed ? '' : 'mr-2'}`} />,
               'Room Chat',
@@ -125,12 +139,26 @@ export function AppLayout() {
                 'Mayor Dashboard',
                 isActive('/app/mayor'),
               )}
+            {user?.isPrimeMinister &&
+              navItem(
+                '/app/pm/inbox',
+                <Scale className={`h-4 w-4 shrink-0 ${collapsed ? '' : 'mr-2'}`} />,
+                'PM Inbox',
+                location.pathname.startsWith('/app/pm'),
+              )}
             {user?.role === 'ADMIN' &&
               navItem(
                 '/app/admin/rooms',
                 <Shield className={`h-4 w-4 shrink-0 ${collapsed ? '' : 'mr-2'}`} />,
                 'Assign Mayors',
                 isActive('/app/admin/rooms'),
+              )}
+            {user?.role === 'ADMIN' &&
+              navItem(
+                '/app/admin/departments',
+                <Landmark className={`h-4 w-4 shrink-0 ${collapsed ? '' : 'mr-2'}`} />,
+                'Assign Ministers',
+                isActive('/app/admin/departments'),
               )}
           </nav>
 

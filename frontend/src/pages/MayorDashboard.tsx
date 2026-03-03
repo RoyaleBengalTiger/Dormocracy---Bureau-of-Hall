@@ -1,17 +1,17 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
- import { motion } from 'framer-motion';
- import { tasksApi } from '@/api/tasks';
+import { motion } from 'framer-motion';
+import { tasksApi } from '@/api/tasks';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Task, TaskStatus } from '@/types';
- import { Crown } from 'lucide-react';
+import { Crown } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { StatusPill } from '@/components/StatusPill';
 import { ApproveAssignTaskModal } from '@/components/modals/ApproveAssignTaskModal';
 import { ReviewTaskModal } from '@/components/modals/ReviewTaskModal';
- 
- export default function MayorDashboard() {
+
+export default function MayorDashboard() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [approveOpen, setApproveOpen] = useState(false);
@@ -21,24 +21,24 @@ import { ReviewTaskModal } from '@/components/modals/ReviewTaskModal';
   const {
     data: pendingTasks = [],
     isLoading: isLoadingPending,
-     isError: isErrorPending,
-     error: errorPending,
-     refetch: refetchPending,
+    isError: isErrorPending,
+    error: errorPending,
+    refetch: refetchPending,
   } = useQuery({
-     queryKey: ['tasks', TaskStatus.PENDING_APPROVAL],
-     queryFn: () => tasksApi.getTasks({ status: TaskStatus.PENDING_APPROVAL }),
-   });
- 
+    queryKey: ['tasks', TaskStatus.PENDING_APPROVAL],
+    queryFn: () => tasksApi.getTasks({ status: TaskStatus.PENDING_APPROVAL }),
+  });
+
   const {
     data: reviewTasks = [],
     isLoading: isLoadingReview,
-     isError: isErrorReview,
-     error: errorReview,
-     refetch: refetchReview,
+    isError: isErrorReview,
+    error: errorReview,
+    refetch: refetchReview,
   } = useQuery({
-     queryKey: ['tasks', TaskStatus.AWAITING_REVIEW],
-     queryFn: () => tasksApi.getTasks({ status: TaskStatus.AWAITING_REVIEW }),
-   });
+    queryKey: ['tasks', TaskStatus.AWAITING_REVIEW],
+    queryFn: () => tasksApi.getTasks({ status: TaskStatus.AWAITING_REVIEW }),
+  });
 
   const roomResidents = useMemo(() => {
     // candidates must be residents of the mayor's room
@@ -54,16 +54,16 @@ import { ReviewTaskModal } from '@/components/modals/ReviewTaskModal';
     setSelectedTask(task);
     setReviewOpen(true);
   };
- 
-   return (
-     <div className="min-h-screen p-8">
-       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-         <div className="flex items-center gap-3 mb-8">
-           <Crown className="h-8 w-8 text-primary" />
-           <h1 className="text-4xl font-bold">Mayor Dashboard</h1>
-         </div>
-         
-         <div className="grid gap-6 md:grid-cols-2">
+
+  return (
+    <div className="min-h-screen p-8">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="flex items-center gap-3 mb-8">
+          <Crown className="h-8 w-8 text-primary" />
+          <h1 className="text-4xl font-bold">Mayor Dashboard</h1>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2">
           <Card className="glass-card">
             <CardHeader>
               <CardTitle className="text-2xl">Pending Approval ({pendingTasks.length})</CardTitle>
@@ -115,7 +115,7 @@ import { ReviewTaskModal } from '@/components/modals/ReviewTaskModal';
               )}
             </CardContent>
           </Card>
-           
+
           <Card className="glass-card">
             <CardHeader>
               <CardTitle className="text-2xl">Awaiting Review ({reviewTasks.length})</CardTitle>
@@ -172,8 +172,8 @@ import { ReviewTaskModal } from '@/components/modals/ReviewTaskModal';
               )}
             </CardContent>
           </Card>
-         </div>
-       </motion.div>
+        </div>
+      </motion.div>
 
       <ApproveAssignTaskModal
         open={approveOpen}
@@ -193,6 +193,6 @@ import { ReviewTaskModal } from '@/components/modals/ReviewTaskModal';
         }}
         task={selectedTask}
       />
-     </div>
-   );
- }
+    </div>
+  );
+}
