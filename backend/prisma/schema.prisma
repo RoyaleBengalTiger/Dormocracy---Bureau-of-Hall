@@ -31,6 +31,7 @@ model User {
   refreshTokenHash String?
 
   socialScore Int @default(50)
+  credits     Int @default(100)
 
   // one user belongs to one room
   roomId String
@@ -43,10 +44,28 @@ model User {
   mayorOfRooms                 Room[]           @relation("RoomMayor")
   primeMinisterOfDepartments   Department[]     @relation("DepartmentPrimeMinister")
   foreignMinisterOfDepartments Department[]     @relation("DepartmentForeignMinister")
+  financeMinisterOfDepartments Department[]     @relation("DepartmentFinanceMinister")
   violationsReceived           Violation[]      @relation("ViolationOffender")
   violationsIssued             Violation[]      @relation("ViolationCreatedBy")
   chatMemberships              ChatRoomMember[]
   sentMessages                 ChatMessage[]
+
+  // Treasury relations
+  treasuryTransactionsCreated TreasuryTransaction[] @relation("TreasuryTransactionCreatedBy")
+  socialScorePurchaseRequests SocialScorePurchaseRequest[] @relation("SocialScoreRequestUser")
+  socialScorePurchaseOffers   SocialScorePurchaseRequest[] @relation("SocialScoreRequestOfferedBy")
+
+  // Treaty relations
+  createdTreaties      Treaty[]            @relation("TreatyCreatedBy")
+  treatyParticipations TreatyParticipant[] @relation("TreatyParticipantUser")
+  createdClauses       TreatyClause[]      @relation("ClauseCreatedBy")
+  exchangesSelling     Exchange[]          @relation("ExchangeSeller")
+  exchangesBuying      Exchange[]          @relation("ExchangeBuyer")
+  breachCasesFiled     BreachCase[]        @relation("BreachCaseFiler")
+  breachCasesAccused   BreachCase[]        @relation("BreachCaseAccused")
+  breachCasesResolved  BreachCase[]        @relation("BreachCaseResolver")
+  breachCasesRuledBy   BreachCase[]        @relation("BreachCaseRuledBy")
+  breachCasesRulingTarget BreachCase[]     @relation("BreachCaseRulingTarget")
 
   @@index([roomId])
 }
@@ -55,18 +74,27 @@ model Department {
   id   String @id @default(uuid())
   name String @unique
 
-  rooms Room[]
+  treasuryCredits Int @default(0)
+
+  rooms    Room[]
+  treaties Treaty[]
 
   primeMinisterId   String?
   primeMinister     User?   @relation("DepartmentPrimeMinister", fields: [primeMinisterId], references: [id], onDelete: SetNull)
   foreignMinisterId String?
   foreignMinister   User?   @relation("DepartmentForeignMinister", fields: [foreignMinisterId], references: [id], onDelete: SetNull)
+  financeMinisterId String?
+  financeMinister   User?   @relation("DepartmentFinanceMinister", fields: [financeMinisterId], references: [id], onDelete: SetNull)
+
+  treasuryTransactions       TreasuryTransaction[]
+  socialScorePurchaseRequests SocialScorePurchaseRequest[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([primeMinisterId])
   @@index([foreignMinisterId])
+  @@index([financeMinisterId])
 }
 
 model Room {
@@ -74,16 +102,20 @@ model Room {
   roomNumber   String
   departmentId String
 
+  treasuryCredits Int @default(0)
+
   department Department @relation(fields: [departmentId], references: [id], onDelete: Restrict)
   users      User[]
   mayorId    String?
   mayor      User?      @relation("RoomMayor", fields: [mayorId], references: [id], onDelete: SetNull)
 
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  tasks      Task[]
-  violations Violation[]
-  chatRoom   ChatRoom?
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  tasks                Task[]
+  violations           Violation[]
+  chatRoom             ChatRoom?
+  treatyParticipations TreatyParticipant[] @relation("TreatyParticipantRoom")
+  treasuryTransactions TreasuryTransaction[]
 
   @@unique([departmentId, roomNumber])
   @@index([departmentId])
@@ -96,6 +128,8 @@ model Task {
   description String?
 
   status TaskStatus @default(PENDING_APPROVAL)
+
+  fundAmount Int @default(0)
 
   roomId String
   room   Room   @relation(fields: [roomId], references: [id], onDelete: Restrict)
@@ -116,6 +150,8 @@ model Task {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  treasuryTransactions TreasuryTransaction[]
+
   @@index([roomId])
   @@index([createdById])
   @@index([assignedToId])
@@ -125,10 +161,13 @@ model Task {
 enum ChatRoomType {
   ROOM
   VIOLATION_CASE
+  TREATY_GROUP
+  BREACH_CASE
 }
 
 enum ViolationStatus {
   ACTIVE
+  AWAITING_OFFENDER_CHOICE
   APPEALED
   IN_EVALUATION
   CLOSED_UPHELD
@@ -153,6 +192,14 @@ model ChatRoom {
   /// VIOLATION_CASE chat: exactly one ChatRoom per Violation
   violationId String?    @unique
   violation   Violation? @relation(fields: [violationId], references: [id], onDelete: Cascade)
+
+  /// TREATY_GROUP chat: exactly one ChatRoom per Treaty
+  treatyId String? @unique
+  treaty   Treaty? @relation(fields: [treatyId], references: [id], onDelete: Cascade)
+
+  /// BREACH_CASE chat: exactly one ChatRoom per BreachCase
+  breachCaseId String?     @unique
+  breachCase   BreachCase? @relation(fields: [breachCaseId], references: [id], onDelete: Cascade)
 
   /// When set, the chat is locked (no new messages)
   closedAt DateTime?
@@ -201,6 +248,16 @@ model ChatMessage {
   @@index([senderId])
 }
 
+enum ViolationPenaltyMode {
+  BOTH_MANDATORY
+  EITHER_CHOICE
+}
+
+enum ViolationOffenderChoice {
+  CREDITS
+  SOCIAL_SCORE
+}
+
 model Violation {
   id String @id @default(uuid())
 
@@ -218,6 +275,20 @@ model Violation {
   title       String
   description String?
   points      Int
+
+  /// Credit fine amount (for dual-penalty violations)
+  creditFine Int @default(0)
+
+  /// Penalty mode: BOTH_MANDATORY or EITHER_CHOICE
+  penaltyMode ViolationPenaltyMode?
+
+  /// Track actual deductions for accurate refunding
+  creditsDeducted Int @default(0)
+  pointsDeducted  Int @default(0)
+  creditsRefunded Int @default(0)
+
+  /// Offender's chosen penalty (only for EITHER_CHOICE)
+  offenderChoice ViolationOffenderChoice?
 
   /// Optional expiry for minor violations
   expiresAt      DateTime?
@@ -246,6 +317,9 @@ model Violation {
   /// If verdict = PUNISH_MAYOR, this links to the new violation created against the mayor
   mayorViolationId String?
 
+  /// Treasury transactions linked to this violation
+  treasuryTransactions TreasuryTransaction[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -254,4 +328,335 @@ model Violation {
   @@index([createdById])
   @@index([status])
   @@index([expiresAt])
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TREASURY & FINANCE FEATURE
+// ═══════════════════════════════════════════════════════════════
+
+enum TreasuryTransactionType {
+  DEPT_ALLOCATE_TO_ROOM
+  DEPT_RECALL_FROM_ROOM
+  ROOM_TASK_SPEND
+  USER_BUY_SOCIAL_SCORE
+  BREACH_COMPENSATION
+  BREACH_FINE_INCOME
+  VIOLATION_FINE_INCOME
+  VIOLATION_REFUND
+}
+
+model TreasuryTransaction {
+  id String @id @default(uuid())
+
+  type   TreasuryTransactionType
+  amount Int
+
+  departmentId String?
+  department   Department? @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+
+  roomId String?
+  room   Room?   @relation(fields: [roomId], references: [id], onDelete: SetNull)
+
+  taskId String?
+  task   Task?   @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  breachCaseId String?
+  breachCase   BreachCase? @relation(fields: [breachCaseId], references: [id], onDelete: SetNull)
+
+  violationId String?
+  violation   Violation? @relation(fields: [violationId], references: [id], onDelete: SetNull)
+
+  userId String?
+
+  createdById String
+  createdBy   User   @relation("TreasuryTransactionCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+
+  note String?
+
+  createdAt DateTime @default(now())
+
+  @@index([departmentId, createdAt])
+  @@index([roomId, createdAt])
+  @@index([type, createdAt])
+  @@index([createdById])
+  @@index([breachCaseId])
+  @@index([violationId])
+}
+
+enum SocialScorePurchaseStatus {
+  REQUESTED
+  OFFERED
+  ACCEPTED
+  REJECTED
+  CANCELLED
+}
+
+model SocialScorePurchaseRequest {
+  id String @id @default(uuid())
+
+  userId String
+  user   User   @relation("SocialScoreRequestUser", fields: [userId], references: [id], onDelete: Restrict)
+
+  departmentId String
+  department   Department @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+
+  status      SocialScorePurchaseStatus @default(REQUESTED)
+  requestNote String?
+
+  /// Offer fields (set by PM)
+  offeredById          String?
+  offeredBy            User?    @relation("SocialScoreRequestOfferedBy", fields: [offeredById], references: [id], onDelete: SetNull)
+  offeredPriceCredits  Int?
+  offeredSocialScore   Int?
+  offeredAt            DateTime?
+  respondedAt          DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([departmentId])
+  @@index([userId])
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TREATY FEATURE
+// ═══════════════════════════════════════════════════════════════
+
+enum TreatyStatus {
+  NEGOTIATION
+  LOCKED
+  ACTIVE
+  EXPIRED
+}
+
+enum TreatyType {
+  EXCHANGE
+  NON_EXCHANGE
+}
+
+enum ParticipantType {
+  ROOM
+  USER
+}
+
+enum ParticipantStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  LEFT
+}
+
+enum ExchangeType {
+  TASK_FOR_BOUNTY
+  NOTES_OR_RESOURCES_FOR_BOUNTY
+  ITEMS_FOR_BOUNTY
+}
+
+enum ExchangeStatus {
+  OPEN
+  ACCEPTED
+  DELIVERED
+  APPROVED
+  REJECTED
+}
+
+enum BreachCaseStatus {
+  OPEN
+  IN_REVIEW
+  AWAITING_CRIMINAL_CHOICE
+  RESOLVED
+}
+
+enum BreachRulingType {
+  AGAINST_ACCUSED
+  AGAINST_ACCUSER
+  NONE
+}
+
+enum BreachPenaltyMode {
+  BOTH_MANDATORY
+  EITHER_CHOICE
+  NONE
+}
+
+enum BreachCriminalChoice {
+  SOCIAL
+  CREDITS
+}
+
+model Treaty {
+  id String @id @default(uuid())
+
+  title  String
+  type   TreatyType   @default(NON_EXCHANGE)
+  status TreatyStatus @default(NEGOTIATION)
+
+  departmentId String
+  department   Department @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+
+  createdById String
+  createdBy   User   @relation("TreatyCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+
+  /// Treaty must have a finite end date
+  endsAt DateTime
+
+  chatRoom     ChatRoom?
+  participants TreatyParticipant[]
+  clauses      TreatyClause[]
+  exchanges    Exchange[]
+  breachCases  BreachCase[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([departmentId])
+  @@index([createdById])
+  @@index([status])
+}
+
+model TreatyClause {
+  id String @id @default(uuid())
+
+  treatyId String
+  treaty   Treaty @relation(fields: [treatyId], references: [id], onDelete: Cascade)
+
+  content    String
+  orderIndex Int    @default(0)
+
+  createdById String
+  createdBy   User   @relation("ClauseCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+
+  breachCases BreachCaseClause[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([treatyId, orderIndex])
+}
+
+model TreatyParticipant {
+  id String @id @default(uuid())
+
+  treatyId String
+  treaty   Treaty @relation(fields: [treatyId], references: [id], onDelete: Cascade)
+
+  type   ParticipantType
+  status ParticipantStatus @default(PENDING)
+
+  /// For ROOM participants
+  roomId String?
+  room   Room?   @relation("TreatyParticipantRoom", fields: [roomId], references: [id], onDelete: Cascade)
+
+  /// For USER participants
+  userId String?
+  user   User?   @relation("TreatyParticipantUser", fields: [userId], references: [id], onDelete: Cascade)
+
+  respondedAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@unique([treatyId, roomId])
+  @@unique([treatyId, userId])
+  @@index([treatyId])
+}
+
+model Exchange {
+  id String @id @default(uuid())
+
+  treatyId String
+  treaty   Treaty @relation(fields: [treatyId], references: [id], onDelete: Cascade)
+
+  type   ExchangeType
+  status ExchangeStatus @default(OPEN)
+
+  title       String
+  description String?
+  bounty      Int
+
+  sellerId String?
+  seller   User?   @relation("ExchangeSeller", fields: [sellerId], references: [id], onDelete: SetNull)
+
+  buyerId String
+  buyer   User   @relation("ExchangeBuyer", fields: [buyerId], references: [id], onDelete: Restrict)
+
+  deliveryNotes String?
+  deliveredAt   DateTime?
+  reviewedAt    DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([treatyId])
+  @@index([sellerId])
+  @@index([status])
+}
+
+model BreachCase {
+  id String @id @default(uuid())
+
+  treatyId String
+  treaty   Treaty @relation(fields: [treatyId], references: [id], onDelete: Cascade)
+
+  status BreachCaseStatus @default(OPEN)
+
+  filerId String
+  filer   User   @relation("BreachCaseFiler", fields: [filerId], references: [id], onDelete: Restrict)
+
+  accusedUserId String
+  accusedUser   User   @relation("BreachCaseAccused", fields: [accusedUserId], references: [id], onDelete: Restrict)
+
+  title       String
+  description String?
+
+  /// Optional reference to a specific exchange
+  exchangeId String?
+
+  clauses BreachCaseClause[]
+
+  /// Case chat (created when evaluation starts)
+  chatRoom ChatRoom?
+
+  /// Evaluation
+  evaluatedAt DateTime?
+
+  /// Ruling (PM only)
+  ruledAt          DateTime?
+  ruledById        String?
+  ruledBy          User?              @relation("BreachCaseRuledBy", fields: [ruledById], references: [id], onDelete: SetNull)
+  rulingType       BreachRulingType?
+  rulingTargetUserId String?
+  rulingTarget     User?              @relation("BreachCaseRulingTarget", fields: [rulingTargetUserId], references: [id], onDelete: SetNull)
+  penaltyMode      BreachPenaltyMode?
+  socialPenalty    Int?
+  creditFine       Int?
+  criminalChoice   BreachCriminalChoice?
+
+  /// Resolution
+  resolutionNote String?
+  resolvedById   String?
+  resolvedBy     User?     @relation("BreachCaseResolver", fields: [resolvedById], references: [id], onDelete: SetNull)
+  resolvedAt     DateTime?
+
+  /// Treasury transactions linked to this breach case
+  treasuryTransactions TreasuryTransaction[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([treatyId])
+  @@index([accusedUserId])
+  @@index([status])
+}
+
+model BreachCaseClause {
+  id String @id @default(uuid())
+
+  breachCaseId String
+  breachCase   BreachCase @relation(fields: [breachCaseId], references: [id], onDelete: Cascade)
+
+  clauseId String
+  clause   TreatyClause @relation(fields: [clauseId], references: [id], onDelete: Cascade)
+
+  @@unique([breachCaseId, clauseId])
 }

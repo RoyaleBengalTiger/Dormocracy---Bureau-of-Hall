@@ -9,6 +9,8 @@ import { AuthModule } from './auth/auth.module';
 import { TasksModule } from './tasks/tasks.module';
 import { ChatModule } from './chat/chat.module';
 import { ViolationsModule } from './violations/violations.module';
+import { TreatiesModule } from './treaties/treaties.module';
+import { FinanceModule } from './finance/finance.module';
 
 @Module({
   imports: [
@@ -23,6 +25,9 @@ import { ViolationsModule } from './violations/violations.module';
 
     TasksModule,
     ViolationsModule,
+    TreatiesModule,
+    FinanceModule,
   ],
 })
 export class AppModule { }
+

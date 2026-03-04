@@ -6,6 +6,7 @@ interface RoleBadgeProps {
   isPrimeMinister?: boolean;
   isForeignMinister?: boolean;
   isMayor?: boolean;
+  isFinanceMinister?: boolean;
 }
 
 const roleConfig: Record<
@@ -19,7 +20,7 @@ const roleConfig: Record<
   ADMIN: { icon: Shield, label: 'Admin', variant: 'destructive' },
 };
 
-export function RoleBadge({ role, isPrimeMinister, isForeignMinister, isMayor }: RoleBadgeProps) {
+export function RoleBadge({ role, isPrimeMinister, isForeignMinister, isMayor, isFinanceMinister }: RoleBadgeProps) {
   const config = roleConfig[role] ?? { icon: Shield, label: role, variant: 'secondary' as const };
   const Icon = config.icon;
 
@@ -41,12 +42,19 @@ export function RoleBadge({ role, isPrimeMinister, isForeignMinister, isMayor }:
           Foreign Minister
         </Badge>
       )}
+      {isFinanceMinister && (
+        <Badge variant="default" className="gap-1 bg-teal-600 hover:bg-teal-700">
+          <Globe className="h-3 w-3" />
+          Finance Minister
+        </Badge>
+      )}
       {isMayor && role !== 'MAYOR' && (
         <Badge variant="default" className="gap-1">
           <Crown className="h-3 w-3" />
           Mayor
         </Badge>
       )}
+
     </div>
   );
 }

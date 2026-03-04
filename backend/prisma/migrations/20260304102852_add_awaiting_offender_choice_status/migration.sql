@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "ViolationStatus" ADD VALUE 'AWAITING_OFFENDER_CHOICE';

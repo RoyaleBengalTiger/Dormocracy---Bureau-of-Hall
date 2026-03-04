@@ -20,6 +20,7 @@ const DEPARTMENT_INCLUDE = {
   },
   primeMinister: { select: { id: true, username: true, email: true } },
   foreignMinister: { select: { id: true, username: true, email: true } },
+  financeMinister: { select: { id: true, username: true, email: true } },
 } as const;
 
 @Injectable()
@@ -122,6 +123,19 @@ export class DepartmentsService {
           'Foreign Minister',
         );
         data.foreignMinisterId = dto.foreignMinisterId;
+      }
+    }
+
+    if (dto.financeMinisterId !== undefined) {
+      if (dto.financeMinisterId === null) {
+        data.financeMinisterId = null;
+      } else {
+        await this.validateUserInDepartment(
+          dto.financeMinisterId,
+          roomIds,
+          'Finance Minister',
+        );
+        data.financeMinisterId = dto.financeMinisterId;
       }
     }
 

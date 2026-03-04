@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { violationsApi } from "@/api/violations";
-import { CreateViolationPayload } from "@/types";
+import { CreateViolationPayload, ViolationPenaltyMode } from "@/types";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -42,6 +42,8 @@ export function CreateViolationModal({
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [points, setPoints] = useState<number>(0);
+    const [creditFine, setCreditFine] = useState<number>(0);
+    const [penaltyMode, setPenaltyMode] = useState<string>("");
     const [expiresAt, setExpiresAt] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -50,6 +52,8 @@ export function CreateViolationModal({
         setTitle("");
         setDescription("");
         setPoints(0);
+        setCreditFine(0);
+        setPenaltyMode("");
         setExpiresAt("");
     };
 
@@ -73,12 +77,15 @@ export function CreateViolationModal({
             points,
             ...(description.trim() ? { description: description.trim() } : {}),
             ...(expiresAt ? { expiresAt: new Date(expiresAt).toISOString() } : {}),
+            ...(creditFine > 0 ? { creditFine } : {}),
+            ...(penaltyMode ? { penaltyMode: penaltyMode as ViolationPenaltyMode } : {}),
         };
 
         try {
             setIsSubmitting(true);
             await violationsApi.create(payload);
-            toast({ title: "Violation created", description: `"${title}" recorded. Points deducted.` });
+            const modeLabel = penaltyMode === 'EITHER_CHOICE' ? 'Offender will choose penalty.' : 'Penalties applied.';
+            toast({ title: "Violation created", description: `"${title}" recorded. ${modeLabel}` });
             resetForm();
             onSuccess();
             onOpenChange(false);
@@ -96,7 +103,7 @@ export function CreateViolationModal({
                 <DialogHeader>
                     <DialogTitle>Create Violation</DialogTitle>
                     <DialogDescription>
-                        Record a violation against a roommate. Points will be immediately deducted.
+                        Record a violation against a roommate.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -139,7 +146,7 @@ export function CreateViolationModal({
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="violation-points">Points to deduct</Label>
+                        <Label htmlFor="violation-points">Social Score Points</Label>
                         <Input
                             id="violation-points"
                             type="number"
@@ -147,6 +154,44 @@ export function CreateViolationModal({
                             value={points}
                             onChange={(e) => setPoints(Math.max(0, Number(e.target.value)))}
                         />
+                    </div>
+
+                    <div className="grid gap-2">
+                        <Label htmlFor="violation-creditfine">Credit Fine (optional)</Label>
+                        <Input
+                            id="violation-creditfine"
+                            type="number"
+                            min={0}
+                            value={creditFine}
+                            onChange={(e) => setCreditFine(Math.max(0, Number(e.target.value)))}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                            Credit amount to deduct. Goes to department treasury.
+                        </p>
+                    </div>
+
+                    <div className="grid gap-2">
+                        <Label htmlFor="penalty-mode">Penalty Mode</Label>
+                        <Select value={penaltyMode} onValueChange={setPenaltyMode}>
+                            <SelectTrigger id="penalty-mode">
+                                <SelectValue placeholder="Default (social score only)" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="BOTH_MANDATORY">
+                                    Both Mandatory (points + credits immediately)
+                                </SelectItem>
+                                <SelectItem value="EITHER_CHOICE">
+                                    Offender Choice (pick one penalty)
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">
+                            {penaltyMode === 'EITHER_CHOICE'
+                                ? 'Offender must choose between social score deduction or credit fine.'
+                                : penaltyMode === 'BOTH_MANDATORY'
+                                    ? 'Both social score and credit penalties are applied immediately.'
+                                    : 'Leave empty for social-score-only deduction (legacy mode).'}
+                        </p>
                     </div>
 
                     <div className="grid gap-2">

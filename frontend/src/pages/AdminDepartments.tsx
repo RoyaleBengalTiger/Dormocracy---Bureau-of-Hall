@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Building2, Crown, Search, ShieldAlert, Star } from "lucide-react";
+import { Building2, Crown, Search, ShieldAlert, Star, Banknote } from "lucide-react";
 
 import { departmentsAdminApi } from "@/api/departments";
 import { AssignDepartmentLeadersModal } from "@/components/modals/AssignDepartmentLeadersModal";
@@ -149,6 +149,16 @@ export default function AdminDepartments() {
                                         </span>
                                         <span className="text-sm font-medium">
                                             {dept.foreignMinister?.username ?? "Unassigned"}
+                                        </span>
+                                    </div>
+
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-sm text-muted-foreground flex items-center gap-2">
+                                            <Banknote className="h-4 w-4" />
+                                            Finance Minister
+                                        </span>
+                                        <span className="text-sm font-medium">
+                                            {dept.financeMinister?.username ?? "Unassigned"}
                                         </span>
                                     </div>
 

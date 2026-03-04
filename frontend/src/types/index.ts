@@ -19,22 +19,27 @@ export interface User {
   email: string;
   role: string;
   socialScore: number;
+  credits: number;
   createdAt: string;
   room: Room | null;
   assignedTasks: any[];
   /** Computed office flags (from department/room assignments) */
   isPrimeMinister: boolean;
   isForeignMinister: boolean;
+  isFinanceMinister: boolean;
   isMayor: boolean;
 }
 
 export interface Department {
   id: string;
   name: string;
+  treasuryCredits?: number;
   primeMinisterId?: string | null;
   foreignMinisterId?: string | null;
+  financeMinisterId?: string | null;
   primeMinister?: { id: string; username: string; email: string } | null;
   foreignMinister?: { id: string; username: string; email: string } | null;
+  financeMinister?: { id: string; username: string; email: string } | null;
 }
 
 export interface DepartmentListItem {
@@ -42,6 +47,7 @@ export interface DepartmentListItem {
   name: string;
   primeMinister: { id: string; username: string; email: string } | null;
   foreignMinister: { id: string; username: string; email: string } | null;
+  financeMinister: { id: string; username: string; email: string } | null;
   rooms: Array<{
     id: string;
     roomNumber: string;
@@ -61,6 +67,7 @@ export interface Room {
   department: Department;
   mayor: RoomUser | null;
   users: RoomUser[];
+  treasuryCredits?: number;
 }
 
 export interface Task {
@@ -71,6 +78,7 @@ export interface Task {
   roomId: string;
   createdById: string;
   assignedToId?: string;
+  fundAmount?: number;
   completionSummary?: string;
   completedAt?: string;
   mayorReviewNote?: string;
@@ -100,6 +108,7 @@ export interface CreateTaskDto {
 
 export interface ApproveAssignTaskDto {
   assignedToId: string;
+  fundAmount?: number;
 }
 
 export interface CompleteTaskDto {
@@ -130,11 +139,22 @@ export interface AuthResponse {
 
 export enum ViolationStatusEnum {
   ACTIVE = 'ACTIVE',
+  AWAITING_OFFENDER_CHOICE = 'AWAITING_OFFENDER_CHOICE',
   APPEALED = 'APPEALED',
   IN_EVALUATION = 'IN_EVALUATION',
   CLOSED_UPHELD = 'CLOSED_UPHELD',
   CLOSED_OVERTURNED = 'CLOSED_OVERTURNED',
   EXPIRED = 'EXPIRED',
+}
+
+export enum ViolationPenaltyMode {
+  BOTH_MANDATORY = 'BOTH_MANDATORY',
+  EITHER_CHOICE = 'EITHER_CHOICE',
+}
+
+export enum ViolationOffenderChoice {
+  CREDITS = 'CREDITS',
+  SOCIAL_SCORE = 'SOCIAL_SCORE',
 }
 
 export enum ViolationVerdictEnum {
@@ -150,6 +170,12 @@ export interface Violation {
   title: string;
   description?: string;
   points: number;
+  creditFine: number;
+  penaltyMode?: ViolationPenaltyMode | null;
+  creditsDeducted: number;
+  pointsDeducted: number;
+  creditsRefunded: number;
+  offenderChoice?: ViolationOffenderChoice | null;
   expiresAt?: string | null;
   archivedAt?: string | null;
   pointsRefunded: number;
@@ -173,6 +199,8 @@ export interface CreateViolationPayload {
   title: string;
   description?: string;
   points: number;
+  creditFine?: number;
+  penaltyMode?: ViolationPenaltyMode;
   expiresAt?: string;
 }
 
@@ -196,4 +224,192 @@ export interface CaseChatMember {
   userId: string;
   user: { id: string; username: string; role: string };
   joinedAt: string;
+}
+
+// ─── TREASURY / FINANCE TYPES ────────────────────────────────
+
+export enum TreasuryTransactionType {
+  DEPT_ALLOCATE_TO_ROOM = 'DEPT_ALLOCATE_TO_ROOM',
+  DEPT_RECALL_FROM_ROOM = 'DEPT_RECALL_FROM_ROOM',
+  ROOM_TASK_SPEND = 'ROOM_TASK_SPEND',
+  USER_BUY_SOCIAL_SCORE = 'USER_BUY_SOCIAL_SCORE',
+}
+
+export interface TreasuryTransaction {
+  id: string;
+  type: TreasuryTransactionType;
+  amount: number;
+  roomId?: string | null;
+  taskId?: string | null;
+  userId?: string | null;
+  note?: string | null;
+  createdAt: string;
+  createdBy: { id: string; username: string };
+  room?: { id: string; roomNumber: string } | null;
+}
+
+export interface FinanceOverview {
+  department: {
+    id: string;
+    name: string;
+    treasuryCredits: number;
+    rooms: Array<{
+      id: string;
+      roomNumber: string;
+      treasuryCredits: number;
+    }>;
+  };
+  recentTransactions: TreasuryTransaction[];
+}
+
+export enum SocialScorePurchaseStatusEnum {
+  REQUESTED = 'REQUESTED',
+  OFFERED = 'OFFERED',
+  ACCEPTED = 'ACCEPTED',
+  REJECTED = 'REJECTED',
+  CANCELLED = 'CANCELLED',
+}
+
+export interface SocialScorePurchaseRequest {
+  id: string;
+  userId: string;
+  departmentId: string;
+  status: SocialScorePurchaseStatusEnum;
+  requestNote?: string | null;
+  offeredById?: string | null;
+  offeredBy?: { id: string; username: string } | null;
+  offeredPriceCredits?: number | null;
+  offeredSocialScore?: number | null;
+  offeredAt?: string | null;
+  respondedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  user?: { id: string; username: string; credits: number; socialScore: number };
+}
+
+// ─── TREATY TYPES ────────────────────────────────────────────
+
+export enum TreatyStatus {
+  NEGOTIATION = 'NEGOTIATION',
+  LOCKED = 'LOCKED',
+  ACTIVE = 'ACTIVE',
+  EXPIRED = 'EXPIRED',
+}
+
+export enum TreatyType {
+  EXCHANGE = 'EXCHANGE',
+  NON_EXCHANGE = 'NON_EXCHANGE',
+}
+
+export enum ExchangeType {
+  TASK_FOR_BOUNTY = 'TASK_FOR_BOUNTY',
+  NOTES_OR_RESOURCES_FOR_BOUNTY = 'NOTES_OR_RESOURCES_FOR_BOUNTY',
+  ITEMS_FOR_BOUNTY = 'ITEMS_FOR_BOUNTY',
+}
+
+export enum ExchangeStatus {
+  OPEN = 'OPEN',
+  ACCEPTED = 'ACCEPTED',
+  DELIVERED = 'DELIVERED',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+}
+
+export enum BreachCaseStatus {
+  OPEN = 'OPEN',
+  IN_REVIEW = 'IN_REVIEW',
+  AWAITING_CRIMINAL_CHOICE = 'AWAITING_CRIMINAL_CHOICE',
+  RESOLVED = 'RESOLVED',
+}
+
+export enum BreachRulingType {
+  AGAINST_ACCUSED = 'AGAINST_ACCUSED',
+  AGAINST_ACCUSER = 'AGAINST_ACCUSER',
+  NONE = 'NONE',
+}
+
+export enum BreachPenaltyMode {
+  BOTH_MANDATORY = 'BOTH_MANDATORY',
+  EITHER_CHOICE = 'EITHER_CHOICE',
+  NONE = 'NONE',
+}
+
+export enum BreachCriminalChoice {
+  SOCIAL = 'SOCIAL',
+  CREDITS = 'CREDITS',
+}
+
+export interface TreatyParticipant {
+  id: string;
+  type: 'ROOM' | 'USER';
+  status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'LEFT';
+  roomId?: string | null;
+  userId?: string | null;
+  respondedAt?: string | null;
+  room?: { id: string; roomNumber: string } | null;
+  user?: { id: string; username: string } | null;
+}
+
+export interface TreatyClause {
+  id: string;
+  content: string;
+  orderIndex: number;
+  createdBy: { id: string; username: string };
+  createdAt: string;
+}
+
+export interface Treaty {
+  id: string;
+  title: string;
+  type: TreatyType;
+  status: TreatyStatus;
+  departmentId: string;
+  endsAt: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: { id: string; username: string };
+  chatRoom?: { id: string; closedAt?: string | null } | null;
+  participants: TreatyParticipant[];
+  clauses: TreatyClause[];
+}
+
+export interface Exchange {
+  id: string;
+  type: ExchangeType;
+  status: ExchangeStatus;
+  title: string;
+  description?: string | null;
+  bounty: number;
+  createdAt: string;
+  seller?: { id: string; username: string } | null;
+  buyer: { id: string; username: string };
+  deliveryNotes?: string | null;
+  deliveredAt?: string | null;
+  reviewedAt?: string | null;
+}
+
+export interface BreachCase {
+  id: string;
+  status: BreachCaseStatus;
+  title: string;
+  description?: string | null;
+  exchangeId?: string | null;
+  createdAt: string;
+  filer: { id: string; username: string };
+  accusedUser: { id: string; username: string };
+  clauses: Array<{ clause: { id: string; content: string } }>;
+  chatRoom?: { id: string; closedAt?: string | null } | null;
+  evaluatedAt?: string | null;
+  ruledAt?: string | null;
+  ruledBy?: { id: string; username: string } | null;
+  rulingType?: BreachRulingType | null;
+  rulingTargetUserId?: string | null;
+  rulingTarget?: { id: string; username: string } | null;
+  penaltyMode?: BreachPenaltyMode | null;
+  socialPenalty?: number | null;
+  creditFine?: number | null;
+  criminalChoice?: BreachCriminalChoice | null;
+  resolutionNote?: string | null;
+  resolvedAt?: string | null;
+  resolvedBy?: { id: string; username: string } | null;
 }

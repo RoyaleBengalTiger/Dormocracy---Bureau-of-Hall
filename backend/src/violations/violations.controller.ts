@@ -16,6 +16,7 @@ import { CreateViolationDto } from './dto/create-violation.dto';
 import { AppealViolationDto } from './dto/appeal-violation.dto';
 import { CloseEvaluationDto } from './dto/close-evaluation.dto';
 import { AddCaseChatMemberDto } from './dto/add-case-chat-member.dto';
+import { ChooseViolationPenaltyDto } from './dto/choose-violation-penalty.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -69,6 +70,16 @@ export class ViolationsController {
     @Get(':id')
     findOne(@Param('id') id: string, @Req() req: any) {
         return this.violations.findOne(id, req.user.sub);
+    }
+
+    // ─── POST /violations/:id/choose-penalty ──────────────────────
+    @Post(':id/choose-penalty')
+    chooseViolationPenalty(
+        @Param('id') id: string,
+        @Body() dto: ChooseViolationPenaltyDto,
+        @Req() req: any,
+    ) {
+        return this.violations.chooseViolationPenalty(id, req.user.sub, dto);
     }
 
     // ─── POST /violations/:id/start-evaluation ───────────────────

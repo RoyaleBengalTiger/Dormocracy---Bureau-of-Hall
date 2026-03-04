@@ -45,6 +45,10 @@ export const violationsApi = {
     closeEvaluation: (id: string, data: CloseEvaluationPayload) =>
         httpClient.post<Violation>(`/violations/${id}/close-evaluation`, data),
 
+    /** Offender chooses penalty for EITHER_CHOICE violations. */
+    choosePenalty: (id: string, choice: 'CREDITS' | 'SOCIAL_SCORE') =>
+        httpClient.post<Violation>(`/violations/${id}/choose-penalty`, { choice }),
+
     // ─── Case Chat ─────────────────────────────────────────────
 
     /** Get case chat messages. */

@@ -36,6 +36,7 @@ const ALL_STATUS = "__all_status__";
 function statusBadge(status: ViolationStatusEnum | string) {
     const map: Record<string, { label: string; color: string; Icon: typeof AlertTriangle }> = {
         ACTIVE: { label: "Active", color: "bg-red-500/15 text-red-400", Icon: AlertTriangle },
+        AWAITING_OFFENDER_CHOICE: { label: "Choose Penalty", color: "bg-purple-500/15 text-purple-400", Icon: Gavel },
         APPEALED: { label: "Appealed", color: "bg-amber-500/15 text-amber-400", Icon: Gavel },
         IN_EVALUATION: { label: "Evaluating", color: "bg-blue-500/15 text-blue-400", Icon: MessageSquare },
         CLOSED_UPHELD: { label: "Upheld", color: "bg-red-500/15 text-red-400", Icon: ShieldCheck },
@@ -91,6 +92,18 @@ export default function Violations() {
         mutationFn: (id: string) => violationsApi.appeal(id),
         onSuccess: () => {
             toast({ title: "Appealed", description: "Violation appealed. The PM will review it." });
+            refetch();
+        },
+        onError: (e) => {
+            toast({ title: "Error", description: e instanceof Error ? e.message : "Failed" });
+        },
+    });
+
+    const choosePenaltyMutation = useMutation({
+        mutationFn: ({ id, choice }: { id: string; choice: 'CREDITS' | 'SOCIAL_SCORE' }) =>
+            violationsApi.choosePenalty(id, choice),
+        onSuccess: () => {
+            toast({ title: "Penalty chosen", description: "Your penalty has been applied." });
             refetch();
         },
         onError: (e) => {
@@ -209,7 +222,12 @@ export default function Violations() {
                                                     <span className="font-semibold">{v.title}</span>
                                                     {statusBadge(v.status)}
                                                 </div>
-                                                <span className="text-sm font-bold text-destructive">−{v.points} pts</span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-sm font-bold text-destructive">−{v.points} pts</span>
+                                                    {v.creditFine > 0 && (
+                                                        <span className="text-sm font-bold text-amber-400">−{v.creditFine} credits</span>
+                                                    )}
+                                                </div>
                                             </div>
 
                                             {v.description && (
@@ -254,6 +272,28 @@ export default function Violations() {
                                                         <Gavel className="mr-1 h-3 w-3" />
                                                         Appeal
                                                     </Button>
+                                                )}
+
+                                                {/* Choose penalty: only for offender, only when AWAITING_OFFENDER_CHOICE */}
+                                                {v.status === "AWAITING_OFFENDER_CHOICE" && v.offender.id === user?.id && (
+                                                    <>
+                                                        <Button
+                                                            size="sm"
+                                                            variant="destructive"
+                                                            onClick={() => choosePenaltyMutation.mutate({ id: v.id, choice: 'SOCIAL_SCORE' })}
+                                                            disabled={choosePenaltyMutation.isPending}
+                                                        >
+                                                            Accept Social Score (−{v.points} pts)
+                                                        </Button>
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            onClick={() => choosePenaltyMutation.mutate({ id: v.id, choice: 'CREDITS' })}
+                                                            disabled={choosePenaltyMutation.isPending}
+                                                        >
+                                                            Pay Credit Fine (−{v.creditFine} credits)
+                                                        </Button>
+                                                    </>
                                                 )}
 
                                                 {/* Enter case chat: when evaluation exists */}

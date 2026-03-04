@@ -8,4 +8,8 @@ export class UpdateDepartmentLeadershipDto {
     @IsOptional()
     @IsString()
     foreignMinisterId?: string | null;
+
+    @IsOptional()
+    @IsString()
+    financeMinisterId?: string | null;
 }

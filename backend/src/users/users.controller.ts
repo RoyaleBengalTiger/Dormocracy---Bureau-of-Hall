@@ -48,8 +48,7 @@ export class UsersController {
   /**
    * ADMIN/PM: List all users.
    */
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.PM)
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll() {
     return this.usersService.findAll();
@@ -58,8 +57,7 @@ export class UsersController {
   /**
    * ADMIN/PM: Get one user.
    */
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.PM)
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);

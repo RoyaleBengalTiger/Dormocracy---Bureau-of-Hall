@@ -39,6 +39,7 @@ export function AssignDepartmentLeadersModal({
 }: Props) {
     const [pmId, setPmId] = useState<string>("");
     const [fmId, setFmId] = useState<string>("");
+    const [finId, setFinId] = useState<string>("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Reset selections when the modal opens with a new department
@@ -46,6 +47,7 @@ export function AssignDepartmentLeadersModal({
         if (!open || !department) return;
         setPmId(department.primeMinister?.id ?? NONE_VALUE);
         setFmId(department.foreignMinister?.id ?? NONE_VALUE);
+        setFinId(department.financeMinister?.id ?? NONE_VALUE);
     }, [open, department?.id]);
 
     /** Flatten all users from all rooms in this department. */
@@ -67,10 +69,11 @@ export function AssignDepartmentLeadersModal({
     const handleSubmit = async () => {
         if (!department) return;
 
-        const body: { primeMinisterId?: string | null; foreignMinisterId?: string | null } = {};
+        const body: { primeMinisterId?: string | null; foreignMinisterId?: string | null; financeMinisterId?: string | null } = {};
 
         const resolvedPm = pmId === NONE_VALUE ? null : pmId || null;
         const resolvedFm = fmId === NONE_VALUE ? null : fmId || null;
+        const resolvedFin = finId === NONE_VALUE ? null : finId || null;
 
         // Only send fields that actually changed
         if (resolvedPm !== (department.primeMinister?.id ?? null)) {
@@ -78,6 +81,9 @@ export function AssignDepartmentLeadersModal({
         }
         if (resolvedFm !== (department.foreignMinister?.id ?? null)) {
             body.foreignMinisterId = resolvedFm;
+        }
+        if (resolvedFin !== (department.financeMinister?.id ?? null)) {
+            body.financeMinisterId = resolvedFin;
         }
 
         if (Object.keys(body).length === 0) {
@@ -144,6 +150,24 @@ export function AssignDepartmentLeadersModal({
                         <Label htmlFor="fm-select">Foreign Minister</Label>
                         <Select value={fmId} onValueChange={setFmId}>
                             <SelectTrigger id="fm-select">
+                                <SelectValue placeholder="Choose a department member" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value={NONE_VALUE}>— Unassign —</SelectItem>
+                                {candidates.map((u) => (
+                                    <SelectItem key={u.id} value={u.id}>
+                                        {u.username} ({u.email})
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* Finance Minister */}
+                    <div className="grid gap-2">
+                        <Label htmlFor="fin-select">Finance Minister</Label>
+                        <Select value={finId} onValueChange={setFinId}>
+                            <SelectTrigger id="fin-select">
                                 <SelectValue placeholder="Choose a department member" />
                             </SelectTrigger>
                             <SelectContent>

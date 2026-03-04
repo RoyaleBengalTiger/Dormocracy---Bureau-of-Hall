@@ -16,7 +16,6 @@ export class TasksController {
   constructor(private readonly tasks: TasksService) { }
 
   // citizen OR mayor can create
-  @Roles(Role.CITIZEN, Role.MAYOR, Role.ADMIN)
   @Post()
   create(@Body() dto: CreateTaskDto, @Req() req: any) {
     return this.tasks.create(dto, req.user.sub);
@@ -35,7 +34,6 @@ export class TasksController {
     });
   }
 
-  @Roles(Role.CITIZEN, Role.MAYOR, Role.ADMIN)
   @Get(':id')
   findOne(@Param('id') id: string, @Req() req: any) {
     return this.tasks.findOne(id, req.user.sub);
@@ -49,7 +47,6 @@ export class TasksController {
   }
 
   // assignee completes
-  @Roles(Role.CITIZEN, Role.MAYOR, Role.ADMIN)
   @Patch(':id/complete')
   complete(@Param('id') id: string, @Body() dto: CompleteTaskDto, @Req() req: any) {
     return this.tasks.complete(id, dto, req.user.sub);

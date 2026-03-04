@@ -92,7 +92,7 @@ export class UsersService {
         role: true,
         socialScore: true,
         createdAt: true,
-
+        credits: true,
         room: {
           select: {
             id: true,
@@ -104,6 +104,7 @@ export class UsersService {
                 name: true,
                 primeMinisterId: true,
                 foreignMinisterId: true,
+                financeMinisterId: true,
               },
             },
 
@@ -136,6 +137,7 @@ export class UsersService {
     // Compute office flags from department/room assignments
     const isPrimeMinister = me.room?.department?.primeMinisterId === me.id;
     const isForeignMinister = me.room?.department?.foreignMinisterId === me.id;
+    const isFinanceMinister = me.room?.department?.financeMinisterId === me.id;
     const isMayor = me.room?.mayorId === me.id;
 
     // Return without the raw mayorId (keep response clean)
@@ -155,6 +157,7 @@ export class UsersService {
       room: cleanRoom,
       isPrimeMinister,
       isForeignMinister,
+      isFinanceMinister,
       isMayor,
     };
   }

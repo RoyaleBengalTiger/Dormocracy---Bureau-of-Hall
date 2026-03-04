@@ -15,6 +15,11 @@ import Violations from "./pages/Violations";
 import PMInbox from "./pages/PMInbox";
 import ViolationCasePage from "./pages/ViolationCasePage";
 import CaseChatPage from "./pages/CaseChatPage";
+import TreatyList from "./pages/TreatyList";
+import TreatyDetail from "./pages/TreatyDetail";
+import TreatyChatPage from "./pages/TreatyChatPage";
+import BreachCaseChatPage from "./pages/BreachCaseChatPage";
+import FinanceDashboard from "./pages/FinanceDashboard";
 import RoomChatPage from "./features/chat/pages/RoomChatPage";
 import ChatDebugPage from "./features/chat/pages/ChatDebugPage";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -51,6 +56,11 @@ const App = () => (
               <Route path="violations/:id/chat" element={<CaseChatPage />} />
               <Route path="pm/inbox" element={<PMInbox />} />
               <Route path="pm/violations/:id" element={<ViolationCasePage />} />
+              <Route path="treaties" element={<TreatyList />} />
+              <Route path="treaties/:id" element={<TreatyDetail />} />
+              <Route path="treaties/:id/chat" element={<TreatyChatPage />} />
+              <Route path="treaties/:id/breaches/:breachId/chat" element={<BreachCaseChatPage />} />
+              <Route path="finance" element={<FinanceDashboard />} />
               <Route path="mayor" element={<ProtectedRoute requiredRole={Role.MAYOR}><MayorDashboard /></ProtectedRoute>} />
               <Route path="admin/rooms" element={<ProtectedRoute requiredRole={Role.ADMIN}><AdminRooms /></ProtectedRoute>} />
               <Route path="admin/departments" element={<ProtectedRoute requiredRole={Role.ADMIN}><AdminDepartments /></ProtectedRoute>} />

@@ -117,14 +117,50 @@ export class TasksService {
     if (!assignee) throw new NotFoundException('Assignee not found');
     if (assignee.roomId !== task.roomId) throw new ForbiddenException('Assignee must be from same room');
 
-    return this.prisma.task.update({
-      where: { id: taskId },
-      data: {
-        assignedToId: dto.assignedToId,
-        status: TaskStatus.ACTIVE,
-        mayorReviewNote: null,
-        reviewedAt: null,
-      },
+    const fundAmount = dto.fundAmount ?? 0;
+
+    // Use a transaction to ensure atomic fund deduction + task update
+    return this.prisma.$transaction(async (tx) => {
+      // If fundAmount > 0, check and deduct from room treasury
+      if (fundAmount > 0) {
+        const room = await tx.room.findUnique({
+          where: { id: task.roomId },
+          select: { treasuryCredits: true },
+        });
+        if (!room || room.treasuryCredits < fundAmount) {
+          throw new ForbiddenException(
+            `Insufficient room treasury: available ${room?.treasuryCredits ?? 0}, requested ${fundAmount}`,
+          );
+        }
+
+        await tx.room.update({
+          where: { id: task.roomId },
+          data: { treasuryCredits: { decrement: fundAmount } },
+        });
+
+        // Log the treasury transaction
+        await tx.treasuryTransaction.create({
+          data: {
+            type: 'ROOM_TASK_SPEND',
+            amount: fundAmount,
+            roomId: task.roomId,
+            taskId: taskId,
+            createdById: currentUserId,
+            note: `Task funding: ${task.title}`,
+          },
+        });
+      }
+
+      return tx.task.update({
+        where: { id: taskId },
+        data: {
+          assignedToId: dto.assignedToId,
+          fundAmount,
+          status: TaskStatus.ACTIVE,
+          mayorReviewNote: null,
+          reviewedAt: null,
+        },
+      });
     });
   }
 
@@ -172,13 +208,25 @@ export class TasksService {
       throw new ForbiddenException('Task is not awaiting review');
     }
 
-    return this.prisma.task.update({
-      where: { id: taskId },
-      data: {
-        mayorReviewNote: dto.note ?? null,
-        reviewedAt: new Date(),
-        status: dto.accept ? TaskStatus.COMPLETED : TaskStatus.ACTIVE,
-      },
+    const newStatus = dto.accept ? TaskStatus.COMPLETED : TaskStatus.ACTIVE;
+
+    return this.prisma.$transaction(async (tx) => {
+      // If accepted and task has fund, pay the assignee
+      if (dto.accept && task.fundAmount > 0 && task.assignedToId) {
+        await tx.user.update({
+          where: { id: task.assignedToId },
+          data: { credits: { increment: task.fundAmount } },
+        });
+      }
+
+      return tx.task.update({
+        where: { id: taskId },
+        data: {
+          mayorReviewNote: dto.note ?? null,
+          reviewedAt: new Date(),
+          status: newStatus,
+        },
+      });
     });
   }
 }

@@ -9,10 +9,10 @@ export const departmentsAdminApi = {
   /** Fetch all departments with rooms, users, and leadership for the admin view. */
   listDepartments: () => httpClient.get<DepartmentListItem[]>('/departments'),
 
-  /** Assign or unassign PM / FM for a department. */
+  /** Assign or unassign PM / FM / Finance Minister for a department. */
   updateLeadership: (
     departmentId: string,
-    body: { primeMinisterId?: string | null; foreignMinisterId?: string | null },
+    body: { primeMinisterId?: string | null; foreignMinisterId?: string | null; financeMinisterId?: string | null },
   ) => httpClient.patch<DepartmentListItem>(`/departments/${departmentId}/leadership`, body),
 };
 

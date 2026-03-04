@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import {
   AlertTriangle,
+  Banknote,
   Building2,
   Landmark,
   LayoutDashboard,
@@ -13,6 +14,7 @@ import {
   Scale,
   Shield,
   MessagesSquare,
+  Handshake,
   PanelLeftClose,
   PanelLeftOpen,
 } from 'lucide-react';
@@ -84,6 +86,7 @@ export function AppLayout() {
                   isPrimeMinister={user.isPrimeMinister}
                   isForeignMinister={user.isForeignMinister}
                   isMayor={user.isMayor}
+                  isFinanceMinister={user.isFinanceMinister}
                 />
               </div>
             )}
@@ -132,6 +135,12 @@ export function AppLayout() {
               'Room Chat',
               isActive('/chat/room') || isActive('/chat/debug'),
             )}
+            {navItem(
+              '/app/treaties',
+              <Handshake className={`h-4 w-4 shrink-0 ${collapsed ? '' : 'mr-2'}`} />,
+              'Treaties',
+              location.pathname.startsWith('/app/treaties'),
+            )}
             {user?.role === 'MAYOR' &&
               navItem(
                 '/app/mayor',
@@ -145,6 +154,13 @@ export function AppLayout() {
                 <Scale className={`h-4 w-4 shrink-0 ${collapsed ? '' : 'mr-2'}`} />,
                 'PM Inbox',
                 location.pathname.startsWith('/app/pm'),
+              )}
+            {(user?.isFinanceMinister || user?.role === 'ADMIN') &&
+              navItem(
+                '/app/finance',
+                <Banknote className={`h-4 w-4 shrink-0 ${collapsed ? '' : 'mr-2'}`} />,
+                'Finance',
+                isActive('/app/finance'),
               )}
             {user?.role === 'ADMIN' &&
               navItem(
