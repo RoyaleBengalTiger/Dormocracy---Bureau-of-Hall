@@ -21,17 +21,13 @@ export class CreateViolationDto {
     @Min(0)
     points: number;
 
-    /** Credit fine amount (defaults to 0 if omitted). */
+    /** Credit fine amount (D1) */
     @IsOptional()
     @IsInt()
     @Min(0)
     creditFine?: number;
 
-    /**
-     * Penalty mode:
-     * - BOTH_MANDATORY: Both social score deduction AND credit fine are applied immediately.
-     * - EITHER_CHOICE: Offender chooses one penalty. If omitted, treated as social-score-only (legacy).
-     */
+    /** Penalty mode: BOTH_MANDATORY (default) or EITHER_CHOICE (D1) */
     @IsOptional()
     @IsEnum(ViolationPenaltyModeDto)
     penaltyMode?: ViolationPenaltyModeDto;

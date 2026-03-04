@@ -19,7 +19,12 @@ import TreatyList from "./pages/TreatyList";
 import TreatyDetail from "./pages/TreatyDetail";
 import TreatyChatPage from "./pages/TreatyChatPage";
 import BreachCaseChatPage from "./pages/BreachCaseChatPage";
+import InterDeptTreatyDetail from "./pages/InterDeptTreatyDetail";
+import InterDeptTreatyChatPage from "./pages/InterDeptTreatyChatPage";
+import InterDeptBreachChatPage from "./pages/InterDeptBreachChatPage";
 import FinanceDashboard from "./pages/FinanceDashboard";
+import ElectionPage from "./pages/ElectionPage";
+import SenateChatPage from "./pages/SenateChatPage";
 import RoomChatPage from "./features/chat/pages/RoomChatPage";
 import ChatDebugPage from "./features/chat/pages/ChatDebugPage";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -60,7 +65,13 @@ const App = () => (
               <Route path="treaties/:id" element={<TreatyDetail />} />
               <Route path="treaties/:id/chat" element={<TreatyChatPage />} />
               <Route path="treaties/:id/breaches/:breachId/chat" element={<BreachCaseChatPage />} />
+              {/* Inter-Dept Treaty routes */}
+              <Route path="inter-dept-treaties/:id" element={<InterDeptTreatyDetail />} />
+              <Route path="inter-dept-treaties/:id/chat" element={<InterDeptTreatyChatPage />} />
+              <Route path="inter-dept-treaties/:id/breaches/:breachId/chat" element={<InterDeptBreachChatPage />} />
               <Route path="finance" element={<FinanceDashboard />} />
+              <Route path="elections" element={<ElectionPage />} />
+              <Route path="senate" element={<SenateChatPage />} />
               <Route path="mayor" element={<ProtectedRoute requiredRole={Role.MAYOR}><MayorDashboard /></ProtectedRoute>} />
               <Route path="admin/rooms" element={<ProtectedRoute requiredRole={Role.ADMIN}><AdminRooms /></ProtectedRoute>} />
               <Route path="admin/departments" element={<ProtectedRoute requiredRole={Role.ADMIN}><AdminDepartments /></ProtectedRoute>} />
@@ -75,3 +86,4 @@ const App = () => (
 );
 
 export default App;
+

@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { violationsApi } from "@/api/violations";
+import { usersApi } from "@/api/users";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,7 @@ export default function CaseChatPage() {
     const [isSending, setIsSending] = useState(false);
     const [showMembers, setShowMembers] = useState(false);
     const [addUserId, setAddUserId] = useState("");
+    const [addUserSearch, setAddUserSearch] = useState("");
     const bottomRef = useRef<HTMLDivElement>(null);
 
     // Fetch violation details
@@ -62,6 +64,16 @@ export default function CaseChatPage() {
         enabled: !!violationId,
     });
 
+    // Check if current user is PM (can manage members)
+    const isPM = user?.isPrimeMinister || user?.role === "ADMIN";
+
+    // Users for the add-member dropdown (PM only)
+    const { data: allUsers = [] } = useQuery({
+        queryKey: ["all-users"],
+        queryFn: () => usersApi.listAll(),
+        enabled: !!isPM,
+    });
+
     const isClosed = chatData?.closed ?? false;
     const messages = useMemo(
         () => [...(chatData?.items ?? [])].reverse(),
@@ -93,6 +105,7 @@ export default function CaseChatPage() {
             await violationsApi.addChatMember(violationId, addUserId.trim());
             toast({ title: "Member added" });
             setAddUserId("");
+            setAddUserSearch("");
             refetchMembers();
         } catch (e) {
             toast({ title: "Error", description: e instanceof Error ? e.message : "Failed" });
@@ -110,8 +123,6 @@ export default function CaseChatPage() {
         }
     };
 
-    // Check if current user is PM (can manage members)
-    const isPM = user?.isPrimeMinister || user?.role === "ADMIN";
 
     return (
         <div className="min-h-screen p-8">
@@ -283,22 +294,71 @@ export default function CaseChatPage() {
                                 {/* Add member (PM only) */}
                                 {isPM && !isClosed && (
                                     <div className="border-t pt-3 space-y-2">
-                                        <p className="text-xs text-muted-foreground">Add member (user ID)</p>
-                                        <div className="flex gap-1">
+                                        <p className="text-xs text-muted-foreground">Add member</p>
+                                        <div className="relative">
                                             <Input
                                                 className="h-7 text-xs"
-                                                placeholder="User ID"
-                                                value={addUserId}
-                                                onChange={(e) => setAddUserId(e.target.value)}
+                                                placeholder="Search user..."
+                                                value={addUserSearch}
+                                                onChange={(e) => {
+                                                    setAddUserSearch(e.target.value);
+                                                    if (addUserId) setAddUserId("");
+                                                }}
                                             />
-                                            <Button
-                                                size="sm"
-                                                variant="outline"
-                                                className="h-7 px-2"
-                                                onClick={handleAddMember}
-                                            >
-                                                <UserPlus className="h-3 w-3" />
-                                            </Button>
+                                            {addUserId && (
+                                                <div className="mt-1 flex items-center gap-2">
+                                                    <span className="text-xs text-green-400">
+                                                        Selected: {allUsers.find(u => u.id === addUserId)?.username ?? addUserId}
+                                                    </span>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className="h-6 px-2"
+                                                        onClick={handleAddMember}
+                                                    >
+                                                        <UserPlus className="h-3 w-3" />
+                                                    </Button>
+                                                </div>
+                                            )}
+                                            {!addUserId && addUserSearch.length > 0 && (
+                                                <div className="absolute z-50 left-0 right-0 top-full mt-1 max-h-32 overflow-y-auto bg-popover border border-border rounded-md shadow-lg">
+                                                    {allUsers
+                                                        .filter(u => {
+                                                            if (u.id === user?.id) return false;
+                                                            if (members.some(m => m.user.id === u.id)) return false;
+                                                            return (
+                                                                u.username.toLowerCase().includes(addUserSearch.toLowerCase()) ||
+                                                                u.email.toLowerCase().includes(addUserSearch.toLowerCase())
+                                                            );
+                                                        })
+                                                        .slice(0, 10)
+                                                        .map(u => (
+                                                            <button
+                                                                key={u.id}
+                                                                type="button"
+                                                                className="w-full text-left px-2 py-1.5 text-xs hover:bg-accent transition-colors"
+                                                                onClick={() => {
+                                                                    setAddUserId(u.id);
+                                                                    setAddUserSearch(u.username);
+                                                                }}
+                                                            >
+                                                                <span className="font-medium">{u.username}</span>
+                                                                <span className="text-muted-foreground ml-1">{u.email}</span>
+                                                            </button>
+                                                        ))
+                                                    }
+                                                    {allUsers.filter(u => {
+                                                        if (u.id === user?.id) return false;
+                                                        if (members.some(m => m.user.id === u.id)) return false;
+                                                        return (
+                                                            u.username.toLowerCase().includes(addUserSearch.toLowerCase()) ||
+                                                            u.email.toLowerCase().includes(addUserSearch.toLowerCase())
+                                                        );
+                                                    }).length === 0 && (
+                                                            <div className="px-2 py-1.5 text-xs text-muted-foreground">No matching users</div>
+                                                        )}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 )}

@@ -112,10 +112,11 @@ export class TasksService {
     // assigned user must be from same room
     const assignee = await this.prisma.user.findUnique({
       where: { id: dto.assignedToId },
-      select: { id: true, roomId: true },
+      select: { id: true, roomId: true, isJailed: true },
     });
     if (!assignee) throw new NotFoundException('Assignee not found');
     if (assignee.roomId !== task.roomId) throw new ForbiddenException('Assignee must be from same room');
+    if (assignee.isJailed) throw new ForbiddenException('Cannot assign tasks to a jailed user');
 
     const fundAmount = dto.fundAmount ?? 0;
 

@@ -10,7 +10,9 @@ import { TasksModule } from './tasks/tasks.module';
 import { ChatModule } from './chat/chat.module';
 import { ViolationsModule } from './violations/violations.module';
 import { TreatiesModule } from './treaties/treaties.module';
+import { InterDeptTreatiesModule } from './inter-dept-treaties/inter-dept-treaties.module';
 import { FinanceModule } from './finance/finance.module';
+import { ElectionsModule } from './elections/elections.module';
 
 @Module({
   imports: [
@@ -26,7 +28,9 @@ import { FinanceModule } from './finance/finance.module';
     TasksModule,
     ViolationsModule,
     TreatiesModule,
+    InterDeptTreatiesModule,
     FinanceModule,
+    ElectionsModule,
   ],
 })
 export class AppModule { }

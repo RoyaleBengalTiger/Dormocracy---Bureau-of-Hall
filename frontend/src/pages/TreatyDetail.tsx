@@ -133,12 +133,19 @@ export default function TreatyDetail() {
         enabled: canSearch,
     });
 
-    // A2: Use the server-side candidates endpoint to get only eligible users
-    const { data: availableUsers = [] } = useQuery({
+    // A2: Use filtered candidates endpoint instead of listing all users
+    const { data: candidateUsers = [] } = useQuery({
         queryKey: ['treaty-user-candidates', id],
         queryFn: () => treatiesApi.getUserCandidates(id!),
-        enabled: canSearch && !!id,
+        enabled: !!id && canSearch,
     });
+
+    // Filter out rooms already in treaty participants
+    const existingRoomIds = useMemo(
+        () => new Set(treaty?.participants.filter((p) => p.type === 'ROOM' && p.roomId).map((p) => p.roomId!)),
+        [treaty?.participants],
+    );
+    const availableRooms = useMemo(() => allRooms.filter((r: RoomListItem) => !existingRoomIds.has(r.id)), [allRooms, existingRoomIds]);
 
     // Fetch treaty stakeholders for breach accused dropdown
     const isActive = treaty?.status === TreatyStatus.ACTIVE;
@@ -155,14 +162,28 @@ export default function TreatyDetail() {
         queryClient.invalidateQueries({ queryKey: ['treaty-user-candidates', id] });
     };
 
-    // Filter out rooms already in treaty participants
-    const existingRoomIds = useMemo(
-        () => new Set(treaty?.participants.filter((p) => p.type === 'ROOM' && p.roomId).map((p) => p.roomId!)),
-        [treaty?.participants],
-    );
-    const availableRooms = useMemo(() => allRooms.filter((r: RoomListItem) => !existingRoomIds.has(r.id)), [allRooms, existingRoomIds]);
+    // B1: Breach compensation state
+    const [compOpen, setCompOpen] = useState(false);
+    const [compBid, setCompBid] = useState('');
+    const [compEntries, setCompEntries] = useState<Array<{ userId: string; username: string; amount: number }>>([]);
+    const [compNote, setCompNote] = useState('');
 
-    // ─── Mutations ─────────────────────────────────────────────
+    const compensateBreachMut = useMutation({
+        mutationFn: () => treatiesApi.createBreachCompensations(id!, compBid, {
+            compensations: compEntries.filter(e => e.amount > 0).map(e => ({ userId: e.userId, amount: e.amount })),
+            note: compNote || undefined,
+        }),
+        onSuccess: () => {
+            invalidate();
+            setCompOpen(false);
+            setCompEntries([]);
+            setCompNote('');
+            toast({ title: 'Compensations sent' });
+        },
+        onError: (e: any) => toast({ title: 'Error', description: e.message, variant: 'destructive' }),
+    });
+
+
     const advanceMut = useMutation({
         mutationFn: () => treatiesApi.advance(id!),
         onSuccess: () => { invalidate(); toast({ title: 'Clauses locked' }); },
@@ -546,7 +567,7 @@ export default function TreatyDetail() {
                                                 <CommandList>
                                                     <CommandEmpty>No users found.</CommandEmpty>
                                                     <CommandGroup>
-                                                        {availableUsers.map((u) => (
+                                                        {candidateUsers.map((u) => (
                                                             <CommandItem
                                                                 key={u.id}
                                                                 value={`${u.username} ${u.email}`}
@@ -653,10 +674,13 @@ export default function TreatyDetail() {
                                         {ex.deliveryNotes && <p>📦 Notes: {ex.deliveryNotes}</p>}
                                     </div>
                                     <div className="flex gap-2">
-                                        {ex.status === ExchangeStatus.OPEN && ex.buyer.id !== user?.id && (
+                                        {ex.status === ExchangeStatus.OPEN && ex.buyer.id !== user?.id && !user?.isJailed && (
                                             <Button size="sm" onClick={() => acceptExMut.mutate(ex.id)} disabled={acceptExMut.isPending}>
                                                 <ShoppingCart className="h-3.5 w-3.5 mr-1" /> Accept
                                             </Button>
+                                        )}
+                                        {ex.status === ExchangeStatus.OPEN && ex.buyer.id !== user?.id && user?.isJailed && (
+                                            <span className="text-xs text-red-400">🔒 Jailed — cannot accept</span>
                                         )}
                                         {ex.status === ExchangeStatus.ACCEPTED && ex.seller?.id === user?.id && (
                                             <div className="flex gap-2 items-center">
@@ -855,6 +879,33 @@ export default function TreatyDetail() {
                                         </div>
                                     )}
 
+                                    {/* B1: PM compensation button */}
+                                    {isPM && (bc.status === BreachCaseStatus.IN_REVIEW || bc.status === BreachCaseStatus.RESOLVED) && (
+                                        <Button
+                                            size="sm"
+                                            variant="outline"
+                                            className="border-green-500/50 text-green-400 hover:bg-green-500/10"
+                                            onClick={async () => {
+                                                setCompBid(bc.id);
+                                                try {
+                                                    const members = await treatiesApi.getBreachChatMembers(id!, bc.id);
+                                                    setCompEntries(
+                                                        members
+                                                            .filter((m: any) => m.userId !== user?.id)
+                                                            .map((m: any) => ({ userId: m.userId, username: m.user?.username ?? m.userId, amount: 0 }))
+                                                    );
+                                                } catch {
+                                                    setCompEntries([]);
+                                                }
+                                                setCompNote('');
+                                                setCompOpen(true);
+                                            }}
+                                        >
+                                            💰 Compensate Members
+                                        </Button>
+                                    )}
+
+
                                     {/* Resolved summary */}
                                     {bc.status === BreachCaseStatus.RESOLVED && bc.rulingType && (
                                         <div className="text-sm text-muted-foreground border-t border-border pt-2 mt-2">
@@ -877,6 +928,52 @@ export default function TreatyDetail() {
                     )}
                 </div>
             )}
+
+            {/* B1: Compensation Dialog */}
+            <Dialog open={compOpen} onOpenChange={setCompOpen}>
+                <DialogContent>
+                    <DialogHeader><DialogTitle>Compensate Breach Members</DialogTitle></DialogHeader>
+                    <div className="space-y-3 mt-2">
+                        {compEntries.length === 0 ? (
+                            <p className="text-sm text-muted-foreground">No eligible members found.</p>
+                        ) : (
+                            compEntries.map((entry, idx) => (
+                                <div key={entry.userId} className="flex items-center gap-3">
+                                    <span className="text-sm font-medium flex-1">👤 {entry.username}</span>
+                                    <Input
+                                        type="number"
+                                        min={0}
+                                        placeholder="Amount"
+                                        className="w-28"
+                                        value={entry.amount || ''}
+                                        onChange={(e) => {
+                                            const val = Math.max(0, Number(e.target.value));
+                                            setCompEntries(prev => prev.map((en, i) => i === idx ? { ...en, amount: val } : en));
+                                        }}
+                                    />
+                                </div>
+                            ))
+                        )}
+                        <Input
+                            placeholder="Note (optional)"
+                            value={compNote}
+                            onChange={(e) => setCompNote(e.target.value)}
+                        />
+                        <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">
+                                Total: {compEntries.reduce((s, e) => s + e.amount, 0)} credits from dept treasury
+                            </span>
+                            <Button
+                                size="sm"
+                                onClick={() => compensateBreachMut.mutate()}
+                                disabled={compensateBreachMut.isPending || compEntries.every(e => e.amount <= 0)}
+                            >
+                                {compensateBreachMut.isPending ? 'Sending...' : 'Send Compensations'}
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

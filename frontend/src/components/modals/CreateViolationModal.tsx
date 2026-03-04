@@ -43,7 +43,7 @@ export function CreateViolationModal({
     const [description, setDescription] = useState("");
     const [points, setPoints] = useState<number>(0);
     const [creditFine, setCreditFine] = useState<number>(0);
-    const [penaltyMode, setPenaltyMode] = useState<string>("");
+    const [penaltyMode, setPenaltyMode] = useState<ViolationPenaltyMode>(ViolationPenaltyMode.BOTH_MANDATORY);
     const [expiresAt, setExpiresAt] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -53,7 +53,7 @@ export function CreateViolationModal({
         setDescription("");
         setPoints(0);
         setCreditFine(0);
-        setPenaltyMode("");
+        setPenaltyMode(ViolationPenaltyMode.BOTH_MANDATORY);
         setExpiresAt("");
     };
 
@@ -75,17 +75,16 @@ export function CreateViolationModal({
             offenderId,
             title: title.trim(),
             points,
+            ...(creditFine > 0 ? { creditFine } : {}),
+            ...(penaltyMode !== ViolationPenaltyMode.BOTH_MANDATORY ? { penaltyMode } : {}),
             ...(description.trim() ? { description: description.trim() } : {}),
             ...(expiresAt ? { expiresAt: new Date(expiresAt).toISOString() } : {}),
-            ...(creditFine > 0 ? { creditFine } : {}),
-            ...(penaltyMode ? { penaltyMode: penaltyMode as ViolationPenaltyMode } : {}),
         };
 
         try {
             setIsSubmitting(true);
             await violationsApi.create(payload);
-            const modeLabel = penaltyMode === 'EITHER_CHOICE' ? 'Offender will choose penalty.' : 'Penalties applied.';
-            toast({ title: "Violation created", description: `"${title}" recorded. ${modeLabel}` });
+            toast({ title: "Violation created", description: `"${title}" recorded.` });
             resetForm();
             onSuccess();
             onOpenChange(false);
@@ -145,52 +144,51 @@ export function CreateViolationModal({
                         />
                     </div>
 
-                    <div className="grid gap-2">
-                        <Label htmlFor="violation-points">Social Score Points</Label>
-                        <Input
-                            id="violation-points"
-                            type="number"
-                            min={0}
-                            value={points}
-                            onChange={(e) => setPoints(Math.max(0, Number(e.target.value)))}
-                        />
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="violation-points">Social Score Penalty</Label>
+                            <Input
+                                id="violation-points"
+                                type="number"
+                                min={0}
+                                value={points}
+                                onChange={(e) => setPoints(Math.max(0, Number(e.target.value)))}
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="violation-credits">Credit Fine</Label>
+                            <Input
+                                id="violation-credits"
+                                type="number"
+                                min={0}
+                                value={creditFine}
+                                onChange={(e) => setCreditFine(Math.max(0, Number(e.target.value)))}
+                            />
+                        </div>
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="violation-creditfine">Credit Fine (optional)</Label>
-                        <Input
-                            id="violation-creditfine"
-                            type="number"
-                            min={0}
-                            value={creditFine}
-                            onChange={(e) => setCreditFine(Math.max(0, Number(e.target.value)))}
-                        />
-                        <p className="text-xs text-muted-foreground">
-                            Credit amount to deduct. Goes to department treasury.
-                        </p>
-                    </div>
-
-                    <div className="grid gap-2">
-                        <Label htmlFor="penalty-mode">Penalty Mode</Label>
-                        <Select value={penaltyMode} onValueChange={setPenaltyMode}>
-                            <SelectTrigger id="penalty-mode">
-                                <SelectValue placeholder="Default (social score only)" />
+                        <Label>Penalty Mode</Label>
+                        <Select
+                            value={penaltyMode}
+                            onValueChange={(v) => setPenaltyMode(v as ViolationPenaltyMode)}
+                        >
+                            <SelectTrigger>
+                                <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="BOTH_MANDATORY">
-                                    Both Mandatory (points + credits immediately)
+                                <SelectItem value={ViolationPenaltyMode.BOTH_MANDATORY}>
+                                    Both Mandatory
                                 </SelectItem>
-                                <SelectItem value="EITHER_CHOICE">
-                                    Offender Choice (pick one penalty)
+                                <SelectItem value={ViolationPenaltyMode.EITHER_CHOICE}>
+                                    Offender Chooses
                                 </SelectItem>
                             </SelectContent>
                         </Select>
                         <p className="text-xs text-muted-foreground">
-                            {penaltyMode === 'EITHER_CHOICE'
-                                ? 'Offender must choose between social score deduction or credit fine.'
-                                : penaltyMode === 'BOTH_MANDATORY'
-                                    ? 'Both social score and credit penalties are applied immediately.'
-                                    : 'Leave empty for social-score-only deduction (legacy mode).'}
+                            {penaltyMode === ViolationPenaltyMode.BOTH_MANDATORY
+                                ? "Both social score and credit penalties are applied immediately."
+                                : "Offender can choose to pay either social score or credits."}
                         </p>
                     </div>
 

@@ -9,6 +9,7 @@ import { AllocateFundsDto } from './dto/allocate-funds.dto';
 import { RecallFundsDto } from './dto/recall-funds.dto';
 import { CreateSocialScoreRequestDto } from './dto/create-social-score-request.dto';
 import { OfferSocialScoreDto } from './dto/offer-social-score.dto';
+import { checkAndApplyJailStatus } from '../common/jail.util';
 
 @Injectable()
 export class FinanceService {
@@ -448,6 +449,9 @@ export class FinanceService {
                     note: `Social score purchase: ${request.offeredSocialScore} score for ${request.offeredPriceCredits} credits`,
                 },
             });
+
+            // Unjail if social score is now >= 0
+            await checkAndApplyJailStatus(tx, currentUserId);
 
             // Update request status
             return tx.socialScorePurchaseRequest.update({

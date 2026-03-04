@@ -38,6 +38,7 @@ import { toast } from "@/hooks/use-toast";
 import {
     ViolationStatusEnum,
     ViolationVerdictEnum,
+    ViolationPenaltyMode,
     type Violation,
     type CaseChatMessage,
     type CaseChatMember,
@@ -242,9 +243,21 @@ export default function ViolationCasePage() {
                                 <h2 className="text-xl font-bold">{violation.title}</h2>
                                 <StatusBadge status={violation.status} />
                             </div>
-                            <span className="text-lg font-bold text-destructive whitespace-nowrap">
-                                −{violation.points} pts
-                            </span>
+                            <div className="flex items-center gap-2">
+                                <span className="text-lg font-bold text-destructive whitespace-nowrap">
+                                    −{violation.points} pts
+                                </span>
+                                {violation.creditFine > 0 && (
+                                    <span className="text-lg font-bold text-amber-400 whitespace-nowrap">
+                                        −{violation.creditFine} cr
+                                    </span>
+                                )}
+                                {violation.penaltyMode === ViolationPenaltyMode.EITHER_CHOICE && (
+                                    <span className="inline-flex items-center rounded-full bg-indigo-500/15 px-2 py-0.5 text-xs font-medium text-indigo-400">
+                                        Choice
+                                    </span>
+                                )}
+                            </div>
                         </div>
 
                         {violation.description && (
@@ -305,8 +318,75 @@ export default function ViolationCasePage() {
                                         (+{violation.pointsRefunded} pts refunded)
                                     </span>
                                 )}
+                                {violation.creditsRefunded > 0 && (
+                                    <span className="ml-2 text-green-400">
+                                        (+{violation.creditsRefunded} cr refunded)
+                                    </span>
+                                )}
                             </div>
                         )}
+
+                        {/* Deduction / choice details */}
+                        {(violation.creditsDeducted > 0 || violation.pointsDeducted > 0 || violation.offenderChoice) && (
+                            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                                {violation.pointsDeducted > 0 && (
+                                    <span>Social score deducted: <strong className="text-destructive">−{violation.pointsDeducted}</strong></span>
+                                )}
+                                {violation.creditsDeducted > 0 && (
+                                    <span>Credits deducted: <strong className="text-amber-400">−{violation.creditsDeducted}</strong></span>
+                                )}
+                                {violation.offenderChoice && (
+                                    <span className="text-indigo-400">
+                                        Chose: {violation.offenderChoice === 'CREDITS' ? 'Credits' : 'Social Score'}
+                                    </span>
+                                )}
+                            </div>
+                        )}
+
+                        {/* D2: Choose penalty for EITHER_CHOICE violations */}
+                        {violation.status === ViolationStatusEnum.ACTIVE &&
+                            violation.penaltyMode === ViolationPenaltyMode.EITHER_CHOICE &&
+                            !violation.offenderChoice &&
+                            violation.offender.id === user?.id && (
+                                <div className="border border-amber-500/30 rounded-lg p-3 space-y-2">
+                                    <p className="text-sm font-medium text-amber-300">Choose your penalty:</p>
+                                    <div className="flex gap-2">
+                                        <Button
+                                            size="sm"
+                                            variant="destructive"
+                                            onClick={async () => {
+                                                try {
+                                                    const { violationsApi: api } = await import('@/api/violations');
+                                                    await api.choosePenalty(violationId!, 'SOCIAL_SCORE');
+                                                    toast({ title: 'Penalty applied' });
+                                                    refetchAppeals();
+                                                } catch (e) {
+                                                    toast({ title: 'Error', description: e instanceof Error ? e.message : 'Failed' });
+                                                }
+                                            }}
+                                        >
+                                            Pay {violation.points} Social Score
+                                        </Button>
+                                        <Button
+                                            size="sm"
+                                            variant="outline"
+                                            className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10"
+                                            onClick={async () => {
+                                                try {
+                                                    const { violationsApi: api } = await import('@/api/violations');
+                                                    await api.choosePenalty(violationId!, 'CREDITS');
+                                                    toast({ title: 'Penalty applied' });
+                                                    refetchAppeals();
+                                                } catch (e) {
+                                                    toast({ title: 'Error', description: e instanceof Error ? e.message : 'Failed' });
+                                                }
+                                            }}
+                                        >
+                                            Pay {violation.creditFine} Credits
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
 
                         {/* Action bar */}
                         {violation.status === ViolationStatusEnum.IN_EVALUATION && isPM && (

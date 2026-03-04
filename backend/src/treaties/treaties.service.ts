@@ -21,6 +21,8 @@ import { CreateBreachCaseDto } from './dto/create-breach-case.dto';
 import { ResolveBreachCaseDto } from './dto/resolve-breach-case.dto';
 import { RuleBreachCaseDto } from './dto/rule-breach-case.dto';
 import { ChooseBreachPenaltyDto } from './dto/choose-breach-penalty.dto';
+import { CreateBreachCompensationDto } from './dto/create-breach-compensation.dto';
+import { checkAndApplyJailStatus } from '../common/jail.util';
 
 /** Statuses that mean "no longer a stakeholder". */
 const INACTIVE_STATUSES: ParticipantStatus[] = [ParticipantStatus.REJECTED, ParticipantStatus.LEFT];
@@ -251,7 +253,7 @@ export class TreatiesService {
                 },
             });
 
-            // Add PM as a treaty participant (USER, ACCEPTED)
+            // A1: Add PM as treaty participant immediately
             await tx.treatyParticipant.create({
                 data: {
                     treatyId: treaty.id,
@@ -262,7 +264,7 @@ export class TreatiesService {
                 },
             });
 
-            // Create chat room with just PM
+            // Create chat room with PM
             await tx.chatRoom.create({
                 data: {
                     type: 'TREATY_GROUP',
@@ -292,6 +294,7 @@ export class TreatiesService {
         return this.prisma.treaty.findMany({
             where: {
                 departmentId: user.room.departmentId,
+                mode: { not: 'INTER_DEPT' },
                 OR: [
                     { createdById: userId },
                     {
@@ -382,7 +385,7 @@ export class TreatiesService {
         if (existing) throw new BadRequestException('Room is already a participant');
 
         return this.prisma.$transaction(async (tx) => {
-            // A3: Remove individually-added USER participants whose users belong to this room
+            // A3: Remove individually-added USER participants whose rooms match
             const roomUsers = await tx.user.findMany({
                 where: { roomId },
                 select: { id: true },
@@ -486,6 +489,56 @@ export class TreatiesService {
             await this.syncChatMembership(treatyId, tx);
             return tx.treaty.findUnique({ where: { id: treatyId }, select: TREATY_SELECT });
         });
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // A2: USER CANDIDATES (PM only, NEGOTIATION only)
+    // ═══════════════════════════════════════════════════════════════
+
+    async getUserCandidates(treatyId: string, userId: string) {
+        const dept = await this.assertPMOfDepartment(userId);
+        const treaty = await this.prisma.treaty.findUnique({
+            where: { id: treatyId },
+            select: { id: true, departmentId: true, status: true },
+        });
+        if (!treaty) throw new NotFoundException('Treaty not found');
+        if (treaty.departmentId !== dept.id) throw new ForbiddenException('Treaty not in your department');
+
+        // Get active/pending participants
+        const participants = await this.prisma.treatyParticipant.findMany({
+            where: { treatyId, status: { notIn: INACTIVE_STATUSES } },
+            select: { type: true, userId: true, roomId: true },
+        });
+
+        // Existing individually-added user IDs
+        const existingUserIds = new Set(
+            participants.filter((p) => p.type === 'USER' && p.userId).map((p) => p.userId!),
+        );
+
+        // Room-based participants — get all user IDs from those rooms
+        const existingRoomIds = participants
+            .filter((p) => p.type === 'ROOM' && p.roomId)
+            .map((p) => p.roomId!);
+
+        const usersInParticipantRooms = existingRoomIds.length > 0
+            ? await this.prisma.user.findMany({
+                where: { roomId: { in: existingRoomIds } },
+                select: { id: true },
+            })
+            : [];
+        const roomCoveredIds = new Set(usersInParticipantRooms.map((u) => u.id));
+
+        // Get all department users
+        const deptRoomIds = dept.rooms.map((r) => r.id);
+        const allDeptUsers = await this.prisma.user.findMany({
+            where: { roomId: { in: deptRoomIds } },
+            select: { id: true, username: true, email: true, roomId: true },
+        });
+
+        // Filter: not individually added AND not covered by a room participant
+        return allDeptUsers.filter(
+            (u) => !existingUserIds.has(u.id) && !roomCoveredIds.has(u.id),
+        );
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -795,6 +848,13 @@ export class TreatiesService {
         if (!exchange) throw new NotFoundException('Exchange not found');
         if (exchange.status !== ExchangeStatus.OPEN) throw new BadRequestException('Exchange is not open');
         if (exchange.buyerId === userId) throw new BadRequestException('Cannot accept your own exchange');
+
+        // Check if user is jailed
+        const acceptor = await this.prisma.user.findUnique({
+            where: { id: userId },
+            select: { isJailed: true },
+        });
+        if (acceptor?.isJailed) throw new ForbiddenException('Jailed users cannot accept exchanges');
 
         return this.prisma.exchange.update({
             where: { id: exchangeId },
@@ -1129,10 +1189,12 @@ export class TreatiesService {
                             breachCaseId,
                             userId: criminalUserId,
                             createdById: userId,
-                            note: `Breach fine from case "${breach.id}" against user ${criminalUserId}`,
+                            note: `Breach fine from case ${breachCaseId}`,
                         },
                     });
                 }
+                // Check jail after penalty
+                await checkAndApplyJailStatus(tx, criminalUserId);
                 // Close case chat
                 if (breach.chatRoom) {
                     await tx.chatRoom.update({ where: { id: breach.chatRoom.id }, data: { closedAt: now } });
@@ -1179,6 +1241,7 @@ export class TreatiesService {
                 id: true, status: true, rulingTargetUserId: true,
                 socialPenalty: true, creditFine: true,
                 chatRoom: { select: { id: true } },
+                treaty: { select: { departmentId: true } },
             },
         });
         if (!breach) throw new NotFoundException('Breach case not found');
@@ -1190,13 +1253,6 @@ export class TreatiesService {
         }
 
         const now = new Date();
-
-        // Need department for treasury logging
-        const treaty = await this.prisma.treaty.findUnique({
-            where: { id: treatyId },
-            select: { departmentId: true },
-        });
-
         return this.prisma.$transaction(async (tx) => {
             if (dto.choice === 'SOCIAL') {
                 await tx.user.update({
@@ -1204,30 +1260,32 @@ export class TreatiesService {
                     data: { socialScore: { decrement: breach.socialPenalty ?? 0 } },
                 });
             } else {
-                const fine = breach.creditFine ?? 0;
+                const creditAmt = breach.creditFine ?? 0;
                 await tx.user.update({
                     where: { id: userId },
-                    data: { credits: { decrement: fine } },
+                    data: { credits: { decrement: creditAmt } },
                 });
                 // B2: Deposit credit fine into department treasury
-                if (fine > 0 && treaty) {
+                if (creditAmt > 0) {
                     await tx.department.update({
-                        where: { id: treaty.departmentId },
-                        data: { treasuryCredits: { increment: fine } },
+                        where: { id: breach.treaty.departmentId },
+                        data: { treasuryCredits: { increment: creditAmt } },
                     });
                     await tx.treasuryTransaction.create({
                         data: {
                             type: 'BREACH_FINE_INCOME',
-                            amount: fine,
-                            departmentId: treaty.departmentId,
+                            amount: creditAmt,
+                            departmentId: breach.treaty.departmentId,
                             breachCaseId,
                             userId,
                             createdById: userId,
-                            note: `Breach fine (criminal choice) from case "${breachCaseId}"`,
+                            note: `Breach penalty choice (credits) for case ${breachCaseId}`,
                         },
                     });
                 }
             }
+            // Check jail after penalty choice
+            await checkAndApplyJailStatus(tx, userId);
             // Close case chat
             if (breach.chatRoom) {
                 await tx.chatRoom.update({ where: { id: breach.chatRoom.id }, data: { closedAt: now } });
@@ -1241,6 +1299,74 @@ export class TreatiesService {
                 },
                 select: this.BREACH_CASE_SELECT,
             });
+        });
+    }
+
+    // ─── B1: Breach Compensation (PM → multiple users) ─────────
+
+    async createBreachCompensations(treatyId: string, breachCaseId: string, userId: string, dto: CreateBreachCompensationDto) {
+        const dept = await this.assertPMOfDepartment(userId);
+        const breach = await this.prisma.breachCase.findFirst({
+            where: { id: breachCaseId, treatyId },
+            select: {
+                id: true, status: true,
+                chatRoom: { select: { id: true, members: { select: { userId: true } } } },
+                treaty: { select: { departmentId: true } },
+            },
+        });
+        if (!breach) throw new NotFoundException('Breach case not found');
+        if (breach.treaty.departmentId !== dept.id) throw new ForbiddenException('Not in your department');
+
+        // Validate eligible user IDs = breach chat members
+        const chatMemberIds = new Set(
+            breach.chatRoom?.members.map((m: any) => m.userId) ?? [],
+        );
+        const totalAmount = dto.compensations.reduce((sum, c) => sum + c.amount, 0);
+        if (totalAmount <= 0) throw new BadRequestException('Total compensation must be > 0');
+
+        for (const c of dto.compensations) {
+            if (c.amount <= 0) throw new BadRequestException(`Invalid amount for user ${c.userId}`);
+            if (!chatMemberIds.has(c.userId)) {
+                throw new BadRequestException(`User ${c.userId} is not a member of this breach case`);
+            }
+        }
+
+        // Check department treasury
+        const deptData = await this.prisma.department.findUnique({
+            where: { id: dept.id },
+            select: { treasuryCredits: true },
+        });
+        if (!deptData || deptData.treasuryCredits < totalAmount) {
+            throw new BadRequestException('Insufficient department treasury for compensation');
+        }
+
+        return this.prisma.$transaction(async (tx) => {
+            // Decrement department treasury
+            await tx.department.update({
+                where: { id: dept.id },
+                data: { treasuryCredits: { decrement: totalAmount } },
+            });
+
+            // Increment each user's credits and log transaction
+            for (const c of dto.compensations) {
+                await tx.user.update({
+                    where: { id: c.userId },
+                    data: { credits: { increment: c.amount } },
+                });
+                await tx.treasuryTransaction.create({
+                    data: {
+                        type: 'BREACH_COMPENSATION',
+                        amount: c.amount,
+                        departmentId: dept.id,
+                        breachCaseId,
+                        userId: c.userId,
+                        createdById: userId,
+                        note: dto.note ?? `Breach compensation for case ${breachCaseId}`,
+                    },
+                });
+            }
+
+            return { compensated: dto.compensations.length, totalAmount };
         });
     }
 
@@ -1319,142 +1445,6 @@ export class TreatiesService {
                 joinedAt: true,
                 user: { select: { id: true, username: true, role: true } },
             },
-        });
-    }
-
-    // ═══════════════════════════════════════════════════════════════
-    // A2: USER CANDIDATES (exclude users whose rooms are participants)
-    // ═══════════════════════════════════════════════════════════════
-
-    async getUserCandidates(treatyId: string, userId: string) {
-        const dept = await this.assertPMOfDepartment(userId);
-        const treaty = await this.prisma.treaty.findUnique({
-            where: { id: treatyId },
-            select: {
-                id: true, status: true, departmentId: true,
-                participants: { select: { type: true, roomId: true, userId: true } },
-            },
-        });
-        if (!treaty) throw new NotFoundException('Treaty not found');
-        if (treaty.departmentId !== dept.id) throw new ForbiddenException('Treaty not in your department');
-
-        // Collect IDs to exclude:
-        // 1. Users already individually added
-        const existingUserIds = treaty.participants
-            .filter((p) => p.type === 'USER' && p.userId)
-            .map((p) => p.userId!);
-
-        // 2. Users belonging to rooms already added as participants
-        const existingRoomIds = treaty.participants
-            .filter((p) => p.type === 'ROOM' && p.roomId)
-            .map((p) => p.roomId!);
-
-        let roomMemberIds: string[] = [];
-        if (existingRoomIds.length > 0) {
-            const roomMembers = await this.prisma.user.findMany({
-                where: { roomId: { in: existingRoomIds } },
-                select: { id: true },
-            });
-            roomMemberIds = roomMembers.map((u) => u.id);
-        }
-
-        const excludeIds = new Set([...existingUserIds, ...roomMemberIds]);
-
-        // Get all users in the department, excluding the ones above
-        const deptRooms = await this.prisma.room.findMany({
-            where: { departmentId: dept.id },
-            select: { id: true },
-        });
-        const deptRoomIds = deptRooms.map((r) => r.id);
-
-        const candidates = await this.prisma.user.findMany({
-            where: {
-                roomId: { in: deptRoomIds },
-                id: { notIn: [...excludeIds] },
-            },
-            select: { id: true, username: true, email: true },
-            orderBy: { username: 'asc' },
-        });
-
-        return candidates;
-    }
-
-    // ═══════════════════════════════════════════════════════════════
-    // B1: BREACH CASE COMPENSATION (PM compensates members)
-    // ═══════════════════════════════════════════════════════════════
-
-    async compensateBreachMembers(
-        treatyId: string,
-        breachCaseId: string,
-        userId: string,
-        dto: { compensations: { userId: string; amount: number }[] },
-    ) {
-        const dept = await this.assertPMOfDepartment(userId);
-        const breach = await this.prisma.breachCase.findFirst({
-            where: { id: breachCaseId, treatyId },
-            select: {
-                id: true, status: true,
-                treaty: { select: { departmentId: true } },
-                chatRoom: { select: { id: true, members: { select: { userId: true } } } },
-            },
-        });
-        if (!breach) throw new NotFoundException('Breach case not found');
-        if (breach.treaty.departmentId !== dept.id) throw new ForbiddenException('Not in your department');
-        if (breach.status !== BreachCaseStatus.RESOLVED) {
-            throw new BadRequestException('Case must be RESOLVED before compensation');
-        }
-
-        // Validate: all target users must be breach chat members
-        const chatMemberIds = new Set(
-            breach.chatRoom?.members.map((m: any) => m.userId) ?? [],
-        );
-
-        const totalAmount = dto.compensations.reduce((sum, c) => sum + c.amount, 0);
-        if (totalAmount <= 0) throw new BadRequestException('Total compensation must be > 0');
-
-        // Check treasury has enough
-        const department = await this.prisma.department.findUnique({
-            where: { id: dept.id },
-            select: { treasuryCredits: true },
-        });
-        if (!department || department.treasuryCredits < totalAmount) {
-            throw new BadRequestException('Insufficient department treasury for compensation');
-        }
-
-        for (const c of dto.compensations) {
-            if (c.amount <= 0) throw new BadRequestException('Each compensation amount must be > 0');
-            if (!chatMemberIds.has(c.userId)) {
-                throw new BadRequestException(`User ${c.userId} is not a member of the breach case chat`);
-            }
-        }
-
-        return this.prisma.$transaction(async (tx) => {
-            // Decrement department treasury
-            await tx.department.update({
-                where: { id: dept.id },
-                data: { treasuryCredits: { decrement: totalAmount } },
-            });
-
-            // Increment each user's credits and log
-            for (const c of dto.compensations) {
-                await tx.user.update({
-                    where: { id: c.userId },
-                    data: { credits: { increment: c.amount } },
-                });
-                await tx.treasuryTransaction.create({
-                    data: {
-                        type: 'BREACH_COMPENSATION',
-                        amount: c.amount,
-                        departmentId: dept.id,
-                        breachCaseId,
-                        userId: c.userId,
-                        createdById: userId,
-                        note: `Breach compensation to user ${c.userId} for case ${breachCaseId}`,
-                    },
-                });
-            }
-
-            return { compensated: dto.compensations.length, totalAmount };
         });
     }
 }

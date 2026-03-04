@@ -93,6 +93,7 @@ export class UsersService {
         socialScore: true,
         createdAt: true,
         credits: true,
+        isJailed: true,
         room: {
           select: {
             id: true,

@@ -11,6 +11,7 @@ import { CreateViolationDto } from './dto/create-violation.dto';
 import { AppealViolationDto } from './dto/appeal-violation.dto';
 import { CloseEvaluationDto } from './dto/close-evaluation.dto';
 import { ChooseViolationPenaltyDto } from './dto/choose-violation-penalty.dto';
+import { checkAndApplyJailStatus } from '../common/jail.util';
 
 /** Shared select for violation list/detail queries. */
 const VIOLATION_SELECT = {
@@ -21,10 +22,10 @@ const VIOLATION_SELECT = {
     points: true,
     creditFine: true,
     penaltyMode: true,
+    offenderChoice: true,
     creditsDeducted: true,
     pointsDeducted: true,
     creditsRefunded: true,
-    offenderChoice: true,
     roomId: true,
     expiresAt: true,
     archivedAt: true,
@@ -81,81 +82,93 @@ export class ViolationsService {
         }
 
         const creditFine = dto.creditFine ?? 0;
-        const penaltyMode = dto.penaltyMode ?? null;
+        const penaltyMode = dto.penaltyMode ?? 'BOTH_MANDATORY';
 
-        // Determine what to deduct immediately based on penalty mode
-        const violation = await this.prisma.$transaction(async (tx) => {
-            let pointsDeducted = 0;
-            let creditsDeducted = 0;
+        // D1: Handle penalty modes
+        if (penaltyMode === 'BOTH_MANDATORY') {
+            // Deduct both immediately
+            const socialDeduction = Math.min(dto.points, offender.socialScore);
+            const creditDeduction = Math.min(creditFine, offender.credits);
 
-            if (penaltyMode === 'EITHER_CHOICE') {
-                // No immediate deductions — offender will choose later
-            } else if (penaltyMode === 'BOTH_MANDATORY') {
-                // Apply both immediately
-                pointsDeducted = Math.min(dto.points, offender.socialScore);
-                creditsDeducted = Math.min(creditFine, offender.credits);
-
+            return this.prisma.$transaction(async (tx) => {
                 await tx.user.update({
                     where: { id: dto.offenderId },
                     data: {
-                        socialScore: { decrement: pointsDeducted },
-                        credits: { decrement: creditsDeducted },
+                        socialScore: { decrement: socialDeduction },
+                        credits: { decrement: creditDeduction },
                     },
                 });
 
-                // C2: Credit fine → department treasury
-                if (creditsDeducted > 0) {
+                // Deposit credit fine into department treasury
+                if (creditDeduction > 0) {
                     await tx.department.update({
                         where: { id: room.departmentId },
-                        data: { treasuryCredits: { increment: creditsDeducted } },
+                        data: { treasuryCredits: { increment: creditDeduction } },
+                    });
+                    await tx.treasuryTransaction.create({
+                        data: {
+                            type: 'VIOLATION_FINE_INCOME',
+                            amount: creditDeduction,
+                            departmentId: room.departmentId,
+                            userId: dto.offenderId,
+                            createdById: creator.id,
+                            note: `Violation fine: ${dto.title}`,
+                        },
                     });
                 }
-            } else {
-                // Legacy: social-score-only violations
-                pointsDeducted = Math.min(dto.points, offender.socialScore);
-                await tx.user.update({
-                    where: { id: dto.offenderId },
-                    data: { socialScore: { decrement: pointsDeducted } },
-                });
-            }
 
-            const v = await tx.violation.create({
-                data: {
-                    roomId: creator.roomId,
-                    offenderId: dto.offenderId,
-                    createdById: creator.id,
-                    title: dto.title,
-                    description: dto.description,
-                    points: dto.points,
-                    creditFine,
-                    penaltyMode: penaltyMode as any,
-                    pointsDeducted,
-                    creditsDeducted,
-                    status: penaltyMode === 'EITHER_CHOICE' ? 'AWAITING_OFFENDER_CHOICE' as any : 'ACTIVE',
-                    expiresAt: dto.expiresAt ? new Date(dto.expiresAt) : null,
-                },
-                select: VIOLATION_SELECT,
-            });
-
-            // C2: Treasury transaction for credit fine income
-            if (creditsDeducted > 0) {
-                await tx.treasuryTransaction.create({
+                const v = await tx.violation.create({
                     data: {
-                        type: 'VIOLATION_FINE_INCOME',
-                        amount: creditsDeducted,
-                        departmentId: room.departmentId,
-                        violationId: v.id,
-                        userId: dto.offenderId,
+                        roomId: creator.roomId,
+                        offenderId: dto.offenderId,
                         createdById: creator.id,
-                        note: `Violation credit fine for "${dto.title}"`,
+                        title: dto.title,
+                        description: dto.description,
+                        points: dto.points,
+                        creditFine,
+                        penaltyMode: 'BOTH_MANDATORY',
+                        pointsDeducted: socialDeduction,
+                        creditsDeducted: creditDeduction,
+                        expiresAt: dto.expiresAt ? new Date(dto.expiresAt) : null,
                     },
+                    select: VIOLATION_SELECT,
                 });
-            }
 
-            return v;
+                // Link treasury transaction to violation
+                if (creditDeduction > 0) {
+                    await tx.treasuryTransaction.updateMany({
+                        where: {
+                            type: 'VIOLATION_FINE_INCOME',
+                            userId: dto.offenderId,
+                            createdById: creator.id,
+                            violationId: null,
+                        },
+                        data: { violationId: v.id },
+                    });
+                }
+
+                // Check jail status after socialScore decrement
+                await checkAndApplyJailStatus(tx, dto.offenderId);
+
+                return v;
+            });
+        }
+
+        // EITHER_CHOICE: create violation without deductions — offender must choose
+        return this.prisma.violation.create({
+            data: {
+                roomId: creator.roomId,
+                offenderId: dto.offenderId,
+                createdById: creator.id,
+                title: dto.title,
+                description: dto.description,
+                points: dto.points,
+                creditFine,
+                penaltyMode: 'EITHER_CHOICE',
+                expiresAt: dto.expiresAt ? new Date(dto.expiresAt) : null,
+            },
+            select: VIOLATION_SELECT,
         });
-
-        return violation;
     }
 
     // ─── LIST (room-scoped) ──────────────────────────────────────
@@ -609,7 +622,7 @@ export class ViolationsService {
             include: {
                 chatRoom: { select: { id: true } },
                 room: { select: { departmentId: true } },
-                offender: { select: { id: true, socialScore: true } },
+                offender: { select: { id: true, socialScore: true, credits: true } },
             },
         });
         if (!violation) throw new NotFoundException('Violation not found');
@@ -642,25 +655,24 @@ export class ViolationsService {
 
                 case ViolationVerdict.OVERTURNED:
                     newStatus = ViolationStatus.CLOSED_OVERTURNED;
-                    // D2: Refund points to offender (idempotent: only if not already refunded)
+                    // D3: Refund social score (idempotent: only if not already refunded)
                     if (violation.pointsRefunded === 0 && violation.pointsDeducted > 0) {
                         await tx.user.update({
                             where: { id: violation.offenderId },
                             data: { socialScore: { increment: violation.pointsDeducted } },
                         });
                     }
-                    // D2: Refund credits if any were deducted
+                    // D3: Refund credits (idempotent)
                     if (violation.creditsRefunded === 0 && violation.creditsDeducted > 0) {
                         await tx.user.update({
                             where: { id: violation.offenderId },
                             data: { credits: { increment: violation.creditsDeducted } },
                         });
-                        // Reverse from department treasury
+                        // Reverse treasury deposit
                         await tx.department.update({
                             where: { id: violation.room.departmentId },
                             data: { treasuryCredits: { decrement: violation.creditsDeducted } },
                         });
-                        // C2: Log the refund
                         await tx.treasuryTransaction.create({
                             data: {
                                 type: 'VIOLATION_REFUND',
@@ -669,30 +681,27 @@ export class ViolationsService {
                                 violationId,
                                 userId: violation.offenderId,
                                 createdById: pmUserId,
-                                note: `Refund for overturned violation "${violation.title}"`,
+                                note: `Violation refund (overturned): ${violation.title}`,
                             },
                         });
                     }
-                    await tx.violation.update({
-                        where: { id: violationId },
-                        data: {
-                            pointsRefunded: violation.pointsDeducted,
-                            creditsRefunded: violation.creditsDeducted,
-                            refundedAt: new Date(),
-                        },
-                    });
+                    // Unjail if score recovers from refund
+                    await checkAndApplyJailStatus(tx, violation.offenderId);
                     break;
 
                 case ViolationVerdict.PUNISH_MAYOR:
                     // Overturn original violation + refund
                     newStatus = ViolationStatus.CLOSED_OVERTURNED;
+                    // D3: Refund social score
                     if (violation.pointsRefunded === 0 && violation.pointsDeducted > 0) {
                         await tx.user.update({
                             where: { id: violation.offenderId },
                             data: { socialScore: { increment: violation.pointsDeducted } },
                         });
                     }
-                    // D2: Refund credits if deducted
+                    // Unjail offender if score recovers from refund
+                    await checkAndApplyJailStatus(tx, violation.offenderId);
+                    // D3: Refund credits
                     if (violation.creditsRefunded === 0 && violation.creditsDeducted > 0) {
                         await tx.user.update({
                             where: { id: violation.offenderId },
@@ -710,7 +719,7 @@ export class ViolationsService {
                                 violationId,
                                 userId: violation.offenderId,
                                 createdById: pmUserId,
-                                note: `Refund for overturned violation "${violation.title}" (punish mayor)`,
+                                note: `Violation refund (punish mayor): ${violation.title}`,
                             },
                         });
                     }
@@ -738,10 +747,14 @@ export class ViolationsService {
                                 title: penaltyTitle,
                                 description: dto.verdictNote ?? null,
                                 points: penaltyPoints,
+                                pointsDeducted: mayorDeduction,
                                 status: ViolationStatus.ACTIVE,
                             },
                         });
                         mayorViolationId = mayorViolation.id;
+
+                        // Check jail for mayor after penalty
+                        await checkAndApplyJailStatus(tx, mayor.id);
                     }
                     break;
             }
@@ -756,7 +769,10 @@ export class ViolationsService {
                     closedById: pmUserId,
                     mayorViolationId,
                     ...(dto.verdict !== ViolationVerdict.UPHELD && violation.pointsRefunded === 0
-                        ? { pointsRefunded: violation.points, refundedAt: new Date() }
+                        ? { pointsRefunded: violation.pointsDeducted || violation.points, refundedAt: new Date() }
+                        : {}),
+                    ...(dto.verdict !== ViolationVerdict.UPHELD && violation.creditsRefunded === 0 && violation.creditsDeducted > 0
+                        ? { creditsRefunded: violation.creditsDeducted }
                         : {}),
                 },
                 select: VIOLATION_SELECT,
@@ -764,23 +780,20 @@ export class ViolationsService {
         });
     }
 
-    // ─── CHOOSE PENALTY (Offender, EITHER_CHOICE only) ──────────
+    // ─── D2: CHOOSE PENALTY (offender, EITHER_CHOICE only) ───────
 
-    async chooseViolationPenalty(violationId: string, userId: string, dto: ChooseViolationPenaltyDto) {
+    async choosePenalty(violationId: string, userId: string, dto: ChooseViolationPenaltyDto) {
         const violation = await this.prisma.violation.findUnique({
             where: { id: violationId },
             include: {
-                room: { select: { departmentId: true } },
                 offender: { select: { id: true, socialScore: true, credits: true } },
+                room: { select: { departmentId: true } },
             },
         });
         if (!violation) throw new NotFoundException('Violation not found');
-        if (violation.status !== ('AWAITING_OFFENDER_CHOICE' as any)) {
-            throw new BadRequestException('This violation is not awaiting offender choice');
-        }
-        if (violation.offenderId !== userId) {
-            throw new ForbiddenException('Only the offender can choose the penalty');
-        }
+        if (violation.offenderId !== userId) throw new ForbiddenException('Only the offender can choose penalty');
+        if (violation.penaltyMode !== 'EITHER_CHOICE') throw new BadRequestException('Penalty mode is not EITHER_CHOICE');
+        if (violation.offenderChoice) throw new BadRequestException('Penalty already chosen');
 
         return this.prisma.$transaction(async (tx) => {
             let pointsDeducted = 0;
@@ -793,13 +806,12 @@ export class ViolationsService {
                     data: { socialScore: { decrement: pointsDeducted } },
                 });
             } else {
-                // CREDITS
                 creditsDeducted = Math.min(violation.creditFine, violation.offender.credits);
                 await tx.user.update({
                     where: { id: userId },
                     data: { credits: { decrement: creditsDeducted } },
                 });
-                // C2: Credit fine → department treasury
+                // Deposit into department treasury
                 if (creditsDeducted > 0) {
                     await tx.department.update({
                         where: { id: violation.room.departmentId },
@@ -813,16 +825,18 @@ export class ViolationsService {
                             violationId,
                             userId,
                             createdById: userId,
-                            note: `Violation penalty choice (credits) for "${violation.title}"`,
+                            note: `Violation penalty choice (credits): ${violation.title}`,
                         },
                     });
                 }
             }
 
+            // Check jail status after penalty choice
+            await checkAndApplyJailStatus(tx, userId);
+
             return tx.violation.update({
                 where: { id: violationId },
                 data: {
-                    status: ViolationStatus.ACTIVE,
                     offenderChoice: dto.choice as any,
                     pointsDeducted,
                     creditsDeducted,
@@ -870,6 +884,8 @@ export class ViolationsService {
                             where: { id: v.offenderId },
                             data: { socialScore: { increment: v.points } },
                         });
+                        // Unjail if score recovers
+                        await checkAndApplyJailStatus(tx, v.offenderId);
                     }
 
                     await tx.violation.update({

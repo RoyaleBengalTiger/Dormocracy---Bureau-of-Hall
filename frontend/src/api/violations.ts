@@ -45,10 +45,6 @@ export const violationsApi = {
     closeEvaluation: (id: string, data: CloseEvaluationPayload) =>
         httpClient.post<Violation>(`/violations/${id}/close-evaluation`, data),
 
-    /** Offender chooses penalty for EITHER_CHOICE violations. */
-    choosePenalty: (id: string, choice: 'CREDITS' | 'SOCIAL_SCORE') =>
-        httpClient.post<Violation>(`/violations/${id}/choose-penalty`, { choice }),
-
     // ─── Case Chat ─────────────────────────────────────────────
 
     /** Get case chat messages. */
@@ -75,4 +71,8 @@ export const violationsApi = {
     /** Kick member from case chat (PM only). */
     kickChatMember: (id: string, userId: string) =>
         httpClient.delete(`/violations/${id}/chat/members/${userId}`),
+
+    /** D2: Offender chooses their penalty (EITHER_CHOICE only). */
+    choosePenalty: (id: string, choice: 'CREDITS' | 'SOCIAL_SCORE') =>
+        httpClient.post<Violation>(`/violations/${id}/choose-penalty`, { choice }),
 };

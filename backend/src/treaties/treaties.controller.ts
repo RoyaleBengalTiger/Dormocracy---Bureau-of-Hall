@@ -23,6 +23,7 @@ import { CreateBreachCaseDto } from './dto/create-breach-case.dto';
 import { ResolveBreachCaseDto } from './dto/resolve-breach-case.dto';
 import { RuleBreachCaseDto } from './dto/rule-breach-case.dto';
 import { ChooseBreachPenaltyDto } from './dto/choose-breach-penalty.dto';
+import { CreateBreachCompensationDto } from './dto/create-breach-compensation.dto';
 import { AddUserParticipantDto as AddChatMemberDto } from './dto/add-participant.dto';
 import { SendMessageDto } from '../chat/dto/send-message.dto';
 
@@ -54,6 +55,11 @@ export class TreatiesController {
     }
 
     // ─── PARTICIPANTS (PM, NEGOTIATION only) ─────────────────────
+
+    @Get(':id/candidates/users')
+    getUserCandidates(@Param('id') id: string, @Req() req: any) {
+        return this.treaties.getUserCandidates(id, req.user.sub);
+    }
 
     @Post(':id/participants/rooms')
     addRoomParticipant(
@@ -288,23 +294,14 @@ export class TreatiesController {
         return this.treaties.chooseBreachPenalty(id, bid, req.user.sub, dto);
     }
 
-    // ─── A2: USER CANDIDATES ──────────────────────────────────────
-
-    @Get(':id/candidates/users')
-    getUserCandidates(@Param('id') id: string, @Req() req: any) {
-        return this.treaties.getUserCandidates(id, req.user.sub);
-    }
-
-    // ─── B1: BREACH COMPENSATION ─────────────────────────────────
-
     @Post(':id/breaches/:bid/compensations')
-    compensateBreachMembers(
+    createBreachCompensations(
         @Param('id') id: string,
         @Param('bid') bid: string,
-        @Body() dto: { compensations: { userId: string; amount: number }[] },
+        @Body() dto: CreateBreachCompensationDto,
         @Req() req: any,
     ) {
-        return this.treaties.compensateBreachMembers(id, bid, req.user.sub, dto);
+        return this.treaties.createBreachCompensations(id, bid, req.user.sub, dto);
     }
 
     // ─── BREACH CASE CHAT ────────────────────────────────────────
@@ -340,3 +337,4 @@ export class TreatiesController {
         return this.treaties.getBreachChatMembers(id, bid, req.user.sub);
     }
 }
+

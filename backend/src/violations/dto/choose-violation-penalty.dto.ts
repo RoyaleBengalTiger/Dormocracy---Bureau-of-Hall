@@ -1,11 +1,11 @@
 import { IsEnum } from 'class-validator';
 
-export enum ViolationOffenderChoiceDto {
+export enum ViolationPenaltyChoice {
     CREDITS = 'CREDITS',
     SOCIAL_SCORE = 'SOCIAL_SCORE',
 }
 
 export class ChooseViolationPenaltyDto {
-    @IsEnum(ViolationOffenderChoiceDto)
-    choice: ViolationOffenderChoiceDto;
+    @IsEnum(ViolationPenaltyChoice)
+    choice: ViolationPenaltyChoice;
 }

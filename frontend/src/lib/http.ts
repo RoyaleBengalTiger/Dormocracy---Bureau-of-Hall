@@ -163,7 +163,13 @@ class HttpClient {
         return null as T;
       }
 
-      return await response.json();
+      // Handle empty body (e.g. DELETE returning 200 with no content)
+      const text = await response.text();
+      if (!text) {
+        return null as T;
+      }
+
+      return JSON.parse(text);
     } catch (error) {
       if (error instanceof Error) {
         console.error(`HTTP request failed for ${endpoint}:`, error);

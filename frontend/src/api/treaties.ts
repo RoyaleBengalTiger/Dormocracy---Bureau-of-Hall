@@ -33,6 +33,9 @@ export const treatiesApi = {
     removeUser: (id: string, userId: string) =>
         httpClient.delete<Treaty>(`/treaties/${id}/participants/users/${userId}`),
 
+    getUserCandidates: (id: string) =>
+        httpClient.get<Array<{ id: string; username: string; email: string; roomId: string }>>(`/treaties/${id}/candidates/users`),
+
     // ─── Leave (LOCKED only) ───────────────────────────────────
     leave: (id: string) => httpClient.post<Treaty>(`/treaties/${id}/leave`, {}),
 
@@ -106,13 +109,8 @@ export const treatiesApi = {
     chooseBreachPenalty: (id: string, bid: string, choice: string) =>
         httpClient.post<BreachCase>(`/treaties/${id}/breaches/${bid}/choose-penalty`, { choice }),
 
-    // ─── A2: User Candidates ─────────────────────────────────
-    getUserCandidates: (id: string) =>
-        httpClient.get<Array<{ id: string; username: string; email: string }>>(`/treaties/${id}/candidates/users`),
-
-    // ─── B1: Breach Compensation ─────────────────────────────
-    compensateBreachMembers: (id: string, bid: string, compensations: { userId: string; amount: number }[]) =>
-        httpClient.post<{ compensated: number; totalAmount: number }>(`/treaties/${id}/breaches/${bid}/compensations`, { compensations }),
+    createBreachCompensations: (id: string, bid: string, data: { compensations: Array<{ userId: string; amount: number }>; note?: string }) =>
+        httpClient.post<any>(`/treaties/${id}/breaches/${bid}/compensations`, data),
 
     // ─── Breach Case Chat ─────────────────────────────────────
     getBreachChatMessages: (id: string, bid: string, limit = 50, cursor?: string) => {

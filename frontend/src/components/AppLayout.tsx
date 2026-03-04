@@ -17,6 +17,7 @@ import {
   Handshake,
   PanelLeftClose,
   PanelLeftOpen,
+  Vote,
 } from 'lucide-react';
 import { RoleBadge } from './RoleBadge';
 import {
@@ -141,6 +142,19 @@ export function AppLayout() {
               'Treaties',
               location.pathname.startsWith('/app/treaties'),
             )}
+            {navItem(
+              '/app/elections',
+              <Vote className={`h-4 w-4 shrink-0 ${collapsed ? '' : 'mr-2'}`} />,
+              'Elections',
+              isActive('/app/elections'),
+            )}
+            {(user?.isMayor || user?.role === 'PM' || user?.role === 'MINISTER' || user?.role === 'MAYOR' || user?.role === 'ADMIN') &&
+              navItem(
+                '/app/senate',
+                <Crown className={`h-4 w-4 shrink-0 ${collapsed ? '' : 'mr-2'}`} />,
+                'Senate Chat',
+                isActive('/app/senate'),
+              )}
             {user?.role === 'MAYOR' &&
               navItem(
                 '/app/mayor',
@@ -162,20 +176,7 @@ export function AppLayout() {
                 'Finance',
                 isActive('/app/finance'),
               )}
-            {user?.role === 'ADMIN' &&
-              navItem(
-                '/app/admin/rooms',
-                <Shield className={`h-4 w-4 shrink-0 ${collapsed ? '' : 'mr-2'}`} />,
-                'Assign Mayors',
-                isActive('/app/admin/rooms'),
-              )}
-            {user?.role === 'ADMIN' &&
-              navItem(
-                '/app/admin/departments',
-                <Landmark className={`h-4 w-4 shrink-0 ${collapsed ? '' : 'mr-2'}`} />,
-                'Assign Ministers',
-                isActive('/app/admin/departments'),
-              )}
+
           </nav>
 
           {/* Footer */}

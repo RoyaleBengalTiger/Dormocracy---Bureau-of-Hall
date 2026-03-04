@@ -20,6 +20,7 @@ export interface User {
   role: string;
   socialScore: number;
   credits: number;
+  isJailed: boolean;
   createdAt: string;
   room: Room | null;
   assignedTasks: any[];
@@ -139,12 +140,17 @@ export interface AuthResponse {
 
 export enum ViolationStatusEnum {
   ACTIVE = 'ACTIVE',
-  AWAITING_OFFENDER_CHOICE = 'AWAITING_OFFENDER_CHOICE',
   APPEALED = 'APPEALED',
   IN_EVALUATION = 'IN_EVALUATION',
   CLOSED_UPHELD = 'CLOSED_UPHELD',
   CLOSED_OVERTURNED = 'CLOSED_OVERTURNED',
   EXPIRED = 'EXPIRED',
+}
+
+export enum ViolationVerdictEnum {
+  UPHELD = 'UPHELD',
+  OVERTURNED = 'OVERTURNED',
+  PUNISH_MAYOR = 'PUNISH_MAYOR',
 }
 
 export enum ViolationPenaltyMode {
@@ -157,12 +163,6 @@ export enum ViolationOffenderChoice {
   SOCIAL_SCORE = 'SOCIAL_SCORE',
 }
 
-export enum ViolationVerdictEnum {
-  UPHELD = 'UPHELD',
-  OVERTURNED = 'OVERTURNED',
-  PUNISH_MAYOR = 'PUNISH_MAYOR',
-}
-
 export interface Violation {
   id: string;
   status: ViolationStatusEnum;
@@ -171,11 +171,11 @@ export interface Violation {
   description?: string;
   points: number;
   creditFine: number;
-  penaltyMode?: ViolationPenaltyMode | null;
+  penaltyMode: ViolationPenaltyMode;
+  offenderChoice?: ViolationOffenderChoice | null;
   creditsDeducted: number;
   pointsDeducted: number;
   creditsRefunded: number;
-  offenderChoice?: ViolationOffenderChoice | null;
   expiresAt?: string | null;
   archivedAt?: string | null;
   pointsRefunded: number;
@@ -346,7 +346,7 @@ export interface TreatyParticipant {
   roomId?: string | null;
   userId?: string | null;
   respondedAt?: string | null;
-  room?: { id: string; roomNumber: string } | null;
+  room?: { id: string; roomNumber: string; departmentId?: string } | null;
   user?: { id: string; username: string } | null;
 }
 
@@ -412,4 +412,178 @@ export interface BreachCase {
   resolutionNote?: string | null;
   resolvedAt?: string | null;
   resolvedBy?: { id: string; username: string } | null;
+}
+
+// ─── INTER-DEPT TREATY TYPES ─────────────────────────────────
+
+export enum TreatyMode {
+  DEPT_SCOPE = 'DEPT_SCOPE',
+  INTER_DEPT = 'INTER_DEPT',
+}
+
+export enum TreatyDepartmentStatus {
+  PENDING = 'PENDING',
+  ACCEPTED = 'ACCEPTED',
+  REJECTED = 'REJECTED',
+  LEFT = 'LEFT',
+}
+
+export enum BreachVerdictStatus {
+  PROPOSED = 'PROPOSED',
+  ACCEPTED = 'ACCEPTED',
+  REJECTED = 'REJECTED',
+}
+
+export enum BreachVerdictRulingEnum {
+  ACCUSED = 'ACCUSED',
+  ACCUSER = 'ACCUSER',
+  NONE = 'NONE',
+}
+
+export enum BreachVerdictPenaltyModeEnum {
+  BOTH_MANDATORY = 'BOTH_MANDATORY',
+  EITHER_CHOICE = 'EITHER_CHOICE',
+}
+
+export interface TreatyDepartmentItem {
+  id: string;
+  departmentId: string;
+  status: TreatyDepartmentStatus;
+  invitedById: string;
+  respondedById?: string | null;
+  respondedAt?: string | null;
+  createdAt: string;
+  department: {
+    id: string;
+    name: string;
+    foreignMinisterId?: string | null;
+    foreignMinister?: { id: string; username: string } | null;
+  };
+  invitedBy: { id: string; username: string };
+  respondedBy?: { id: string; username: string } | null;
+}
+
+export interface InterDeptTreatyClause {
+  id: string;
+  content: string;
+  orderIndex: number;
+  isLocked: boolean;
+  lockedById?: string | null;
+  lockedBy?: { id: string; username: string } | null;
+  lockedAt?: string | null;
+  createdBy: { id: string; username: string };
+  createdAt: string;
+}
+
+export interface InterDeptTreaty {
+  id: string;
+  title: string;
+  type: TreatyType;
+  status: TreatyStatus;
+  mode: TreatyMode;
+  departmentId: string;
+  hostForeignMinisterId?: string | null;
+  endsAt: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: { id: string; username: string };
+  hostForeignMinister?: { id: string; username: string } | null;
+  department: { id: string; name: string };
+  chatRoom?: { id: string; closedAt?: string | null } | null;
+  treatyDepartments: TreatyDepartmentItem[];
+  participants: TreatyParticipant[];
+  clauses: InterDeptTreatyClause[];
+}
+
+export interface BreachVerdictVote {
+  id: string;
+  vote: string;
+  comment?: string | null;
+  createdAt: string;
+  voterUser: { id: string; username: string };
+  voterDepartment: { id: string; name: string };
+}
+
+export interface BreachVerdict {
+  id: string;
+  status: BreachVerdictStatus;
+  ruledAgainst: BreachVerdictRulingEnum;
+  creditFine: number;
+  socialPenalty: number;
+  penaltyMode: BreachVerdictPenaltyModeEnum;
+  notes?: string | null;
+  createdAt: string;
+  finalizedAt?: string | null;
+  proposedBy: { id: string; username: string };
+  votes: BreachVerdictVote[];
+}
+
+export interface InterDeptBreachCase extends BreachCase {
+  breachVerdicts?: BreachVerdict[];
+}
+
+// ─── ELECTION TYPES ──────────────────────────────────────────
+
+export enum ElectionType {
+  ROOM = 'ROOM',
+  DEPARTMENT = 'DEPARTMENT',
+}
+
+export enum ElectionStatus {
+  ACTIVE = 'ACTIVE',
+  COMPLETED = 'COMPLETED',
+  TIE_BREAKING = 'TIE_BREAKING',
+}
+
+export interface ElectionCandidate {
+  id: string;
+  electionId: string;
+  userId: string;
+  totalVotePower: number;
+  user: { id: string; username: string; socialScore?: number };
+}
+
+export interface ElectionVote {
+  id: string;
+  electionId: string;
+  voterId: string;
+  candidateId: string;
+  votePower: number;
+  createdAt: string;
+  voter: { id: string; username: string };
+  candidate: ElectionCandidate;
+}
+
+export interface Election {
+  id: string;
+  type: ElectionType;
+  status: ElectionStatus;
+  roomId?: string | null;
+  departmentId?: string | null;
+  deadline: string;
+  winnerId?: string | null;
+  winner?: { id: string; username: string } | null;
+  room?: {
+    id: string;
+    roomNumber: string;
+    departmentId: string;
+    department: { id: string; name: string };
+  } | null;
+  department?: { id: string; name: string } | null;
+  candidates: ElectionCandidate[];
+  votes: ElectionVote[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SenateChatRoom {
+  id: string;
+  type: string;
+  departmentSenateId: string;
+  closedAt?: string | null;
+  members: Array<{
+    id: string;
+    userId: string;
+    user: { id: string; username: string; role: string };
+  }>;
 }

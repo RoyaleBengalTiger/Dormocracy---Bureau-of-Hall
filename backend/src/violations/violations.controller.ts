@@ -72,20 +72,20 @@ export class ViolationsController {
         return this.violations.findOne(id, req.user.sub);
     }
 
-    // ─── POST /violations/:id/choose-penalty ──────────────────────
-    @Post(':id/choose-penalty')
-    chooseViolationPenalty(
-        @Param('id') id: string,
-        @Body() dto: ChooseViolationPenaltyDto,
-        @Req() req: any,
-    ) {
-        return this.violations.chooseViolationPenalty(id, req.user.sub, dto);
-    }
-
     // ─── POST /violations/:id/start-evaluation ───────────────────
     @Post(':id/start-evaluation')
     startEvaluation(@Param('id') id: string, @Req() req: any) {
         return this.violations.startEvaluation(id, req.user.sub);
+    }
+
+    // ─── POST /violations/:id/choose-penalty (D2) ────────────────
+    @Post(':id/choose-penalty')
+    choosePenalty(
+        @Param('id') id: string,
+        @Body() dto: ChooseViolationPenaltyDto,
+        @Req() req: any,
+    ) {
+        return this.violations.choosePenalty(id, req.user.sub, dto);
     }
 
     // ─── GET /violations/:id/chat ────────────────────────────────
