@@ -16,8 +16,6 @@ enum TaskStatus {
 enum Role {
   CITIZEN
   MAYOR
-  MINISTER
-  PM
   ADMIN
 }
 

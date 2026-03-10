@@ -194,50 +194,19 @@ export class ElectionsService {
             throw new BadRequestException('No mayors found');
         }
 
-        // ── Strip PM, FM, Finance Minister roles ────────────────────
-        const stripOps: any[] = [];
+        // ── Strip PM, FM, Finance Minister positions ────────────────
+        // Minister positions are tracked via Department FK fields, not user.role.
+        // Just clear the department FK fields.
         const deptClear: any = {};
-
-        if (dept.primeMinisterId) {
-            stripOps.push(
-                this.prisma.user.update({
-                    where: { id: dept.primeMinisterId },
-                    data: { role: 'MAYOR' }, // PM is a mayor, demote back to MAYOR
-                }),
-            );
-            deptClear.primeMinisterId = null;
-        }
-        if (dept.foreignMinisterId) {
-            // FM is also a mayor, so just set back to MAYOR
-            stripOps.push(
-                this.prisma.user.update({
-                    where: { id: dept.foreignMinisterId },
-                    data: { role: 'MAYOR' },
-                }),
-            );
-            deptClear.foreignMinisterId = null;
-        }
-        if (dept.financeMinisterId) {
-            stripOps.push(
-                this.prisma.user.update({
-                    where: { id: dept.financeMinisterId },
-                    data: { role: 'MAYOR' },
-                }),
-            );
-            deptClear.financeMinisterId = null;
-        }
+        if (dept.primeMinisterId) deptClear.primeMinisterId = null;
+        if (dept.foreignMinisterId) deptClear.foreignMinisterId = null;
+        if (dept.financeMinisterId) deptClear.financeMinisterId = null;
 
         if (Object.keys(deptClear).length > 0) {
-            stripOps.push(
-                this.prisma.department.update({
-                    where: { id: dto.departmentId },
-                    data: deptClear,
-                }),
-            );
-        }
-
-        if (stripOps.length > 0) {
-            await this.prisma.$transaction(stripOps);
+            await this.prisma.department.update({
+                where: { id: dto.departmentId },
+                data: deptClear,
+            });
         }
 
         const election = await this.prisma.election.create({
@@ -520,18 +489,11 @@ export class ElectionsService {
                 }),
             );
         } else {
-            // DEPARTMENT: set PM
+            // DEPARTMENT: set PM (tracked via department FK, not user.role)
             operations.push(
                 this.prisma.department.update({
                     where: { id: election.departmentId! },
                     data: { primeMinisterId: winnerId },
-                }),
-            );
-            // Update user role to PM
-            operations.push(
-                this.prisma.user.update({
-                    where: { id: winnerId },
-                    data: { role: 'PM' },
                 }),
             );
         }
@@ -597,24 +559,14 @@ export class ElectionsService {
             );
         }
 
-        // Update department and user roles
-        await this.prisma.$transaction([
-            this.prisma.department.update({
-                where: { id: departmentId },
-                data: {
-                    foreignMinisterId: dto.foreignMinisterId,
-                    financeMinisterId: dto.financeMinisterId,
-                },
-            }),
-            this.prisma.user.update({
-                where: { id: dto.foreignMinisterId },
-                data: { role: 'MINISTER' },
-            }),
-            this.prisma.user.update({
-                where: { id: dto.financeMinisterId },
-                data: { role: 'MINISTER' },
-            }),
-        ]);
+        // Update department FK fields (minister positions are not user roles)
+        await this.prisma.department.update({
+            where: { id: departmentId },
+            data: {
+                foreignMinisterId: dto.foreignMinisterId,
+                financeMinisterId: dto.financeMinisterId,
+            },
+        });
 
         // Create or sync senate chat
         await this.syncSenateChatRoom(departmentId);

@@ -1,5 +1,5 @@
 import { Badge } from '@/components/ui/badge';
-import { Shield, User, Crown, Building, Scale, Globe } from 'lucide-react';
+import { Shield, User, Crown, Scale, Globe } from 'lucide-react';
 
 interface RoleBadgeProps {
   role: string;
@@ -15,8 +15,6 @@ const roleConfig: Record<
 > = {
   CITIZEN: { icon: User, label: 'Citizen', variant: 'secondary' },
   MAYOR: { icon: Crown, label: 'Mayor', variant: 'default' },
-  MINISTER: { icon: Building, label: 'Minister', variant: 'default' },
-  PM: { icon: Shield, label: 'PM', variant: 'default' },
   ADMIN: { icon: Shield, label: 'Admin', variant: 'destructive' },
 };
 

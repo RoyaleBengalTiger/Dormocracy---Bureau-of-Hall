@@ -338,7 +338,7 @@ function MinisterAssignment({
         const allUsers = new Map<string, string>();
         for (const room of dept.rooms) {
             for (const u of room.users) {
-                if (u.role === 'MAYOR' || u.role === 'PM' || u.role === 'MINISTER') {
+                if (u.role === 'MAYOR') {
                     allUsers.set(u.id, u.username);
                 }
             }
