@@ -277,7 +277,7 @@ export default function Violations() {
                                             {/* Defence/Action section */}
                                             <div className="flex gap-2 pl-6 pt-1">
                                                 {/* Appeal button: only for offender, only when ACTIVE */}
-                                                {v.status === "ACTIVE" && v.offender.id === user?.id && v.penaltyMode !== ViolationPenaltyMode.EITHER_CHOICE && (
+                                                {v.status === "ACTIVE" && v.offender.id === user?.id && (v.penaltyMode === ViolationPenaltyMode.BOTH_MANDATORY || v.offenderChoice) && (
                                                     <Button
                                                         size="sm"
                                                         variant="outline"

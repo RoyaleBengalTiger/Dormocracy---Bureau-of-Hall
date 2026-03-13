@@ -4,7 +4,7 @@
 
 **Project name:** Dormocracy : Bureau of Halls  
 **GitHub repository:** https://github.com/RoyaleBengalTiger/Dormocracy_2.0  
-**Repository snapshot observed:** public GitHub repository with 28 commits visible on the main page at the time of review. citeturn380328view0
+
 
 ## Team members
 

@@ -259,7 +259,7 @@ export class TreatiesService {
                     treatyId: treaty.id,
                     type: 'USER',
                     userId,
-                    status: ParticipantStatus.ACCEPTED,
+                    status: ParticipantStatus.PENDING,
                     respondedAt: new Date(),
                 },
             });

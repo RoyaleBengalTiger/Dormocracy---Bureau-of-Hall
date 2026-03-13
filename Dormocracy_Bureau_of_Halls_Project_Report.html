@@ -1,0 +1,3936 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dormocracy_Bureau_of_Halls_Project_Report.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="dormocracy--bureau-of-halls--project-report">Dormocracy : Bureau of Halls — Project Report</h1>
+<h2 id="project-identity">Project identity</h2>
+<p><strong>Project name:</strong> Dormocracy : Bureau of Halls<br>
+<strong>GitHub repository:</strong> https://github.com/RoyaleBengalTiger/Dormocracy_2.0</p>
+<h2 id="team-members">Team members</h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Student ID</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Khandakar Abu Talib Sifat</td>
+<td>220041246</td>
+</tr>
+<tr>
+<td>Md Samiul Islam</td>
+<td>220041207</td>
+</tr>
+<tr>
+<td>Muhatadi Bin Maruf</td>
+<td>220041247</td>
+</tr>
+<tr>
+<td>Sheikh Mosheul Akbar</td>
+<td>220041137</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="1-problem-scope-and-project-overview">1. Problem, scope, and project overview</h2>
+<p>Dormocracy models a residential hall as a miniature digital government. Instead of using a plain hall-management system, the project frames dorm governance as a civic simulation with departments, rooms, mayors, prime ministers, elections, treasury, treaties, violations, and discussion channels.</p>
+<p>The system solves several operational and academic problems at once:</p>
+<ol>
+<li><strong>Governance digitization:</strong> converts informal room and hall management into trackable workflows.</li>
+<li><strong>Role-based administration:</strong> supports citizens, mayors, admins, and department-level leadership.</li>
+<li><strong>Accountability:</strong> every meaningful action leaves data traces through violations, treasury transactions, treaties, or elections.</li>
+<li><strong>Engagement:</strong> the platform turns governance into a game-like bureaucracy where social score, credits, elections, and inter-room/inter-department treaties create incentives.</li>
+<li><strong>Full-stack learning objective:</strong> the codebase demonstrates a non-trivial TypeScript system with frontend, backend, authentication, real-time chat, and relational data modeling.</li>
+</ol>
+<p>The uploaded project contains:</p>
+<ul>
+<li>a <strong>NestJS backend</strong> organized into domain modules,</li>
+<li>a <strong>React + TypeScript frontend</strong> with protected routes and modular API clients,</li>
+<li>a <strong>Prisma/PostgreSQL schema</strong> containing a rich relational design,</li>
+<li>limited frontend test scaffolding,</li>
+<li>strong use of workflow-centric backend services.</li>
+</ul>
+<h3 id="scope-summary">Scope summary</h3>
+<p>The current implementation goes far beyond basic CRUD. It includes:</p>
+<ul>
+<li>authentication and role-based authorization,</li>
+<li>department and room administration,</li>
+<li>room task lifecycle management,</li>
+<li>room chat and case-specific chats,</li>
+<li>violations, appeals, and evaluation workflows,</li>
+<li>treaty creation and negotiation,</li>
+<li>inter-department treaty voting and breach verdicts,</li>
+<li>finance and treasury transactions,</li>
+<li>election management for room and department governance.</li>
+</ul>
+<h3 id="high-level-architecture">High-level architecture</h3>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart LR
+    U[Users] --> FE[React Frontend]
+    FE --> API[NestJS REST API]
+    FE --> WS[Socket/Realtime Chat]
+    API --> AUTH[Auth Module]
+    API --> GOV[Departments / Rooms / Users]
+    API --> TASKS[Tasks Module]
+    API --> VIO[Violations Module]
+    API --> TRT[Treaties Module]
+    API --> IDT[Inter-Dept Treaties Module]
+    API --> FIN[Finance Module]
+    API --> ELEC[Elections Module]
+    API --> CHAT[Chat Module]
+    AUTH --> PRISMA[Prisma ORM]
+    GOV --> PRISMA
+    TASKS --> PRISMA
+    VIO --> PRISMA
+    TRT --> PRISMA
+    IDT --> PRISMA
+    FIN --> PRISMA
+    ELEC --> PRISMA
+    CHAT --> PRISMA
+    PRISMA --> DB[(PostgreSQL)]
+</div></code></pre>
+<h3 id="backend-module-map">Backend module map</h3>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart TD
+    AppModule --> AuthModule
+    AppModule --> DepartmentsModule
+    AppModule --> RoomsModule
+    AppModule --> UsersModule
+    AppModule --> ChatModule
+    AppModule --> TasksModule
+    AppModule --> ViolationsModule
+    AppModule --> TreatiesModule
+    AppModule --> InterDeptTreatiesModule
+    AppModule --> FinanceModule
+    AppModule --> ElectionsModule
+    AppModule --> PrismaModule
+</div></code></pre>
+<hr>
+<h2 id="2-list-of-features-with-brief-descriptions">2. List of features with brief descriptions</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>User registration and login</td>
+<td>Users register into a department and room, and log in using JWT-based authentication with refresh-token cookie support.</td>
+</tr>
+<tr>
+<td>Role-based access control</td>
+<td>The system distinguishes <code>CITIZEN</code>, <code>MAYOR</code>, and <code>ADMIN</code>, and enforces guarded routes in the backend.</td>
+</tr>
+<tr>
+<td>Department administration</td>
+<td>Admins can create, update, delete departments and assign department leadership such as Prime Minister, Foreign Minister, and Finance Minister.</td>
+</tr>
+<tr>
+<td>Room administration</td>
+<td>Admins can create rooms, modify room information, and assign mayors to rooms.</td>
+</tr>
+<tr>
+<td>User profile management</td>
+<td>Authenticated users can fetch and update their own profile; admins can manage other users.</td>
+</tr>
+<tr>
+<td>Room chat</td>
+<td>Citizens in the same room can communicate through a shared room chat with paginated message loading.</td>
+</tr>
+<tr>
+<td>Task lifecycle</td>
+<td>Citizens can create tasks; mayors approve and assign tasks; assignees complete tasks; mayors review and close them.</td>
+</tr>
+<tr>
+<td>Task funding</td>
+<td>Tasks can spend from room treasury and reward assignees when accepted.</td>
+</tr>
+<tr>
+<td>Violation management</td>
+<td>Mayors/admins can create violations against users, with support for points, fines, expiry, and appeal flows.</td>
+</tr>
+<tr>
+<td>Violation appeals and evaluation</td>
+<td>Prime Ministers can start evaluation, open case-specific chats, add case members, and close appeals with verdicts.</td>
+</tr>
+<tr>
+<td>Punish-mayor workflow</td>
+<td>If a violation case is overturned in a special way, the system can create a penalty against the mayor who issued it.</td>
+</tr>
+<tr>
+<td>Treaty management</td>
+<td>Departments can create treaties, add participants, add clauses, negotiate terms, and manage lifecycle states.</td>
+</tr>
+<tr>
+<td>Exchange-based treaties</td>
+<td>Treaties can include exchanges with bounty-based interactions between seller and buyer roles.</td>
+</tr>
+<tr>
+<td>Breach case handling</td>
+<td>Treaty participants can file breach cases, link clauses, start evaluation, choose penalties, and resolve disputes.</td>
+</tr>
+<tr>
+<td>Inter-department treaties</td>
+<td>A larger treaty model supports invited departments, stakeholder discovery, locked clauses, voting, and senate-like coordination.</td>
+</tr>
+<tr>
+<td>Breach verdict voting</td>
+<td>Inter-department breaches support proposed verdicts and department-level voting before finalization.</td>
+</tr>
+<tr>
+<td>Treasury and finance</td>
+<td>Departments and rooms have treasury balances; fund allocation/recall operations are logged as transactions.</td>
+</tr>
+<tr>
+<td>Social score purchase</td>
+<td>Users can request to buy social score from departments, accept offers, and update jail status accordingly.</td>
+</tr>
+<tr>
+<td>Elections</td>
+<td>The system supports room-level and department-level elections, candidate registration, voting, tie handling, and minister assignment.</td>
+</tr>
+<tr>
+<td>Senate chat</td>
+<td>Departments have senate chat functionality integrated with the election subsystem.</td>
+</tr>
+<tr>
+<td>Protected frontend routing</td>
+<td>Frontend pages are protected by authentication and, for some pages, by role checks.</td>
+</tr>
+<tr>
+<td>Token refresh logic</td>
+<td>The frontend automatically attempts token refresh on 401 responses.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="frontend-page-map">Frontend page map</h3>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart TD
+    Landing --> Login
+    Landing --> Signup
+    Login --> Dashboard
+    Signup --> Dashboard
+    Dashboard --> Tasks
+    Dashboard --> Violations
+    Dashboard --> PMInbox
+    Dashboard --> TreatyList
+    Dashboard --> FinanceDashboard
+    Dashboard --> ElectionPage
+    Dashboard --> SenateChatPage
+    Dashboard --> MayorDashboard
+    Dashboard --> AdminRooms
+    Dashboard --> AdminDepartments
+    Dashboard --> RoomChatPage
+    TreatyList --> TreatyDetail
+    TreatyDetail --> TreatyChatPage
+    TreatyDetail --> BreachCaseChatPage
+    Dashboard --> InterDeptTreatyDetail
+    InterDeptTreatyDetail --> InterDeptTreatyChatPage
+    InterDeptTreatyDetail --> InterDeptBreachChatPage
+</div></code></pre>
+<hr>
+<h2 id="3-tools-and-technologies-used">3. Tools and technologies used</h2>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Tools / Technologies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frontend</td>
+<td>React, TypeScript, React Router, TanStack Query, Vite-style project structure</td>
+</tr>
+<tr>
+<td>Backend</td>
+<td>NestJS, TypeScript, Fastify adapter</td>
+</tr>
+<tr>
+<td>ORM / DB access</td>
+<td>Prisma</td>
+</tr>
+<tr>
+<td>Database</td>
+<td>PostgreSQL (declared in Prisma datasource)</td>
+</tr>
+<tr>
+<td>Authentication</td>
+<td>JWT access token + refresh token, Argon2 password hashing</td>
+</tr>
+<tr>
+<td>Authorization</td>
+<td>NestJS guards, role decorators, JWT guard, roles guard</td>
+</tr>
+<tr>
+<td>Realtime / communication</td>
+<td>Socket.IO client usage in frontend, REST chat fallback endpoints in backend</td>
+</tr>
+<tr>
+<td>Validation</td>
+<td>NestJS <code>ValidationPipe</code>, DTO validation pattern</td>
+</tr>
+<tr>
+<td>Testing</td>
+<td>Vitest frontend scaffolding, Testing Library setup</td>
+</tr>
+<tr>
+<td>API style</td>
+<td>Modular REST API with role-aware endpoints</td>
+</tr>
+<tr>
+<td>Diagramming in this report</td>
+<td>Mermaid</td>
+</tr>
+</tbody>
+</table>
+<h3 id="request--authentication-flow">Request / authentication flow</h3>
+<pre><code class="language-mermaid"><div class="mermaid">sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    participant DB
+
+    User->>Frontend: Login / Signup
+    Frontend->>Backend: POST /auth/login or /auth/register
+    Backend->>DB: verify/create user
+    Backend-->>Frontend: accessToken + refresh cookie
+    Frontend->>Backend: authenticated API request with Bearer token
+    Backend->>DB: domain logic + persistence
+    Backend-->>Frontend: JSON response
+
+    alt token expired
+        Frontend->>Backend: POST /auth/refresh with cookie
+        Backend-->>Frontend: new accessToken
+        Frontend->>Backend: retry original request
+    end
+</div></code></pre>
+<hr>
+<h2 id="4-database-design">4. Database design</h2>
+<p>The Prisma schema is the strongest part of the project from a software-engineering perspective. It models governance, workflow, treasury, chat, treaties, and elections in a unified relational structure.</p>
+<h3 id="database-design-principles-visible-in-the-schema">Database design principles visible in the schema</h3>
+<ol>
+<li><strong>Strong normalization:</strong> entities such as users, rooms, departments, tasks, treaties, and elections are separated cleanly.</li>
+<li><strong>Explicit workflow states:</strong> many models rely on enums to encode business process state.</li>
+<li><strong>Auditability:</strong> treasury transactions, createdBy fields, timestamps, and status histories improve traceability.</li>
+<li><strong>Context-specific chats:</strong> chat rooms are polymorphic by type and can belong to rooms, violations, treaties, breach cases, or senate groups.</li>
+<li><strong>Atomic business operations:</strong> the backend frequently uses transactions for financial and rule-sensitive updates.</li>
+<li><strong>Rich relational integrity:</strong> foreign keys, unique constraints, and indices appear throughout the schema.</li>
+</ol>
+<h3 id="core-erd">Core ERD</h3>
+<pre><code class="language-mermaid"><div class="mermaid">erDiagram
+    Department ||--o{ Room : contains
+    Room ||--o{ User : houses
+    Room ||--o{ Task : owns
+    Room ||--o{ Violation : records
+    Department ||--o{ Treaty : owns
+    Department ||--o{ Election : organizes
+    Room ||--o{ Election : organizes
+    User ||--o{ Task : creates
+    User ||--o{ Task : assigned_to
+    User ||--o{ Violation : offender
+    User ||--o{ Violation : created_by
+    Department ||--o{ TreasuryTransaction : logs
+    Room ||--o{ TreasuryTransaction : logs
+    Task ||--o{ TreasuryTransaction : linked_to
+</div></code></pre>
+<h3 id="communication--case-erd">Communication / case ERD</h3>
+<pre><code class="language-mermaid"><div class="mermaid">erDiagram
+    ChatRoom ||--o{ ChatRoomMember : has
+    ChatRoom ||--o{ ChatMessage : stores
+    Room ||--o| ChatRoom : room_chat
+    Violation ||--o| ChatRoom : case_chat
+    Treaty ||--o| ChatRoom : treaty_chat
+    BreachCase ||--o| ChatRoom : breach_chat
+    Department ||--o| ChatRoom : senate_chat
+    User ||--o{ ChatRoomMember : joins
+    User ||--o{ ChatMessage : sends
+</div></code></pre>
+<h3 id="treaty--breach-erd">Treaty / breach ERD</h3>
+<pre><code class="language-mermaid"><div class="mermaid">erDiagram
+    Treaty ||--o{ TreatyClause : contains
+    Treaty ||--o{ TreatyParticipant : has
+    Treaty ||--o{ Exchange : enables
+    Treaty ||--o{ BreachCase : disputes
+    Treaty ||--o{ TreatyDepartment : invites
+    BreachCase ||--o{ BreachCaseClause : references
+    TreatyClause ||--o{ BreachCaseClause : cited_in
+    BreachCase ||--o{ BreachVerdict : proposes
+    BreachVerdict ||--o{ BreachVerdictVote : collects
+    Department ||--o{ TreatyDepartment : participates
+    User ||--o{ TreatyParticipant : joins
+    Room ||--o{ TreatyParticipant : joins
+</div></code></pre>
+<h3 id="finance--election-erd">Finance / election ERD</h3>
+<pre><code class="language-mermaid"><div class="mermaid">erDiagram
+    Department ||--o{ SocialScorePurchaseRequest : receives
+    User ||--o{ SocialScorePurchaseRequest : requests
+    Department ||--o{ TreasuryTransaction : owns
+    Room ||--o{ TreasuryTransaction : owns
+    User ||--o{ TreasuryTransaction : creates
+    Election ||--o{ ElectionCandidate : has
+    Election ||--o{ ElectionVote : records
+    User ||--o{ ElectionCandidate : becomes
+    User ||--o{ ElectionVote : casts
+    ElectionCandidate ||--o{ ElectionVote : receives
+</div></code></pre>
+<h3 id="important-tables-and-roles">Important tables and roles</h3>
+<ul>
+<li><strong>User</strong>: central actor table; stores room membership, role, social score, credits, jail state, auth refresh hash, and links to most workflows.</li>
+<li><strong>Department</strong>: higher governance unit with treasury and minister assignments.</li>
+<li><strong>Room</strong>: lower governance unit under a department with treasury and mayor.</li>
+<li><strong>Task</strong>: structured room-level work pipeline.</li>
+<li><strong>Violation</strong>: discipline and appeal mechanism.</li>
+<li><strong>ChatRoom / ChatMessage / ChatRoomMember</strong>: communication layer.</li>
+<li><strong>TreasuryTransaction</strong>: financial ledger.</li>
+<li><strong>Treaty / TreatyClause / TreatyParticipant / Exchange / BreachCase</strong>: inter-room or inter-user collaboration and dispute handling.</li>
+<li><strong>TreatyDepartment / BreachVerdict / BreachVerdictVote</strong>: inter-department consensus model.</li>
+<li><strong>Election / ElectionCandidate / ElectionVote</strong>: democratic governance subsystem.</li>
+</ul>
+<h3 id="full-schema-design-by-table">Full schema design by table</h3>
+<h3 id="user"><code>User</code></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Key / Role</th>
+<th>Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>String</td>
+<td>PK, DEFAULT</td>
+<td>@id @default(uuid())</td>
+</tr>
+<tr>
+<td>username</td>
+<td>String</td>
+<td>UNIQUE</td>
+<td>@unique</td>
+</tr>
+<tr>
+<td>email</td>
+<td>String</td>
+<td>UNIQUE</td>
+<td>@unique</td>
+</tr>
+<tr>
+<td>password</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>role</td>
+<td>Role</td>
+<td>DEFAULT</td>
+<td>@default(CITIZEN)</td>
+</tr>
+<tr>
+<td>refreshTokenHash</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>socialScore</td>
+<td>Int</td>
+<td>DEFAULT</td>
+<td>@default(50)</td>
+</tr>
+<tr>
+<td>credits</td>
+<td>Int</td>
+<td>DEFAULT</td>
+<td>@default(100)</td>
+</tr>
+<tr>
+<td>isJailed</td>
+<td>Boolean</td>
+<td>DEFAULT</td>
+<td>@default(false)</td>
+</tr>
+<tr>
+<td>roomId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>room</td>
+<td>Room</td>
+<td>REL</td>
+<td>@relation(fields: [roomId], references: [id], onDelete: Restrict)</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>DateTime</td>
+<td>DEFAULT</td>
+<td>@default(now())</td>
+</tr>
+<tr>
+<td>updatedAt</td>
+<td>DateTime</td>
+<td>UPDATED_AT</td>
+<td>@updatedAt</td>
+</tr>
+<tr>
+<td>createdTasks</td>
+<td>Task[]</td>
+<td>REL</td>
+<td>@relation(&quot;TaskCreatedBy&quot;)</td>
+</tr>
+<tr>
+<td>assignedTasks</td>
+<td>Task[]</td>
+<td>REL</td>
+<td>@relation(&quot;TaskAssignedTo&quot;)</td>
+</tr>
+<tr>
+<td>mayorOfRooms</td>
+<td>Room[]</td>
+<td>REL</td>
+<td>@relation(&quot;RoomMayor&quot;)</td>
+</tr>
+<tr>
+<td>primeMinisterOfDepartments</td>
+<td>Department[]</td>
+<td>REL</td>
+<td>@relation(&quot;DepartmentPrimeMinister&quot;)</td>
+</tr>
+<tr>
+<td>foreignMinisterOfDepartments</td>
+<td>Department[]</td>
+<td>REL</td>
+<td>@relation(&quot;DepartmentForeignMinister&quot;)</td>
+</tr>
+<tr>
+<td>financeMinisterOfDepartments</td>
+<td>Department[]</td>
+<td>REL</td>
+<td>@relation(&quot;DepartmentFinanceMinister&quot;)</td>
+</tr>
+<tr>
+<td>violationsReceived</td>
+<td>Violation[]</td>
+<td>REL</td>
+<td>@relation(&quot;ViolationOffender&quot;)</td>
+</tr>
+<tr>
+<td>violationsIssued</td>
+<td>Violation[]</td>
+<td>REL</td>
+<td>@relation(&quot;ViolationCreatedBy&quot;)</td>
+</tr>
+<tr>
+<td>chatMemberships</td>
+<td>ChatRoomMember[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>sentMessages</td>
+<td>ChatMessage[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>treasuryTransactionsCreated</td>
+<td>TreasuryTransaction[]</td>
+<td>REL</td>
+<td>@relation(&quot;TreasuryTransactionCreatedBy&quot;)</td>
+</tr>
+<tr>
+<td>socialScorePurchaseRequests</td>
+<td>SocialScorePurchaseRequest[]</td>
+<td>REL</td>
+<td>@relation(&quot;SocialScoreRequestUser&quot;)</td>
+</tr>
+<tr>
+<td>socialScorePurchaseOffers</td>
+<td>SocialScorePurchaseRequest[]</td>
+<td>REL</td>
+<td>@relation(&quot;SocialScoreRequestOfferedBy&quot;)</td>
+</tr>
+<tr>
+<td>createdTreaties</td>
+<td>Treaty[]</td>
+<td>REL</td>
+<td>@relation(&quot;TreatyCreatedBy&quot;)</td>
+</tr>
+<tr>
+<td>hostFmTreaties</td>
+<td>Treaty[]</td>
+<td>REL</td>
+<td>@relation(&quot;TreatyHostFM&quot;)</td>
+</tr>
+<tr>
+<td>treatyParticipations</td>
+<td>TreatyParticipant[]</td>
+<td>REL</td>
+<td>@relation(&quot;TreatyParticipantUser&quot;)</td>
+</tr>
+<tr>
+<td>createdClauses</td>
+<td>TreatyClause[]</td>
+<td>REL</td>
+<td>@relation(&quot;ClauseCreatedBy&quot;)</td>
+</tr>
+<tr>
+<td>lockedClauses</td>
+<td>TreatyClause[]</td>
+<td>REL</td>
+<td>@relation(&quot;ClauseLockedBy&quot;)</td>
+</tr>
+<tr>
+<td>exchangesSelling</td>
+<td>Exchange[]</td>
+<td>REL</td>
+<td>@relation(&quot;ExchangeSeller&quot;)</td>
+</tr>
+<tr>
+<td>exchangesBuying</td>
+<td>Exchange[]</td>
+<td>REL</td>
+<td>@relation(&quot;ExchangeBuyer&quot;)</td>
+</tr>
+<tr>
+<td>breachCasesFiled</td>
+<td>BreachCase[]</td>
+<td>REL</td>
+<td>@relation(&quot;BreachCaseFiler&quot;)</td>
+</tr>
+<tr>
+<td>breachCasesAccused</td>
+<td>BreachCase[]</td>
+<td>REL</td>
+<td>@relation(&quot;BreachCaseAccused&quot;)</td>
+</tr>
+<tr>
+<td>breachCasesResolved</td>
+<td>BreachCase[]</td>
+<td>REL</td>
+<td>@relation(&quot;BreachCaseResolver&quot;)</td>
+</tr>
+<tr>
+<td>breachCasesRuledBy</td>
+<td>BreachCase[]</td>
+<td>REL</td>
+<td>@relation(&quot;BreachCaseRuledBy&quot;)</td>
+</tr>
+<tr>
+<td>breachCasesRulingTarget</td>
+<td>BreachCase[]</td>
+<td>REL</td>
+<td>@relation(&quot;BreachCaseRulingTarget&quot;)</td>
+</tr>
+<tr>
+<td>treatyDeptInvites</td>
+<td>TreatyDepartment[]</td>
+<td>REL</td>
+<td>@relation(&quot;TreatyDeptInvitedBy&quot;)</td>
+</tr>
+<tr>
+<td>treatyDeptResponses</td>
+<td>TreatyDepartment[]</td>
+<td>REL</td>
+<td>@relation(&quot;TreatyDeptRespondedBy&quot;)</td>
+</tr>
+<tr>
+<td>breachVerdictsProposed</td>
+<td>BreachVerdict[]</td>
+<td>REL</td>
+<td>@relation(&quot;BreachVerdictProposedBy&quot;)</td>
+</tr>
+<tr>
+<td>breachVerdictVotes</td>
+<td>BreachVerdictVote[]</td>
+<td>REL</td>
+<td>@relation(&quot;BreachVerdictVoter&quot;)</td>
+</tr>
+<tr>
+<td>electionsWon</td>
+<td>Election[]</td>
+<td>REL</td>
+<td>@relation(&quot;ElectionWinner&quot;)</td>
+</tr>
+<tr>
+<td>electionCandidacies</td>
+<td>ElectionCandidate[]</td>
+<td>REL</td>
+<td>@relation(&quot;ElectionCandidateUser&quot;)</td>
+</tr>
+<tr>
+<td>electionVotes</td>
+<td>ElectionVote[]</td>
+<td>REL</td>
+<td>@relation(&quot;ElectionVoter&quot;)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="department"><code>Department</code></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Key / Role</th>
+<th>Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>String</td>
+<td>PK, DEFAULT</td>
+<td>@id @default(uuid())</td>
+</tr>
+<tr>
+<td>name</td>
+<td>String</td>
+<td>UNIQUE</td>
+<td>@unique</td>
+</tr>
+<tr>
+<td>treasuryCredits</td>
+<td>Int</td>
+<td>DEFAULT</td>
+<td>@default(1000)</td>
+</tr>
+<tr>
+<td>rooms</td>
+<td>Room[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>treaties</td>
+<td>Treaty[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>elections</td>
+<td>Election[]</td>
+<td>REL</td>
+<td>@relation(&quot;ElectionDepartment&quot;)</td>
+</tr>
+<tr>
+<td>primeMinisterId</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>primeMinister</td>
+<td>User?</td>
+<td>REL</td>
+<td>@relation(&quot;DepartmentPrimeMinister&quot;, fields: [primeMinisterId], references: [id], onDelete: SetNull)</td>
+</tr>
+<tr>
+<td>foreignMinisterId</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>foreignMinister</td>
+<td>User?</td>
+<td>REL</td>
+<td>@relation(&quot;DepartmentForeignMinister&quot;, fields: [foreignMinisterId], references: [id], onDelete: SetNull)</td>
+</tr>
+<tr>
+<td>financeMinisterId</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>financeMinister</td>
+<td>User?</td>
+<td>REL</td>
+<td>@relation(&quot;DepartmentFinanceMinister&quot;, fields: [financeMinisterId], references: [id], onDelete: SetNull)</td>
+</tr>
+<tr>
+<td>treasuryTransactions</td>
+<td>TreasuryTransaction[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>socialScorePurchaseRequests</td>
+<td>SocialScorePurchaseRequest[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>treatyDepartments</td>
+<td>TreatyDepartment[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>breachVerdictVotes</td>
+<td>BreachVerdictVote[]</td>
+<td>REL</td>
+<td>@relation(&quot;BreachVerdictVoterDept&quot;)</td>
+</tr>
+<tr>
+<td>senateChatRoom</td>
+<td>ChatRoom?</td>
+<td>REL</td>
+<td>@relation(&quot;DepartmentSenateChatRoom&quot;)</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>DateTime</td>
+<td>DEFAULT</td>
+<td>@default(now())</td>
+</tr>
+<tr>
+<td>updatedAt</td>
+<td>DateTime</td>
+<td>UPDATED_AT</td>
+<td>@updatedAt</td>
+</tr>
+</tbody>
+</table>
+<h3 id="room"><code>Room</code></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Key / Role</th>
+<th>Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>String</td>
+<td>PK, DEFAULT</td>
+<td>@id @default(uuid())</td>
+</tr>
+<tr>
+<td>roomNumber</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>departmentId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>treasuryCredits</td>
+<td>Int</td>
+<td>DEFAULT</td>
+<td>@default(0)</td>
+</tr>
+<tr>
+<td>department</td>
+<td>Department</td>
+<td>REL</td>
+<td>@relation(fields: [departmentId], references: [id], onDelete: Restrict)</td>
+</tr>
+<tr>
+<td>users</td>
+<td>User[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>mayorId</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>mayor</td>
+<td>User?</td>
+<td>REL</td>
+<td>@relation(&quot;RoomMayor&quot;, fields: [mayorId], references: [id], onDelete: SetNull)</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>DateTime</td>
+<td>DEFAULT</td>
+<td>@default(now())</td>
+</tr>
+<tr>
+<td>updatedAt</td>
+<td>DateTime</td>
+<td>UPDATED_AT</td>
+<td>@updatedAt</td>
+</tr>
+<tr>
+<td>tasks</td>
+<td>Task[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>violations</td>
+<td>Violation[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>chatRoom</td>
+<td>ChatRoom?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>treatyParticipations</td>
+<td>TreatyParticipant[]</td>
+<td>REL</td>
+<td>@relation(&quot;TreatyParticipantRoom&quot;)</td>
+</tr>
+<tr>
+<td>treasuryTransactions</td>
+<td>TreasuryTransaction[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>elections</td>
+<td>Election[]</td>
+<td>REL</td>
+<td>@relation(&quot;ElectionRoom&quot;)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="task"><code>Task</code></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Key / Role</th>
+<th>Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>String</td>
+<td>PK, DEFAULT</td>
+<td>@id @default(uuid())</td>
+</tr>
+<tr>
+<td>title</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>description</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>status</td>
+<td>TaskStatus</td>
+<td>DEFAULT</td>
+<td>@default(PENDING_APPROVAL)</td>
+</tr>
+<tr>
+<td>fundAmount</td>
+<td>Int</td>
+<td>DEFAULT</td>
+<td>@default(0)</td>
+</tr>
+<tr>
+<td>roomId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>room</td>
+<td>Room</td>
+<td>REL</td>
+<td>@relation(fields: [roomId], references: [id], onDelete: Restrict)</td>
+</tr>
+<tr>
+<td>createdById</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>createdBy</td>
+<td>User</td>
+<td>REL</td>
+<td>@relation(&quot;TaskCreatedBy&quot;, fields: [createdById], references: [id], onDelete: Restrict)</td>
+</tr>
+<tr>
+<td>assignedToId</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>assignedTo</td>
+<td>User?</td>
+<td>REL</td>
+<td>@relation(&quot;TaskAssignedTo&quot;, fields: [assignedToId], references: [id], onDelete: SetNull)</td>
+</tr>
+<tr>
+<td>completionSummary</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>completedAt</td>
+<td>DateTime?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>mayorReviewNote</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>reviewedAt</td>
+<td>DateTime?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>DateTime</td>
+<td>DEFAULT</td>
+<td>@default(now())</td>
+</tr>
+<tr>
+<td>updatedAt</td>
+<td>DateTime</td>
+<td>UPDATED_AT</td>
+<td>@updatedAt</td>
+</tr>
+<tr>
+<td>treasuryTransactions</td>
+<td>TreasuryTransaction[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h3 id="chatroom"><code>ChatRoom</code></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Key / Role</th>
+<th>Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>String</td>
+<td>PK, DEFAULT</td>
+<td>@id @default(uuid())</td>
+</tr>
+<tr>
+<td>type</td>
+<td>ChatRoomType</td>
+<td>DEFAULT</td>
+<td>@default(ROOM)</td>
+</tr>
+<tr>
+<td>roomId</td>
+<td>String?</td>
+<td>UNIQUE</td>
+<td>@unique</td>
+</tr>
+<tr>
+<td>room</td>
+<td>Room?</td>
+<td>REL</td>
+<td>@relation(fields: [roomId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>violationId</td>
+<td>String?</td>
+<td>UNIQUE</td>
+<td>@unique</td>
+</tr>
+<tr>
+<td>violation</td>
+<td>Violation?</td>
+<td>REL</td>
+<td>@relation(fields: [violationId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>treatyId</td>
+<td>String?</td>
+<td>UNIQUE</td>
+<td>@unique</td>
+</tr>
+<tr>
+<td>treaty</td>
+<td>Treaty?</td>
+<td>REL</td>
+<td>@relation(fields: [treatyId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>breachCaseId</td>
+<td>String?</td>
+<td>UNIQUE</td>
+<td>@unique</td>
+</tr>
+<tr>
+<td>breachCase</td>
+<td>BreachCase?</td>
+<td>REL</td>
+<td>@relation(fields: [breachCaseId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>departmentSenateId</td>
+<td>String?</td>
+<td>UNIQUE</td>
+<td>@unique</td>
+</tr>
+<tr>
+<td>departmentSenate</td>
+<td>Department?</td>
+<td>REL</td>
+<td>@relation(&quot;DepartmentSenateChatRoom&quot;, fields: [departmentSenateId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>closedAt</td>
+<td>DateTime?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>members</td>
+<td>ChatRoomMember[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>messages</td>
+<td>ChatMessage[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>DateTime</td>
+<td>DEFAULT</td>
+<td>@default(now())</td>
+</tr>
+<tr>
+<td>updatedAt</td>
+<td>DateTime</td>
+<td>UPDATED_AT</td>
+<td>@updatedAt</td>
+</tr>
+</tbody>
+</table>
+<h3 id="chatroommember"><code>ChatRoomMember</code></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Key / Role</th>
+<th>Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>String</td>
+<td>PK, DEFAULT</td>
+<td>@id @default(uuid())</td>
+</tr>
+<tr>
+<td>chatRoomId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>userId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>chatRoom</td>
+<td>ChatRoom</td>
+<td>REL</td>
+<td>@relation(fields: [chatRoomId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>user</td>
+<td>User</td>
+<td>REL</td>
+<td>@relation(fields: [userId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>mutedUntil</td>
+<td>DateTime?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>joinedAt</td>
+<td>DateTime</td>
+<td>DEFAULT</td>
+<td>@default(now())</td>
+</tr>
+</tbody>
+</table>
+<h3 id="chatmessage"><code>ChatMessage</code></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Key / Role</th>
+<th>Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>String</td>
+<td>PK, DEFAULT</td>
+<td>@id @default(uuid())</td>
+</tr>
+<tr>
+<td>chatRoomId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>senderId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>chatRoom</td>
+<td>ChatRoom</td>
+<td>REL</td>
+<td>@relation(fields: [chatRoomId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>sender</td>
+<td>User</td>
+<td>REL</td>
+<td>@relation(fields: [senderId], references: [id], onDelete: Restrict)</td>
+</tr>
+<tr>
+<td>content</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>deletedAt</td>
+<td>DateTime?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>DateTime</td>
+<td>DEFAULT</td>
+<td>@default(now())</td>
+</tr>
+</tbody>
+</table>
+<h3 id="violation"><code>Violation</code></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Key / Role</th>
+<th>Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>String</td>
+<td>PK, DEFAULT</td>
+<td>@id @default(uuid())</td>
+</tr>
+<tr>
+<td>status</td>
+<td>ViolationStatus</td>
+<td>DEFAULT</td>
+<td>@default(ACTIVE)</td>
+</tr>
+<tr>
+<td>roomId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>room</td>
+<td>Room</td>
+<td>REL</td>
+<td>@relation(fields: [roomId], references: [id], onDelete: Restrict)</td>
+</tr>
+<tr>
+<td>offenderId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>offender</td>
+<td>User</td>
+<td>REL</td>
+<td>@relation(&quot;ViolationOffender&quot;, fields: [offenderId], references: [id], onDelete: Restrict)</td>
+</tr>
+<tr>
+<td>createdById</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>createdBy</td>
+<td>User</td>
+<td>REL</td>
+<td>@relation(&quot;ViolationCreatedBy&quot;, fields: [createdById], references: [id], onDelete: Restrict)</td>
+</tr>
+<tr>
+<td>title</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>description</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>points</td>
+<td>Int</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>creditFine</td>
+<td>Int</td>
+<td>DEFAULT</td>
+<td>@default(0)</td>
+</tr>
+<tr>
+<td>penaltyMode</td>
+<td>ViolationPenaltyMode</td>
+<td>DEFAULT</td>
+<td>@default(BOTH_MANDATORY)</td>
+</tr>
+<tr>
+<td>offenderChoice</td>
+<td>ViolationOffenderChoice?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>creditsDeducted</td>
+<td>Int</td>
+<td>DEFAULT</td>
+<td>@default(0)</td>
+</tr>
+<tr>
+<td>pointsDeducted</td>
+<td>Int</td>
+<td>DEFAULT</td>
+<td>@default(0)</td>
+</tr>
+<tr>
+<td>creditsRefunded</td>
+<td>Int</td>
+<td>DEFAULT</td>
+<td>@default(0)</td>
+</tr>
+<tr>
+<td>expiresAt</td>
+<td>DateTime?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>archivedAt</td>
+<td>DateTime?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>pointsRefunded</td>
+<td>Int</td>
+<td>DEFAULT</td>
+<td>@default(0)</td>
+</tr>
+<tr>
+<td>refundedAt</td>
+<td>DateTime?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>appealedAt</td>
+<td>DateTime?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>appealNote</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>evaluationStartedAt</td>
+<td>DateTime?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>evaluationClosedAt</td>
+<td>DateTime?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>chatRoom</td>
+<td>ChatRoom?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>verdict</td>
+<td>ViolationVerdict?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>verdictNote</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>closedById</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>mayorViolationId</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>treasuryTransactions</td>
+<td>TreasuryTransaction[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>DateTime</td>
+<td>DEFAULT</td>
+<td>@default(now())</td>
+</tr>
+<tr>
+<td>updatedAt</td>
+<td>DateTime</td>
+<td>UPDATED_AT</td>
+<td>@updatedAt</td>
+</tr>
+</tbody>
+</table>
+<h3 id="treasurytransaction"><code>TreasuryTransaction</code></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Key / Role</th>
+<th>Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>String</td>
+<td>PK, DEFAULT</td>
+<td>@id @default(uuid())</td>
+</tr>
+<tr>
+<td>type</td>
+<td>TreasuryTransactionType</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>amount</td>
+<td>Int</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>departmentId</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>department</td>
+<td>Department?</td>
+<td>REL</td>
+<td>@relation(fields: [departmentId], references: [id], onDelete: SetNull)</td>
+</tr>
+<tr>
+<td>roomId</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>room</td>
+<td>Room?</td>
+<td>REL</td>
+<td>@relation(fields: [roomId], references: [id], onDelete: SetNull)</td>
+</tr>
+<tr>
+<td>taskId</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>task</td>
+<td>Task?</td>
+<td>REL</td>
+<td>@relation(fields: [taskId], references: [id], onDelete: SetNull)</td>
+</tr>
+<tr>
+<td>breachCaseId</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>breachCase</td>
+<td>BreachCase?</td>
+<td>REL</td>
+<td>@relation(fields: [breachCaseId], references: [id], onDelete: SetNull)</td>
+</tr>
+<tr>
+<td>violationId</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>violation</td>
+<td>Violation?</td>
+<td>REL</td>
+<td>@relation(fields: [violationId], references: [id], onDelete: SetNull)</td>
+</tr>
+<tr>
+<td>userId</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>createdById</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>createdBy</td>
+<td>User</td>
+<td>REL</td>
+<td>@relation(&quot;TreasuryTransactionCreatedBy&quot;, fields: [createdById], references: [id], onDelete: Restrict)</td>
+</tr>
+<tr>
+<td>note</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>DateTime</td>
+<td>DEFAULT</td>
+<td>@default(now())</td>
+</tr>
+</tbody>
+</table>
+<h3 id="socialscorepurchaserequest"><code>SocialScorePurchaseRequest</code></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Key / Role</th>
+<th>Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>String</td>
+<td>PK, DEFAULT</td>
+<td>@id @default(uuid())</td>
+</tr>
+<tr>
+<td>userId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>user</td>
+<td>User</td>
+<td>REL</td>
+<td>@relation(&quot;SocialScoreRequestUser&quot;, fields: [userId], references: [id], onDelete: Restrict)</td>
+</tr>
+<tr>
+<td>departmentId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>department</td>
+<td>Department</td>
+<td>REL</td>
+<td>@relation(fields: [departmentId], references: [id], onDelete: Restrict)</td>
+</tr>
+<tr>
+<td>status</td>
+<td>SocialScorePurchaseStatus</td>
+<td>DEFAULT</td>
+<td>@default(REQUESTED)</td>
+</tr>
+<tr>
+<td>requestNote</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>offeredById</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>offeredBy</td>
+<td>User?</td>
+<td>REL</td>
+<td>@relation(&quot;SocialScoreRequestOfferedBy&quot;, fields: [offeredById], references: [id], onDelete: SetNull)</td>
+</tr>
+<tr>
+<td>offeredPriceCredits</td>
+<td>Int?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>offeredSocialScore</td>
+<td>Int?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>offeredAt</td>
+<td>DateTime?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>respondedAt</td>
+<td>DateTime?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>DateTime</td>
+<td>DEFAULT</td>
+<td>@default(now())</td>
+</tr>
+<tr>
+<td>updatedAt</td>
+<td>DateTime</td>
+<td>UPDATED_AT</td>
+<td>@updatedAt</td>
+</tr>
+</tbody>
+</table>
+<h3 id="treaty"><code>Treaty</code></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Key / Role</th>
+<th>Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>String</td>
+<td>PK, DEFAULT</td>
+<td>@id @default(uuid())</td>
+</tr>
+<tr>
+<td>title</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>type</td>
+<td>TreatyType</td>
+<td>DEFAULT</td>
+<td>@default(NON_EXCHANGE)</td>
+</tr>
+<tr>
+<td>status</td>
+<td>TreatyStatus</td>
+<td>DEFAULT</td>
+<td>@default(NEGOTIATION)</td>
+</tr>
+<tr>
+<td>mode</td>
+<td>TreatyMode</td>
+<td>DEFAULT</td>
+<td>@default(DEPT_SCOPE)</td>
+</tr>
+<tr>
+<td>departmentId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>department</td>
+<td>Department</td>
+<td>REL</td>
+<td>@relation(fields: [departmentId], references: [id], onDelete: Restrict)</td>
+</tr>
+<tr>
+<td>createdById</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>createdBy</td>
+<td>User</td>
+<td>REL</td>
+<td>@relation(&quot;TreatyCreatedBy&quot;, fields: [createdById], references: [id], onDelete: Restrict)</td>
+</tr>
+<tr>
+<td>hostForeignMinisterId</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>hostForeignMinister</td>
+<td>User?</td>
+<td>REL</td>
+<td>@relation(&quot;TreatyHostFM&quot;, fields: [hostForeignMinisterId], references: [id], onDelete: SetNull)</td>
+</tr>
+<tr>
+<td>endsAt</td>
+<td>DateTime</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>chatRoom</td>
+<td>ChatRoom?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>participants</td>
+<td>TreatyParticipant[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>clauses</td>
+<td>TreatyClause[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>exchanges</td>
+<td>Exchange[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>breachCases</td>
+<td>BreachCase[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>treatyDepartments</td>
+<td>TreatyDepartment[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>breachVerdicts</td>
+<td>BreachVerdict[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>DateTime</td>
+<td>DEFAULT</td>
+<td>@default(now())</td>
+</tr>
+<tr>
+<td>updatedAt</td>
+<td>DateTime</td>
+<td>UPDATED_AT</td>
+<td>@updatedAt</td>
+</tr>
+</tbody>
+</table>
+<h3 id="treatyclause"><code>TreatyClause</code></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Key / Role</th>
+<th>Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>String</td>
+<td>PK, DEFAULT</td>
+<td>@id @default(uuid())</td>
+</tr>
+<tr>
+<td>treatyId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>treaty</td>
+<td>Treaty</td>
+<td>REL</td>
+<td>@relation(fields: [treatyId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>content</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>orderIndex</td>
+<td>Int</td>
+<td>DEFAULT</td>
+<td>@default(0)</td>
+</tr>
+<tr>
+<td>createdById</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>createdBy</td>
+<td>User</td>
+<td>REL</td>
+<td>@relation(&quot;ClauseCreatedBy&quot;, fields: [createdById], references: [id], onDelete: Restrict)</td>
+</tr>
+<tr>
+<td>isLocked</td>
+<td>Boolean</td>
+<td>DEFAULT</td>
+<td>@default(false)</td>
+</tr>
+<tr>
+<td>lockedById</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>lockedBy</td>
+<td>User?</td>
+<td>REL</td>
+<td>@relation(&quot;ClauseLockedBy&quot;, fields: [lockedById], references: [id], onDelete: SetNull)</td>
+</tr>
+<tr>
+<td>lockedAt</td>
+<td>DateTime?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>breachCases</td>
+<td>BreachCaseClause[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>DateTime</td>
+<td>DEFAULT</td>
+<td>@default(now())</td>
+</tr>
+<tr>
+<td>updatedAt</td>
+<td>DateTime</td>
+<td>UPDATED_AT</td>
+<td>@updatedAt</td>
+</tr>
+</tbody>
+</table>
+<h3 id="treatyparticipant"><code>TreatyParticipant</code></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Key / Role</th>
+<th>Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>String</td>
+<td>PK, DEFAULT</td>
+<td>@id @default(uuid())</td>
+</tr>
+<tr>
+<td>treatyId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>treaty</td>
+<td>Treaty</td>
+<td>REL</td>
+<td>@relation(fields: [treatyId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>type</td>
+<td>ParticipantType</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>status</td>
+<td>ParticipantStatus</td>
+<td>DEFAULT</td>
+<td>@default(PENDING)</td>
+</tr>
+<tr>
+<td>roomId</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>room</td>
+<td>Room?</td>
+<td>REL</td>
+<td>@relation(&quot;TreatyParticipantRoom&quot;, fields: [roomId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>userId</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>user</td>
+<td>User?</td>
+<td>REL</td>
+<td>@relation(&quot;TreatyParticipantUser&quot;, fields: [userId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>respondedAt</td>
+<td>DateTime?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>DateTime</td>
+<td>DEFAULT</td>
+<td>@default(now())</td>
+</tr>
+</tbody>
+</table>
+<h3 id="exchange"><code>Exchange</code></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Key / Role</th>
+<th>Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>String</td>
+<td>PK, DEFAULT</td>
+<td>@id @default(uuid())</td>
+</tr>
+<tr>
+<td>treatyId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>treaty</td>
+<td>Treaty</td>
+<td>REL</td>
+<td>@relation(fields: [treatyId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>type</td>
+<td>ExchangeType</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>status</td>
+<td>ExchangeStatus</td>
+<td>DEFAULT</td>
+<td>@default(OPEN)</td>
+</tr>
+<tr>
+<td>title</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>description</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>bounty</td>
+<td>Int</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>sellerId</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>seller</td>
+<td>User?</td>
+<td>REL</td>
+<td>@relation(&quot;ExchangeSeller&quot;, fields: [sellerId], references: [id], onDelete: SetNull)</td>
+</tr>
+<tr>
+<td>buyerId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>buyer</td>
+<td>User</td>
+<td>REL</td>
+<td>@relation(&quot;ExchangeBuyer&quot;, fields: [buyerId], references: [id], onDelete: Restrict)</td>
+</tr>
+<tr>
+<td>deliveryNotes</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>deliveredAt</td>
+<td>DateTime?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>reviewedAt</td>
+<td>DateTime?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>DateTime</td>
+<td>DEFAULT</td>
+<td>@default(now())</td>
+</tr>
+<tr>
+<td>updatedAt</td>
+<td>DateTime</td>
+<td>UPDATED_AT</td>
+<td>@updatedAt</td>
+</tr>
+</tbody>
+</table>
+<h3 id="breachcase"><code>BreachCase</code></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Key / Role</th>
+<th>Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>String</td>
+<td>PK, DEFAULT</td>
+<td>@id @default(uuid())</td>
+</tr>
+<tr>
+<td>treatyId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>treaty</td>
+<td>Treaty</td>
+<td>REL</td>
+<td>@relation(fields: [treatyId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>status</td>
+<td>BreachCaseStatus</td>
+<td>DEFAULT</td>
+<td>@default(OPEN)</td>
+</tr>
+<tr>
+<td>filerId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>filer</td>
+<td>User</td>
+<td>REL</td>
+<td>@relation(&quot;BreachCaseFiler&quot;, fields: [filerId], references: [id], onDelete: Restrict)</td>
+</tr>
+<tr>
+<td>accusedUserId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>accusedUser</td>
+<td>User</td>
+<td>REL</td>
+<td>@relation(&quot;BreachCaseAccused&quot;, fields: [accusedUserId], references: [id], onDelete: Restrict)</td>
+</tr>
+<tr>
+<td>title</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>description</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>exchangeId</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>clauses</td>
+<td>BreachCaseClause[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>chatRoom</td>
+<td>ChatRoom?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>evaluatedAt</td>
+<td>DateTime?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>ruledAt</td>
+<td>DateTime?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>ruledById</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>ruledBy</td>
+<td>User?</td>
+<td>REL</td>
+<td>@relation(&quot;BreachCaseRuledBy&quot;, fields: [ruledById], references: [id], onDelete: SetNull)</td>
+</tr>
+<tr>
+<td>rulingType</td>
+<td>BreachRulingType?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>rulingTargetUserId</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>rulingTarget</td>
+<td>User?</td>
+<td>REL</td>
+<td>@relation(&quot;BreachCaseRulingTarget&quot;, fields: [rulingTargetUserId], references: [id], onDelete: SetNull)</td>
+</tr>
+<tr>
+<td>penaltyMode</td>
+<td>BreachPenaltyMode?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>socialPenalty</td>
+<td>Int?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>creditFine</td>
+<td>Int?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>criminalChoice</td>
+<td>BreachCriminalChoice?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>resolutionNote</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>resolvedById</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>resolvedBy</td>
+<td>User?</td>
+<td>REL</td>
+<td>@relation(&quot;BreachCaseResolver&quot;, fields: [resolvedById], references: [id], onDelete: SetNull)</td>
+</tr>
+<tr>
+<td>resolvedAt</td>
+<td>DateTime?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>treasuryTransactions</td>
+<td>TreasuryTransaction[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>DateTime</td>
+<td>DEFAULT</td>
+<td>@default(now())</td>
+</tr>
+<tr>
+<td>updatedAt</td>
+<td>DateTime</td>
+<td>UPDATED_AT</td>
+<td>@updatedAt</td>
+</tr>
+<tr>
+<td>breachVerdicts</td>
+<td>BreachVerdict[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h3 id="breachcaseclause"><code>BreachCaseClause</code></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Key / Role</th>
+<th>Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>String</td>
+<td>PK, DEFAULT</td>
+<td>@id @default(uuid())</td>
+</tr>
+<tr>
+<td>breachCaseId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>breachCase</td>
+<td>BreachCase</td>
+<td>REL</td>
+<td>@relation(fields: [breachCaseId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>clauseId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>clause</td>
+<td>TreatyClause</td>
+<td>REL</td>
+<td>@relation(fields: [clauseId], references: [id], onDelete: Cascade)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="treatydepartment"><code>TreatyDepartment</code></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Key / Role</th>
+<th>Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>String</td>
+<td>PK, DEFAULT</td>
+<td>@id @default(uuid())</td>
+</tr>
+<tr>
+<td>treatyId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>treaty</td>
+<td>Treaty</td>
+<td>REL</td>
+<td>@relation(fields: [treatyId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>departmentId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>department</td>
+<td>Department</td>
+<td>REL</td>
+<td>@relation(fields: [departmentId], references: [id], onDelete: Restrict)</td>
+</tr>
+<tr>
+<td>status</td>
+<td>TreatyDepartmentStatus</td>
+<td>DEFAULT</td>
+<td>@default(PENDING)</td>
+</tr>
+<tr>
+<td>invitedById</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>invitedBy</td>
+<td>User</td>
+<td>REL</td>
+<td>@relation(&quot;TreatyDeptInvitedBy&quot;, fields: [invitedById], references: [id], onDelete: Restrict)</td>
+</tr>
+<tr>
+<td>respondedById</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>respondedBy</td>
+<td>User?</td>
+<td>REL</td>
+<td>@relation(&quot;TreatyDeptRespondedBy&quot;, fields: [respondedById], references: [id], onDelete: SetNull)</td>
+</tr>
+<tr>
+<td>respondedAt</td>
+<td>DateTime?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>DateTime</td>
+<td>DEFAULT</td>
+<td>@default(now())</td>
+</tr>
+<tr>
+<td>updatedAt</td>
+<td>DateTime</td>
+<td>UPDATED_AT</td>
+<td>@updatedAt</td>
+</tr>
+</tbody>
+</table>
+<h3 id="breachverdict"><code>BreachVerdict</code></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Key / Role</th>
+<th>Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>String</td>
+<td>PK, DEFAULT</td>
+<td>@id @default(uuid())</td>
+</tr>
+<tr>
+<td>breachCaseId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>breachCase</td>
+<td>BreachCase</td>
+<td>REL</td>
+<td>@relation(fields: [breachCaseId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>treatyId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>treaty</td>
+<td>Treaty</td>
+<td>REL</td>
+<td>@relation(fields: [treatyId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>proposedById</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>proposedBy</td>
+<td>User</td>
+<td>REL</td>
+<td>@relation(&quot;BreachVerdictProposedBy&quot;, fields: [proposedById], references: [id], onDelete: Restrict)</td>
+</tr>
+<tr>
+<td>status</td>
+<td>BreachVerdictStatus</td>
+<td>DEFAULT</td>
+<td>@default(PROPOSED)</td>
+</tr>
+<tr>
+<td>ruledAgainst</td>
+<td>BreachVerdictRuling</td>
+<td>DEFAULT</td>
+<td>@default(NONE)</td>
+</tr>
+<tr>
+<td>creditFine</td>
+<td>Int</td>
+<td>DEFAULT</td>
+<td>@default(0)</td>
+</tr>
+<tr>
+<td>socialPenalty</td>
+<td>Int</td>
+<td>DEFAULT</td>
+<td>@default(0)</td>
+</tr>
+<tr>
+<td>penaltyMode</td>
+<td>BreachVerdictPenaltyMode</td>
+<td>DEFAULT</td>
+<td>@default(BOTH_MANDATORY)</td>
+</tr>
+<tr>
+<td>notes</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>votes</td>
+<td>BreachVerdictVote[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>DateTime</td>
+<td>DEFAULT</td>
+<td>@default(now())</td>
+</tr>
+<tr>
+<td>finalizedAt</td>
+<td>DateTime?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h3 id="breachverdictvote"><code>BreachVerdictVote</code></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Key / Role</th>
+<th>Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>String</td>
+<td>PK, DEFAULT</td>
+<td>@id @default(uuid())</td>
+</tr>
+<tr>
+<td>verdictId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>verdict</td>
+<td>BreachVerdict</td>
+<td>REL</td>
+<td>@relation(fields: [verdictId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>voterUserId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>voterUser</td>
+<td>User</td>
+<td>REL</td>
+<td>@relation(&quot;BreachVerdictVoter&quot;, fields: [voterUserId], references: [id], onDelete: Restrict)</td>
+</tr>
+<tr>
+<td>voterDepartmentId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>voterDepartment</td>
+<td>Department</td>
+<td>REL</td>
+<td>@relation(&quot;BreachVerdictVoterDept&quot;, fields: [voterDepartmentId], references: [id], onDelete: Restrict)</td>
+</tr>
+<tr>
+<td>vote</td>
+<td>String</td>
+<td>-</td>
+<td>// ACCEPT or REJECT</td>
+</tr>
+<tr>
+<td>comment</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>DateTime</td>
+<td>DEFAULT</td>
+<td>@default(now())</td>
+</tr>
+</tbody>
+</table>
+<h3 id="election"><code>Election</code></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Key / Role</th>
+<th>Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>String</td>
+<td>PK, DEFAULT</td>
+<td>@id @default(uuid())</td>
+</tr>
+<tr>
+<td>type</td>
+<td>ElectionType</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>status</td>
+<td>ElectionStatus</td>
+<td>DEFAULT</td>
+<td>@default(ACTIVE)</td>
+</tr>
+<tr>
+<td>roomId</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>room</td>
+<td>Room?</td>
+<td>REL</td>
+<td>@relation(&quot;ElectionRoom&quot;, fields: [roomId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>departmentId</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>department</td>
+<td>Department?</td>
+<td>REL</td>
+<td>@relation(&quot;ElectionDepartment&quot;, fields: [departmentId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>deadline</td>
+<td>DateTime</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>winnerId</td>
+<td>String?</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>winner</td>
+<td>User?</td>
+<td>REL</td>
+<td>@relation(&quot;ElectionWinner&quot;, fields: [winnerId], references: [id], onDelete: SetNull)</td>
+</tr>
+<tr>
+<td>candidates</td>
+<td>ElectionCandidate[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>votes</td>
+<td>ElectionVote[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>DateTime</td>
+<td>DEFAULT</td>
+<td>@default(now())</td>
+</tr>
+<tr>
+<td>updatedAt</td>
+<td>DateTime</td>
+<td>UPDATED_AT</td>
+<td>@updatedAt</td>
+</tr>
+</tbody>
+</table>
+<h3 id="electioncandidate"><code>ElectionCandidate</code></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Key / Role</th>
+<th>Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>String</td>
+<td>PK, DEFAULT</td>
+<td>@id @default(uuid())</td>
+</tr>
+<tr>
+<td>electionId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>election</td>
+<td>Election</td>
+<td>REL</td>
+<td>@relation(fields: [electionId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>userId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>user</td>
+<td>User</td>
+<td>REL</td>
+<td>@relation(&quot;ElectionCandidateUser&quot;, fields: [userId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>totalVotePower</td>
+<td>Int</td>
+<td>DEFAULT</td>
+<td>@default(0)</td>
+</tr>
+<tr>
+<td>votes</td>
+<td>ElectionVote[]</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h3 id="electionvote"><code>ElectionVote</code></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Key / Role</th>
+<th>Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>String</td>
+<td>PK, DEFAULT</td>
+<td>@id @default(uuid())</td>
+</tr>
+<tr>
+<td>electionId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>election</td>
+<td>Election</td>
+<td>REL</td>
+<td>@relation(fields: [electionId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>voterId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>voter</td>
+<td>User</td>
+<td>REL</td>
+<td>@relation(&quot;ElectionVoter&quot;, fields: [voterId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>candidateId</td>
+<td>String</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>candidate</td>
+<td>ElectionCandidate</td>
+<td>REL</td>
+<td>@relation(fields: [candidateId], references: [id], onDelete: Cascade)</td>
+</tr>
+<tr>
+<td>votePower</td>
+<td>Int</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>DateTime</td>
+<td>DEFAULT</td>
+<td>@default(now())</td>
+</tr>
+</tbody>
+</table>
+<h3 id="enums-used-to-encode-workflow-states">Enums used to encode workflow states</h3>
+<table>
+<thead>
+<tr>
+<th>Enum</th>
+<th>Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TaskStatus</td>
+<td>PENDING_APPROVAL, ACTIVE, AWAITING_REVIEW, COMPLETED</td>
+</tr>
+<tr>
+<td>Role</td>
+<td>CITIZEN, MAYOR, ADMIN</td>
+</tr>
+<tr>
+<td>ElectionType</td>
+<td>ROOM, DEPARTMENT</td>
+</tr>
+<tr>
+<td>ElectionStatus</td>
+<td>ACTIVE, COMPLETED, TIE_BREAKING</td>
+</tr>
+<tr>
+<td>ChatRoomType</td>
+<td>ROOM, VIOLATION_CASE, TREATY_GROUP, BREACH_CASE, SENATE</td>
+</tr>
+<tr>
+<td>ViolationStatus</td>
+<td>ACTIVE, APPEALED, IN_EVALUATION, CLOSED_UPHELD, CLOSED_OVERTURNED, EXPIRED</td>
+</tr>
+<tr>
+<td>ViolationVerdict</td>
+<td>UPHELD, OVERTURNED, PUNISH_MAYOR</td>
+</tr>
+<tr>
+<td>ViolationPenaltyMode</td>
+<td>BOTH_MANDATORY, EITHER_CHOICE</td>
+</tr>
+<tr>
+<td>ViolationOffenderChoice</td>
+<td>CREDITS, SOCIAL_SCORE</td>
+</tr>
+<tr>
+<td>TreasuryTransactionType</td>
+<td>DEPT_ALLOCATE_TO_ROOM, DEPT_RECALL_FROM_ROOM, ROOM_TASK_SPEND, USER_BUY_SOCIAL_SCORE, BREACH_COMPENSATION, BREACH_FINE_INCOME, VIOLATION_FINE_INCOME, VIOLATION_REFUND</td>
+</tr>
+<tr>
+<td>SocialScorePurchaseStatus</td>
+<td>REQUESTED, OFFERED, ACCEPTED, REJECTED, CANCELLED</td>
+</tr>
+<tr>
+<td>TreatyMode</td>
+<td>DEPT_SCOPE, INTER_DEPT</td>
+</tr>
+<tr>
+<td>TreatyStatus</td>
+<td>NEGOTIATION, LOCKED, ACTIVE, EXPIRED</td>
+</tr>
+<tr>
+<td>TreatyType</td>
+<td>EXCHANGE, NON_EXCHANGE</td>
+</tr>
+<tr>
+<td>TreatyDepartmentStatus</td>
+<td>PENDING, ACCEPTED, REJECTED, LEFT</td>
+</tr>
+<tr>
+<td>BreachVerdictStatus</td>
+<td>PROPOSED, ACCEPTED, REJECTED</td>
+</tr>
+<tr>
+<td>BreachVerdictRuling</td>
+<td>ACCUSED, ACCUSER, NONE</td>
+</tr>
+<tr>
+<td>BreachVerdictPenaltyMode</td>
+<td>BOTH_MANDATORY, EITHER_CHOICE</td>
+</tr>
+<tr>
+<td>ParticipantType</td>
+<td>ROOM, USER</td>
+</tr>
+<tr>
+<td>ParticipantStatus</td>
+<td>PENDING, ACCEPTED, REJECTED, LEFT</td>
+</tr>
+<tr>
+<td>ExchangeType</td>
+<td>TASK_FOR_BOUNTY, NOTES_OR_RESOURCES_FOR_BOUNTY, ITEMS_FOR_BOUNTY</td>
+</tr>
+<tr>
+<td>ExchangeStatus</td>
+<td>OPEN, ACCEPTED, DELIVERED, APPROVED, REJECTED</td>
+</tr>
+<tr>
+<td>BreachCaseStatus</td>
+<td>OPEN, IN_REVIEW, AWAITING_CRIMINAL_CHOICE, RESOLVED</td>
+</tr>
+<tr>
+<td>BreachRulingType</td>
+<td>AGAINST_ACCUSED, AGAINST_ACCUSER, NONE</td>
+</tr>
+<tr>
+<td>BreachPenaltyMode</td>
+<td>BOTH_MANDATORY, EITHER_CHOICE, NONE</td>
+</tr>
+<tr>
+<td>BreachCriminalChoice</td>
+<td>SOCIAL, CREDITS</td>
+</tr>
+</tbody>
+</table>
+<h3 id="notes-on-schema-quality">Notes on schema quality</h3>
+<ul>
+<li>The schema uses <strong>many enums</strong>, which is good for preserving finite-state business logic.</li>
+<li>The design uses <strong>composite uniqueness</strong> in important places such as treaty participation and room numbering.</li>
+<li>Index coverage is good on high-frequency foreign keys and timeline-oriented queries.</li>
+<li>Multiple tables include <code>createdAt</code> and <code>updatedAt</code>, which supports audit and sorting workflows well.</li>
+</ul>
+<hr>
+<h2 id="5-api-design-and-request-verification">5. API design and request verification</h2>
+<h3 id="observed-backend-endpoint-surface">Observed backend endpoint surface</h3>
+<p>The NestJS controllers expose approximately the following number of routes by module:</p>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th style="text-align:right">Approx. route count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Auth</td>
+<td style="text-align:right">4</td>
+</tr>
+<tr>
+<td>Chat</td>
+<td style="text-align:right">3</td>
+</tr>
+<tr>
+<td>Departments</td>
+<td style="text-align:right">6</td>
+</tr>
+<tr>
+<td>Rooms</td>
+<td style="text-align:right">6</td>
+</tr>
+<tr>
+<td>Users</td>
+<td style="text-align:right">6</td>
+</tr>
+<tr>
+<td>Tasks</td>
+<td style="text-align:right">6</td>
+</tr>
+<tr>
+<td>Violations</td>
+<td style="text-align:right">14</td>
+</tr>
+<tr>
+<td>Treaties</td>
+<td style="text-align:right">35</td>
+</tr>
+<tr>
+<td>Inter-department treaties</td>
+<td style="text-align:right">31</td>
+</tr>
+<tr>
+<td>Finance</td>
+<td style="text-align:right">11</td>
+</tr>
+<tr>
+<td>Elections</td>
+<td style="text-align:right">10</td>
+</tr>
+</tbody>
+</table>
+<h3 id="api-module-interaction-map">API module interaction map</h3>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart LR
+    FEAuth[frontend/api/auth.ts] --> AuthAPI[/auth/*]
+    FEUsers[frontend/api/users.ts] --> UsersAPI[/users/*]
+    FEDep[frontend/api/departments.ts] --> DeptAPI[/departments/*]
+    FERooms[frontend/api/rooms.ts] --> RoomAPI[/rooms/*]
+    FETasks[frontend/api/tasks.ts] --> TaskAPI[/tasks/*]
+    FEVio[frontend/api/violations.ts] --> VioAPI[/violations/*]
+    FETreaty[frontend/api/treaties.ts] --> TreatyAPI[/treaties/*]
+    FEIDT[frontend/api/interDeptTreaties.ts] --> IDTAPI[/inter-dept-treaties/*]
+    FEFin[frontend/api/finance.ts] --> FinAPI[/finance/*]
+    FEElec[frontend/api/elections.ts] --> ElecAPI[/elections/*]
+    FEChat[room chat pages] --> ChatAPI[/chat/room/*]
+</div></code></pre>
+<h3 id="static-request-verification-findings">Static request verification findings</h3>
+<p>This review could <strong>statically verify</strong> the project’s API contract by comparing:</p>
+<ul>
+<li>backend controller routes,</li>
+<li>frontend API client calls,</li>
+<li>frontend token-refresh logic,</li>
+<li>backend auth cookie flow.</li>
+</ul>
+<h4 id="what-checks-passed">What checks passed</h4>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frontend uses modular API wrappers</td>
+<td>Passed</td>
+<td>Separate files exist for auth, departments, elections, finance, treaties, violations, tasks, rooms, and users.</td>
+</tr>
+<tr>
+<td>Backend route coverage is broad</td>
+<td>Passed</td>
+<td>All major business areas have dedicated NestJS controllers and services.</td>
+</tr>
+<tr>
+<td>Automatic token refresh exists</td>
+<td>Passed</td>
+<td>Frontend retries requests after <code>POST /auth/refresh</code>.</td>
+</tr>
+<tr>
+<td>Backend refresh implementation exists</td>
+<td>Passed</td>
+<td>Backend reads refresh cookie and rotates tokens.</td>
+</tr>
+<tr>
+<td>Role-sensitive endpoints exist</td>
+<td>Passed</td>
+<td>Controllers use JWT + role guards in multiple modules.</td>
+</tr>
+<tr>
+<td>Pagination pattern exists for chats</td>
+<td>Passed</td>
+<td>Cursor-based pagination appears in room, treaty, violation, and senate chat style endpoints.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="notable-integration-observations">Notable integration observations</h4>
+<table>
+<thead>
+<tr>
+<th>Observation</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frontend logout currently clears local token client-side but does <strong>not</strong> call backend <code>POST /auth/logout</code>.</td>
+<td>Refresh-token hash may remain active server-side until expiry or next logout implementation update.</td>
+</tr>
+<tr>
+<td>The uploaded archive does not include visible package manifests or environment files.</td>
+<td>Full runtime integration tests could not be executed from the provided snapshot alone.</td>
+</tr>
+<tr>
+<td>Only a sample frontend test file exists (<code>example.test.ts</code>).</td>
+<td>Automated test coverage is currently very limited.</td>
+</tr>
+<tr>
+<td>Live database connectivity details are absent from the Prisma datasource block in the uploaded schema.</td>
+<td>Real request execution against PostgreSQL could not be reproduced inside this review environment.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="api-test-status-summary">API test status summary</h3>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart TD
+    A[Frontend API clients] --> B[Static route matching]
+    A --> C[Auth refresh logic review]
+    A --> D[Protected page review]
+    B --> E[Backend controllers confirmed]
+    C --> F[/auth/refresh present]
+    D --> G[Role checks present]
+    E --> H[Contract appears implemented]
+    F --> H
+    G --> H
+    H --> I[Live execution still required with env + DB]
+</div></code></pre>
+<h3 id="recommended-live-test-checklist">Recommended live test checklist</h3>
+<p>Because the full runtime stack was not bundled, the following should be executed by the team before final submission:</p>
+<ol>
+<li>Register a new user into an existing department.</li>
+<li>Log in and verify refresh token rotation.</li>
+<li>Fetch <code>/users/me</code>.</li>
+<li>Create, approve, complete, and review a task.</li>
+<li>Create a violation, submit an appeal, start evaluation, and close with each verdict type.</li>
+<li>Create a treaty, add participants, add clauses, and advance status.</li>
+<li>File a treaty breach and exercise chat + resolution paths.</li>
+<li>Allocate and recall treasury funds.</li>
+<li>Create and accept a social score purchase request.</li>
+<li>Run a room election and a department election.</li>
+<li>Verify room chat and senate chat pagination.</li>
+<li>Verify role restrictions by testing citizen vs mayor vs admin accounts.</li>
+</ol>
+<hr>
+<h2 id="6-procedural-sql-advanced-queries-and-advanced-concepts">6. Procedural SQL, advanced queries, and advanced concepts</h2>
+<p>The codebase primarily uses <strong>Prisma ORM</strong> rather than handwritten SQL files. Even so, it demonstrates several advanced database and transactional concepts.</p>
+<h3 id="61-transactional-treasury-allocation">6.1 Transactional treasury allocation</h3>
+<p>This pattern ensures that department balance decreases, room balance increases, and a ledger transaction is inserted atomically.</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.prisma.$transaction(<span class="hljs-keyword">async</span> (tx) =&gt; {
+  <span class="hljs-keyword">const</span> dept = <span class="hljs-keyword">await</span> tx.department.findUnique({
+    where: { id: department.id },
+    select: { treasuryCredits: <span class="hljs-literal">true</span> },
+  });
+
+  <span class="hljs-keyword">await</span> tx.department.update({
+    where: { id: department.id },
+    data: { treasuryCredits: { decrement: dto.amount } },
+  });
+
+  <span class="hljs-keyword">await</span> tx.room.update({
+    where: { id: roomId },
+    data: { treasuryCredits: { increment: dto.amount } },
+  });
+
+  <span class="hljs-keyword">const</span> transaction = <span class="hljs-keyword">await</span> tx.treasuryTransaction.create({
+    data: {
+      <span class="hljs-keyword">type</span>: <span class="hljs-string">'DEPT_ALLOCATE_TO_ROOM'</span>,
+      amount: dto.amount,
+      departmentId: department.id,
+      roomId,
+      createdById: currentUserId,
+      note: dto.note,
+    },
+  });
+
+  <span class="hljs-keyword">return</span> transaction;
+});
+</div></code></pre>
+<p><strong>Why it matters:</strong> this is an atomic multi-step financial operation. Without a transaction, treasury totals could become inconsistent.</p>
+<h3 id="62-task-approval-with-treasury-deduction">6.2 Task approval with treasury deduction</h3>
+<pre class="hljs"><code><div><span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.prisma.$transaction(<span class="hljs-keyword">async</span> (tx) =&gt; {
+  <span class="hljs-keyword">if</span> (fundAmount &gt; <span class="hljs-number">0</span>) {
+    <span class="hljs-keyword">const</span> room = <span class="hljs-keyword">await</span> tx.room.findUnique({
+      where: { id: task.roomId },
+      select: { treasuryCredits: <span class="hljs-literal">true</span> },
+    });
+
+    <span class="hljs-keyword">await</span> tx.room.update({
+      where: { id: task.roomId },
+      data: { treasuryCredits: { decrement: fundAmount } },
+    });
+
+    <span class="hljs-keyword">await</span> tx.treasuryTransaction.create({
+      data: {
+        <span class="hljs-keyword">type</span>: <span class="hljs-string">'ROOM_TASK_SPEND'</span>,
+        amount: fundAmount,
+        roomId: task.roomId,
+        taskId: taskId,
+        createdById: currentUserId,
+      },
+    });
+  }
+
+  <span class="hljs-keyword">return</span> tx.task.update({
+    where: { id: taskId },
+    data: {
+      assignedToId: dto.assignedToId,
+      fundAmount,
+      status: TaskStatus.ACTIVE,
+    },
+  });
+});
+</div></code></pre>
+<p><strong>Concepts used:</strong> transactionality, conditional treasury spend, status transition.</p>
+<h3 id="63-aggregate-query-for-ordered-treaty-clauses">6.3 Aggregate query for ordered treaty clauses</h3>
+<pre class="hljs"><code><div><span class="hljs-keyword">const</span> maxOrder = <span class="hljs-keyword">await</span> <span class="hljs-keyword">this</span>.prisma.treatyClause.aggregate({
+  where: { treatyId },
+  _max: { orderIndex: <span class="hljs-literal">true</span> },
+});
+
+<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.prisma.treatyClause.create({
+  data: {
+    treatyId,
+    content: dto.content,
+    orderIndex: (maxOrder._max.orderIndex ?? <span class="hljs-number">-1</span>) + <span class="hljs-number">1</span>,
+    createdById: userId,
+  },
+});
+</div></code></pre>
+<p><strong>Why it matters:</strong> this is an advanced aggregate-driven insert pattern for maintaining ordered clauses.</p>
+<h3 id="64-cursor-based-pagination-for-chat-history">6.4 Cursor-based pagination for chat history</h3>
+<pre class="hljs"><code><div><span class="hljs-keyword">const</span> messages = <span class="hljs-keyword">await</span> <span class="hljs-keyword">this</span>.prisma.chatMessage.findMany({
+  where: { chatRoomId: treaty.chatRoom.id, deletedAt: <span class="hljs-literal">null</span> },
+  orderBy: [{ createdAt: <span class="hljs-string">'desc'</span> }, { id: <span class="hljs-string">'desc'</span> }],
+  take: limit,
+  ...(cursor ? { cursor: { id: cursor }, skip: <span class="hljs-number">1</span> } : {}),
+});
+</div></code></pre>
+<p><strong>Concepts used:</strong> cursor pagination, deterministic ordering, scalable chat loading.</p>
+<h3 id="65-refund-and-reversal-logic-in-violation-closure">6.5 Refund and reversal logic in violation closure</h3>
+<pre class="hljs"><code><div><span class="hljs-keyword">if</span> (violation.creditsRefunded === <span class="hljs-number">0</span> &amp;&amp; violation.creditsDeducted &gt; <span class="hljs-number">0</span>) {
+  <span class="hljs-keyword">await</span> tx.user.update({
+    where: { id: violation.offenderId },
+    data: { credits: { increment: violation.creditsDeducted } },
+  });
+
+  <span class="hljs-keyword">await</span> tx.department.update({
+    where: { id: violation.room.departmentId },
+    data: { treasuryCredits: { decrement: violation.creditsDeducted } },
+  });
+
+  <span class="hljs-keyword">await</span> tx.treasuryTransaction.create({
+    data: {
+      <span class="hljs-keyword">type</span>: <span class="hljs-string">'VIOLATION_REFUND'</span>,
+      amount: violation.creditsDeducted,
+      departmentId: violation.room.departmentId,
+      violationId,
+      userId: violation.offenderId,
+      createdById: pmUserId,
+    },
+  });
+}
+</div></code></pre>
+<p><strong>Why it matters:</strong> this is a good example of idempotent-style reversal logic and ledger-backed compensation.</p>
+<h3 id="66-social-score-purchase-acceptance">6.6 Social score purchase acceptance</h3>
+<pre class="hljs"><code><div><span class="hljs-keyword">await</span> tx.user.update({
+  where: { id: currentUserId },
+  data: { credits: { decrement: request.offeredPriceCredits } },
+});
+
+<span class="hljs-keyword">await</span> tx.user.update({
+  where: { id: currentUserId },
+  data: { socialScore: { increment: request.offeredSocialScore } },
+});
+
+<span class="hljs-keyword">await</span> tx.department.update({
+  where: { id: request.departmentId },
+  data: { treasuryCredits: { increment: request.offeredPriceCredits } },
+});
+</div></code></pre>
+<p><strong>Concepts used:</strong> value exchange, multi-entity update, domain-level accounting.</p>
+<h3 id="advanced-concepts-list">Advanced concepts list</h3>
+<table>
+<thead>
+<tr>
+<th>Concept</th>
+<th>Where used</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Transactions (<code>$transaction</code>)</td>
+<td>Finance, Tasks, Violations, Treaties, Inter-dept treaties, Rooms</td>
+<td>Preserves consistency across multi-step updates</td>
+</tr>
+<tr>
+<td>Aggregation (<code>aggregate</code>)</td>
+<td>Inter-dept treaty clause ordering</td>
+<td>Computes next clause order safely</td>
+</tr>
+<tr>
+<td>Upsert</td>
+<td>Auth registration, chat membership, treaty department participation</td>
+<td>Simplifies create-or-update logic</td>
+</tr>
+<tr>
+<td>Cursor-based pagination</td>
+<td>Chat, treaty chat, election/senate messages</td>
+<td>Efficient loading of chronological data</td>
+</tr>
+<tr>
+<td>Increment/decrement field operators</td>
+<td>Treasury, credits, social score</td>
+<td>Prevents read-modify-write drift</td>
+</tr>
+<tr>
+<td>Composite unique constraints</td>
+<td>Room numbering, treaty participation, votes</td>
+<td>Protects business invariants</td>
+</tr>
+<tr>
+<td>Enum-driven workflows</td>
+<td>Tasks, violations, treaties, exchanges, elections</td>
+<td>Makes business states explicit and queryable</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sql-oriented-discussion">SQL-oriented discussion</h3>
+<p>Even though the project is ORM-based, these Prisma calls translate into core relational operations equivalent to:</p>
+<ul>
+<li><code>INSERT</code> for entity creation,</li>
+<li><code>UPDATE ... SET field = field + n</code> / <code>field = field - n</code>,</li>
+<li><code>SELECT ... ORDER BY ... LIMIT ...</code>,</li>
+<li><code>JOIN</code>-heavy relational fetches,</li>
+<li>aggregate queries similar to <code>SELECT MAX(order_index)</code>,</li>
+<li>transactional sequences that correspond to <code>BEGIN ... COMMIT</code>.</li>
+</ul>
+<p>That means the project still demonstrates strong database-system understanding even without standalone <code>.sql</code> scripts.</p>
+<hr>
+<h2 id="7-limitations-of-the-project">7. Limitations of the project</h2>
+<table>
+<thead>
+<tr>
+<th>Limitation</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Limited automated tests</td>
+<td>The uploaded frontend test suite contains only a sample passing test and no substantial integration or unit coverage.</td>
+</tr>
+<tr>
+<td>Runtime setup not fully bundled</td>
+<td>Package manifests, environment configuration, and migration/runtime metadata were not present in the uploaded snapshot.</td>
+</tr>
+<tr>
+<td>Logout integration gap</td>
+<td>Frontend logout does not currently call the backend logout endpoint.</td>
+</tr>
+<tr>
+<td>Complexity risk</td>
+<td>The domain model is rich, but it also increases maintenance difficulty and onboarding cost.</td>
+</tr>
+<tr>
+<td>Large schema surface</td>
+<td>The schema includes many entities and enums, which can become hard to evolve without migration discipline.</td>
+</tr>
+<tr>
+<td>Potential UI learning curve</td>
+<td>The government metaphor is creative, but some users may need onboarding to understand treaties, ministers, verdicts, and social score mechanics.</td>
+</tr>
+<tr>
+<td>Missing explicit test artifacts for API validation</td>
+<td>No Postman collection, e2e suite, or backend integration tests were visible in the uploaded files.</td>
+</tr>
+<tr>
+<td>Operational assumptions</td>
+<td>Some workflows depend on correct sequencing of roles and state transitions, which requires careful admin setup and seed data.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="8-modifications-made-to-the-scope-features-or-design-throughout-the-semester">8. Modifications made to the scope, features, or design throughout the semester</h2>
+<p>This section is inferred from the current codebase structure and inline comments such as <code>NEW</code>, <code>D2</code>, and <code>D3</code>, which strongly suggest that the scope expanded during implementation.</p>
+<h3 id="likely-scope-evolution">Likely scope evolution</h3>
+<table>
+<thead>
+<tr>
+<th>Initial/basic hall-management expectation</th>
+<th>Expanded implementation actually present</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>User + room management</td>
+<td>Full governance model with departments, mayors, ministers, and elections</td>
+</tr>
+<tr>
+<td>Simple complaint/discipline module</td>
+<td>Multi-stage violation workflow with appeals, evaluation, verdicts, refunds, and punish-mayor branching</td>
+</tr>
+<tr>
+<td>Basic task tracking</td>
+<td>Treasury-backed task approval, assignment, completion, and reward pipeline</td>
+</tr>
+<tr>
+<td>Plain communication</td>
+<td>Room chat, treaty chat, breach chat, and senate chat with membership rules</td>
+</tr>
+<tr>
+<td>Basic collaboration</td>
+<td>Rich treaty subsystem with clauses, participants, exchanges, breaches, and inter-department negotiations</td>
+</tr>
+<tr>
+<td>Static financial fields</td>
+<td>Real treasury ledger with allocation, recall, purchases, compensation, refunds</td>
+</tr>
+<tr>
+<td>Standard CRUD voting</td>
+<td>Role-sensitive room and department elections with tie handling and minister assignment</td>
+</tr>
+</tbody>
+</table>
+<h3 id="interpretation">Interpretation</h3>
+<p>The final system is no longer just a dormitory manager. It has evolved into a <strong>simulation-heavy hall governance platform</strong>. That is a significant positive expansion in ambition, but it also increased:</p>
+<ul>
+<li>schema size,</li>
+<li>service-layer complexity,</li>
+<li>state management needs,</li>
+<li>testing requirements.</li>
+</ul>
+<hr>
+<h2 id="9-individual-contribution">9. Individual contribution</h2>
+<p>The uploaded source snapshot and visible repository landing page do <strong>not</strong> contain reliable per-person ownership metadata for each module, so the following table is best treated as a <strong>submission-ready draft structure</strong> that the team should finalize according to actual work done.</p>
+<table>
+<thead>
+<tr>
+<th>Team member</th>
+<th>Student ID</th>
+<th>Suggested/report-ready contribution area</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Khandakar Abu Talib Sifat</td>
+<td>220041246</td>
+<td>Project coordination, backend architecture, authentication and core governance modules</td>
+</tr>
+<tr>
+<td>Md Samiul Islam</td>
+<td>220041207</td>
+<td>Frontend pages, routing, API integration, dashboard and protected UI flows</td>
+</tr>
+<tr>
+<td>Muhatadi Bin Maruf</td>
+<td>220041247</td>
+<td>Database design, Prisma schema, finance/election/treaty data modeling</td>
+</tr>
+<tr>
+<td>Sheikh Mosheul Akbar</td>
+<td>220041137</td>
+<td>Violations, chat workflows, testing support, documentation and report preparation</td>
+</tr>
+</tbody>
+</table>
+<h3 id="safer-alternative-wording-for-final-submission">Safer alternative wording for final submission</h3>
+<p>You may also replace the row descriptions above with your exact real contributions. That is recommended if your instructor expects precise attribution.</p>
+<hr>
+<h2 id="10-overall-evaluation">10. Overall evaluation</h2>
+<p>Dormocracy : Bureau of Halls is a technically ambitious full-stack academic project. Its strongest qualities are:</p>
+<ul>
+<li>a rich and well-normalized database design,</li>
+<li>ambitious role-based governance mechanics,</li>
+<li>advanced workflow modeling,</li>
+<li>transaction-aware financial operations,</li>
+<li>multiple communication and dispute-resolution subsystems.</li>
+</ul>
+<p>The main areas that still need improvement before production-quality deployment are:</p>
+<ul>
+<li>automated testing,</li>
+<li>runtime packaging and reproducibility,</li>
+<li>formal API/e2e verification,</li>
+<li>simplification of some complex user flows.</li>
+</ul>
+<p>Overall, the project demonstrates strong effort in:</p>
+<ul>
+<li>database systems,</li>
+<li>backend service design,</li>
+<li>relational thinking,</li>
+<li>stateful workflow implementation,</li>
+<li>full-stack application integration.</li>
+</ul>
+<hr>
+<h2 id="11-appendix-concise-schema-summary">11. Appendix: concise schema summary</h2>
+<h3 id="table-count">Table count</h3>
+<ul>
+<li><strong>Models:</strong> 22</li>
+<li><strong>Enums:</strong> 26</li>
+</ul>
+<h3 id="most-central-entities">Most central entities</h3>
+<ul>
+<li><code>User</code></li>
+<li><code>Department</code></li>
+<li><code>Room</code></li>
+<li><code>Task</code></li>
+<li><code>Violation</code></li>
+<li><code>ChatRoom</code></li>
+<li><code>Treaty</code></li>
+<li><code>BreachCase</code></li>
+<li><code>TreasuryTransaction</code></li>
+<li><code>Election</code></li>
+</ul>
+<h3 id="final-architecture-summary-diagram">Final architecture summary diagram</h3>
+<pre><code class="language-mermaid"><div class="mermaid">mindmap
+  root((Dormocracy))
+    Governance
+      Departments
+      Rooms
+      Users
+      Roles
+      Elections
+    Workflow
+      Tasks
+      Violations
+      Appeals
+      Verdicts
+    Collaboration
+      Treaties
+      Clauses
+      Exchanges
+      Breaches
+      Inter-dept voting
+    Finance
+      Treasury
+      Allocation
+      Recall
+      Social score purchase
+      Refunds
+    Communication
+      Room chat
+      Treaty chat
+      Breach chat
+      Senate chat
+</div></code></pre>
+
+</body>
+</html>
